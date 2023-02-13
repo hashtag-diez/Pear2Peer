@@ -29,10 +29,14 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
 
     @Override
     public boolean equals(ContentDescriptorI cd) throws Exception {
-        boolean addrEqual = this._addr.getNodeIdentifier().equals(cd.getContentNodeAdressI().getNodeIdentifier());
-        boolean size = this.getSize() == cd.getSize();
+        /*
+         * boolean addrEqual =
+         * this._addr.getNodeIdentifier().equals(cd.getContentNodeAdressI().
+         * getNodeIdentifier());
+         * boolean size = this.getSize() == cd.getSize();
+         */
         return _isTitleEquals(cd) && _isAlbumTitleEquals(cd) && _isIntrepretersContains(cd)
-                && _isComposersContains(cd) && size && addrEqual;
+                && _isComposersContains(cd) /* && size && addrEqual */;
     }
 
     @Override

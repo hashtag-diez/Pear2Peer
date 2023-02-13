@@ -9,8 +9,8 @@ import interfaces.ContentTemplateI;
 
 public interface ContentManagementCI 
 extends RequiredCI, OfferedCI{
-  ContentDescriptorI find(ContentTemplateI cd, int hops);
+  ContentDescriptorI find(ContentTemplateI cd, int hops) throws Exception;
   Set<ContentDescriptorI> match(ContentTemplateI cd, 
     Set<ContentDescriptorI> matched, 
-    int hops);
+    int hops) throws Exception;
 }
