@@ -17,8 +17,8 @@ implements	NodeManagementCI{
   }
   @Override
   public void leave(PeerNodeAddressI a) throws Exception {
-    // TODO Auto-generated method stub
-    
+    System.out.println("Appel de Leave du connecteur de " + a.getNodeIdentifier());
+		((NodeManagementCI)this.offering).leave(a);
   }
   
 }

@@ -23,12 +23,20 @@ implements NodeCI{
 					public PeerNodeAddressI call() throws Exception {
 						return ((Node)this.getServiceOwner()).addToNetwork(a);
 					}
-				}) ;
+				});
   }
 
   @Override
-  public void disconnect(PeerNodeAddressI a) {
-    // TODO Auto-generated method stub
-    
+  public void disconnect(PeerNodeAddressI a) throws Exception{
+    System.out.println("Appel de Leave du inbound de " + a.getNodeIdentifier());
+    this.getOwner().runTask(
+				owner -> {
+          try {
+            ((Node) owner).deleteFromNetwork(a);
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        }
+    );
   }
 }

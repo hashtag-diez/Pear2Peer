@@ -8,23 +8,30 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import interfaces.PeerNodeAddressI;
 
-public class NodeManagementInboundPort 
-extends		AbstractInboundPort
-implements NodeManagementCI{
+public class NodeManagementInboundPort
+    extends AbstractInboundPort
+    implements NodeManagementCI {
 
   public NodeManagementInboundPort(String uri, ComponentI owner) throws Exception {
     super(uri, NodeManagementCI.class, owner);
   }
 
   @Override
-  public Set<PeerNodeAddressI> join(PeerNodeAddressI a) throws Exception{
+  public Set<PeerNodeAddressI> join(PeerNodeAddressI a) throws Exception {
     return this.getOwner().handleRequest(
-      owner -> ((NodeManagement)owner).addNewComers(a));
+        owner -> ((NodeManagement) owner).addNewComers(a));
   }
 
   @Override
-  public void leave(PeerNodeAddressI a) {
-    
+  public void leave(PeerNodeAddressI a) throws Exception {
+    this.getOwner().runTask(
+        owner -> {
+          try {
+            ((NodeManagement) owner).deletePeer(a);
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        });
   }
-  
+
 }

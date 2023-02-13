@@ -11,26 +11,30 @@ import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import ports.NodeManagementInboundPort;
 
-@OfferedInterfaces(offered = {NodeManagementCI.class})
-public class NodeManagement 
-extends AbstractComponent
-implements FacadeNodeAddressI{
+@OfferedInterfaces(offered = { NodeManagementCI.class })
+public class NodeManagement
+    extends AbstractComponent
+    implements FacadeNodeAddressI {
 
   protected NodeManagementInboundPort NMSetterPort;
   private Set<PeerNodeAddressI> members = new HashSet<>();
   protected String uriPrefix = "NodeC";
 
-  protected NodeManagement(String reflectionInboundPortURI, String inboundURI) throws Exception{
+  protected NodeManagement(String reflectionInboundPortURI, String inboundURI) throws Exception {
     super(reflectionInboundPortURI, 1, 0);
     this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
     this.NMSetterPort.publishPort();
     this.uriPrefix = this.uriPrefix + UUID.randomUUID();
   }
 
-  public Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception{
+  public Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
     Set<PeerNodeAddressI> neighbors = new HashSet<>(members);
     members.add(a);
     return neighbors;
+  }
+
+  public void deletePeer(PeerNodeAddressI a) throws Exception {
+    members.remove(a);
   }
 
   @Override

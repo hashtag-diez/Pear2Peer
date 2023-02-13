@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch CVM",
+      "request": "launch",
+      "mainClass": "CVM",
+      "projectName": "Pear2Peer_99077ee1"
+    },
+    {
+      "type": "java",
       "name": "Launch Current File",
       "request": "launch",
       "mainClass": "${file}"

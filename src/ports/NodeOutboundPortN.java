@@ -1,7 +1,5 @@
 package ports;
 
-import java.util.Set;
-
 import components.interfaces.NodeCI;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
@@ -20,7 +18,6 @@ implements NodeCI{
 
   @Override
   public void disconnect(PeerNodeAddressI a) throws Exception {
-    // TODO Auto-generated method stub
-    
+    ((NodeCI)this.getConnector()).disconnect(a) ;
   }
 }

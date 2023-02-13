@@ -14,8 +14,7 @@ implements	NodeCI{
   }
   @Override
   public void disconnect(PeerNodeAddressI a) throws Exception {
-    // TODO Auto-generated method stub
-    
+    ((NodeCI)this.offering).disconnect(a);    
   }
   
 }
