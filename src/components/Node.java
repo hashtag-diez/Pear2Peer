@@ -11,10 +11,12 @@ import components.interfaces.ContentManagementCI;
 import components.interfaces.NodeCI;
 import components.interfaces.NodeManagementCI;
 import connectors.ContentManagementServiceConnector;
+import connectors.NodeManagementServiceConnector;
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
+import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 import fr.sorbonne_u.utils.Pair;
 import interfaces.ContentDescriptorI;
@@ -35,14 +37,14 @@ public class Node
 	protected NodeOutboundPortNM NMGetterPort;
 	protected NodeInboundPortCM CMSetterPort;
 	protected NodeInboundPort NSetterPort;
-
+	protected String NMInboundURI;
 	protected Map<PeerNodeAddressI, Pair<NodeOutboundPortN, OutboundPortCM>> peersGetterPorts;
 
 	protected String uriPrefix = "NodeC";
 
 	protected List<ContentDescriptorI> contentsDescriptors;
 
-	protected Node(String reflectionInboundPortURI, String outboundURI) throws Exception {
+	protected Node(String reflectionInboundPortURI, String outboundURI, String NMInboundURI) throws Exception {
 		super(reflectionInboundPortURI, 1, 0);
 		this.NMGetterPort = new NodeOutboundPortNM(outboundURI, this);
 		this.NMGetterPort.publishPort();
@@ -53,6 +55,24 @@ public class Node
 		this.CMSetterPort = new NodeInboundPortCM("cm" + reflectionInboundPortURI, this);
 		this.CMSetterPort.publishPort();
 		this.contentsDescriptors = new ArrayList<ContentDescriptorI>();
+		this.NMInboundURI = NMInboundURI;
+	}
+
+	@Override
+	public void start() throws ComponentStartException {
+		super.start();
+		try {
+			this.doPortConnection(NSetterPort.getPortURI(), NMInboundURI,
+					NodeManagementServiceConnector.class.getCanonicalName());
+		} catch (Exception e) {
+			throw new ComponentStartException(e);
+		}
+	}
+
+	@Override
+	public void finalise() throws Exception {
+		super.finalise();
+		this.doPortDisconnection(NSetterPort.getPortURI());
 	}
 
 	@Override
@@ -87,14 +107,8 @@ public class Node
 					@Override
 					public void run() {
 						Node caller = (Node) this.taskOwner;
-
 						try {
 							caller.NMGetterPort.leave(caller);
-							/*
-							 * doPortDisconnection(NMGetterPort.getPortURI());
-							 * NMGetterPort.unpublishPort();
-							 */
-
 							for (PeerNodeAddressI p : caller.peersGetterPorts.keySet()) {
 								NodeOutboundPortN out = peersGetterPorts.get(p).getFirst();
 								out.disconnect(caller);
@@ -122,7 +136,7 @@ public class Node
 		String iportCM = node.getNodeIdentifier().getSecond();
 		OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
 		peerOutPortCM.publishPort();
-		this.doPortConnection(oportCM, iportCM, NodeServiceConnector.class.getCanonicalName());
+		this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
 
 		this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPortN, peerOutPortCM));
 		System.out.println(getNodeIdentifier() + " est connecté à " + node.getNodeIdentifier());
@@ -131,8 +145,14 @@ public class Node
 
 	public void deleteFromNetwork(PeerNodeAddressI node) throws Exception {
 		NodeOutboundPortN outBoundPort = this.peersGetterPorts.get(node).getFirst();
+		OutboundPortCM outBoundPortCM = this.peersGetterPorts.get(node).getSecond();
+
 		this.doPortDisconnection(outBoundPort.getPortURI());
+		this.doPortDisconnection(outBoundPortCM.getPortURI());
+
 		outBoundPort.unpublishPort();
+		outBoundPortCM.unpublishPort();
+
 		this.peersGetterPorts.remove(node);
 	}
 
@@ -156,14 +176,10 @@ public class Node
 		return this.uriPrefix;
 	}
 
-	/**
-	 * to review
-	 */
 	public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
 		for (ContentDescriptorI localCd : this.contentsDescriptors) {
 			if (localCd.equals(request))
 				return localCd;
-
 		}
 
 		if (hops-- == 0)
@@ -196,7 +212,6 @@ public class Node
 				matched.addAll(((ContentManagementCI) outBoundPort).match(cd, matched, --hops));
 			}
 		}
-
 		return matched;
 	}
 }
