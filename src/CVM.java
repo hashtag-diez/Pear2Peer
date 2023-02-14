@@ -1,3 +1,4 @@
+
 import components.Node;
 import components.NodeManagement;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -14,7 +15,7 @@ public class CVM
 	protected static final String URIGetterOutboundPortURI = "oport";
 	/** URI of the consumer inbound port (simplifies the connection). */
 	protected static final String URIProviderInboundPortURI = "iport";
-	
+
 	protected final int NB_PEER = 10;
 	/**
 	 * Reference to the provider component to share between deploy
@@ -33,14 +34,13 @@ public class CVM
 				new Object[] { NODE_MANAGEMENT_COMPONENT_URI,
 						URIProviderInboundPortURI });
 
-		for(int i = 0; i<NB_PEER; i++){
+		for (int i = 0; i < NB_PEER; i++) {
 			AbstractComponent.createComponent(
-				Node.class.getCanonicalName(),
-				new Object[] { NODE_COMPONENT_URI + i,
-						URIGetterOutboundPortURI + i, 
-						URIProviderInboundPortURI});
+					Node.class.getCanonicalName(),
+					new Object[] { NODE_COMPONENT_URI + i,
+							URIGetterOutboundPortURI + i,
+							URIProviderInboundPortURI });
 		}
-		
 
 		super.deploy();
 	}

@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import fr.sorbonne_u.utils.Pair;
-
+import implem.ContentDescriptor;
 import components.interfaces.ContentManagementCI;
 import components.interfaces.NodeManagementCI;
 import connectors.ContentManagementServiceConnector;
@@ -16,6 +16,7 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
 import interfaces.FacadeNodeAddressI;
@@ -41,7 +42,7 @@ public class NodeManagement
     super(reflectionInboundPortURI, 1, 0);
     this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
     this.NMSetterPort.publishPort();
-    this.CMSetterPort = new NodeManagementInboundPortCM("cm"+inboundURI, this);
+    this.CMSetterPort = new NodeManagementInboundPortCM("cm" + inboundURI, this);
     this.CMSetterPort.publishPort();
     this.contentsDescriptors = new ArrayList<>();
     this.uriPrefix = this.uriPrefix + UUID.randomUUID();
@@ -49,19 +50,30 @@ public class NodeManagement
 
   public Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
     HashMap<PeerNodeAddressI, OutboundPortCM> neighbors = (HashMap<PeerNodeAddressI, OutboundPortCM>) members.clone();
-    
+
     String oportCM = AbstractOutboundPort.generatePortURI();
     OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
-		peerOutPortCM.publishPort();
-    this.doPortConnection(oportCM, CMSetterPort.getPortURI(), ContentManagementServiceConnector.class.getCanonicalName());
+    peerOutPortCM.publishPort();
+    this.doPortConnection(oportCM, CMSetterPort.getPortURI(),
+        ContentManagementServiceConnector.class.getCanonicalName());
 
-    members.put(a,peerOutPortCM);
+    members.put(a, peerOutPortCM);
     return neighbors
-      .keySet()
-      .stream()
-      .skip(neighbors.size() > 3 ? neighbors.size() - 3 : 0)
-      .limit(3)
-      .collect(Collectors.toSet());
+        .keySet()
+        .stream()
+        .skip(neighbors.size() > 3 ? neighbors.size() - 3 : 0)
+        .limit(3)
+        .collect(Collectors.toSet());
+  }
+
+  public void loadDescriptors(int number) throws Exception {
+    ContentDataManager.DATA_DIR_NAME = "src/data";
+    ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(0);
+    for (HashMap<String, Object> obj : result) {
+      ContentDescriptorI readDescriptor = new ContentDescriptor(obj);
+      contentsDescriptors.add(readDescriptor);
+      System.out.println(readDescriptor);
+    }
   }
 
   public void deletePeer(PeerNodeAddressI a) throws Exception {
@@ -84,46 +96,48 @@ public class NodeManagement
 
   @Override
   public Pair<String, String> getNodeIdentifier() throws Exception {
-    return new Pair<String,String>(NMSetterPort.getPortURI(), CMSetterPort.getPortURI());
+    return new Pair<String, String>(NMSetterPort.getPortURI(), CMSetterPort.getPortURI());
   }
 
   @Override
   public String getNodeManagementURI() {
     return uriPrefix;
   }
+
   public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
-		for (ContentDescriptorI localCd : this.contentsDescriptors) {
-			if (localCd.equals(request))
-				return localCd;
-		}
+    for (ContentDescriptorI localCd : this.contentsDescriptors) {
+      if (localCd.equals(request))
+        return localCd;
+    }
 
-		if (hops-- == 0)
-			return null;
+    if (hops-- == 0)
+      return null;
 
-		for (PeerNodeAddressI node : this.members.keySet()) {
-			OutboundPortCM outBoundPort = members.get(node);
-			ContentDescriptorI res = ((ContentManagementCI) outBoundPort).find(request, hops);
-			if (res != null)
-				return res;
-		}
+    for (PeerNodeAddressI node : this.members.keySet()) {
+      OutboundPortCM outBoundPort = members.get(node);
+      ContentDescriptorI res = ((ContentManagementCI) outBoundPort).find(request, hops);
+      if (res != null)
+        return res;
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	public Set<ContentDescriptorI> match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops) throws Exception {
-		for (ContentDescriptorI localCd : this.contentsDescriptors) {
-			if (localCd.match(cd)) {
-				matched.add(localCd);
-			}
-		}
+  public Set<ContentDescriptorI> match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops)
+      throws Exception {
+    for (ContentDescriptorI localCd : this.contentsDescriptors) {
+      if (localCd.match(cd)) {
+        matched.add(localCd);
+      }
+    }
 
-		if (hops != 0) {
-			for (PeerNodeAddressI node : this.members.keySet()) {
-				OutboundPortCM outBoundPort = members.get(node);
-				matched.addAll(((ContentManagementCI) outBoundPort).match(cd, matched, --hops));
-			}
-		}
+    if (hops != 0) {
+      for (PeerNodeAddressI node : this.members.keySet()) {
+        OutboundPortCM outBoundPort = members.get(node);
+        matched.addAll(((ContentManagementCI) outBoundPort).match(cd, matched, --hops));
+      }
+    }
 
-		return matched;
-	}
+    return matched;
+  }
 }

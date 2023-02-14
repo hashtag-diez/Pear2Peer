@@ -18,7 +18,9 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.Pair;
+import implem.ContentDescriptor;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
 import interfaces.PeerNodeAddressI;
@@ -62,6 +64,7 @@ public class Node
 	public void start() throws ComponentStartException {
 		super.start();
 		try {
+			this.loadDescriptors(1);
 			this.doPortConnection(NSetterPort.getPortURI(), NMInboundURI,
 					NodeManagementServiceConnector.class.getCanonicalName());
 		} catch (Exception e) {
@@ -154,6 +157,16 @@ public class Node
 		outBoundPortCM.unpublishPort();
 
 		this.peersGetterPorts.remove(node);
+	}
+
+	public void loadDescriptors(int number) throws Exception {
+		ContentDataManager.DATA_DIR_NAME = "src/data";
+		ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(1);
+		for (HashMap<String, Object> obj : result) {
+			ContentDescriptorI readDescriptor = new ContentDescriptor(obj);
+			contentsDescriptors.add(readDescriptor);
+			System.out.println(readDescriptor);
+		}
 	}
 
 	@Override
