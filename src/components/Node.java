@@ -65,7 +65,7 @@ public class Node
 		super.start();
 		try {
 			this.loadDescriptors(1);
-			this.doPortConnection(NSetterPort.getPortURI(), NMInboundURI,
+			this.doPortConnection(NMGetterPort.getPortURI(), NMInboundURI,
 					NodeManagementServiceConnector.class.getCanonicalName());
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
@@ -75,13 +75,11 @@ public class Node
 	@Override
 	public void finalise() throws Exception {
 		super.finalise();
-		this.doPortDisconnection(NSetterPort.getPortURI());
+		this.doPortDisconnection(NMGetterPort.getPortURI());
 	}
 
 	@Override
 	public void execute() throws Exception {
-		System.out.println("Execute de " + getNodeURI());
-
 		Set<PeerNodeAddressI> neighbors = NMGetterPort.join(this);
 		for (PeerNodeAddressI node : neighbors) {
 			String oportN = AbstractOutboundPort.generatePortURI();
@@ -99,8 +97,7 @@ public class Node
 
 			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, peerOutPortCM));
 
-			PeerNodeAddressI myID = peerOutPort.connect(this);
-			System.out.println(myID.getNodeIdentifier() + " est connecté à " + node.getNodeIdentifier());
+			peerOutPort.connect(this);
 		}
 
 		Thread.sleep((long) (Math.random() % 4) * 1000L);
@@ -131,7 +128,6 @@ public class Node
 		String oportCM = AbstractOutboundPort.generatePortURI();
 
 		String iportN = node.getNodeIdentifier().getFirst();
-		System.out.println("Ajout de " + iportN);
 		NodeOutboundPortN peerOutPortN = new NodeOutboundPortN(oportNM, this);
 		peerOutPortN.publishPort();
 		this.doPortConnection(oportNM, iportN, NodeServiceConnector.class.getCanonicalName());
@@ -142,7 +138,7 @@ public class Node
 		this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
 
 		this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPortN, peerOutPortCM));
-		System.out.println(getNodeIdentifier() + " est connecté à " + node.getNodeIdentifier());
+		System.out.println(getNodeIdentifier().getFirst() + " est connecté à " + node.getNodeIdentifier().getFirst());
 		return node;
 	}
 

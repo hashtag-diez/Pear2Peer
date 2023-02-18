@@ -28,7 +28,6 @@ public class NodeInboundPort
 
   @Override
   public void disconnect(PeerNodeAddressI a) throws Exception {
-    System.out.println("Appel de Leave du inbound de " + a.getNodeIdentifier());
     this.getOwner().runTask(
         owner -> {
           try {

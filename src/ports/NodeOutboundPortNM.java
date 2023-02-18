@@ -19,14 +19,12 @@ public class NodeOutboundPortNM
 
   @Override
   public Set<PeerNodeAddressI> join(PeerNodeAddressI a) throws Exception {
-    System.out.println("Appel de Join de l'outbound de " + a.getNodeIdentifier());
     return ((NodeManagementCI) this.getConnector()).join(a);
 
   }
 
   @Override
   public void leave(PeerNodeAddressI a) throws Exception {
-    System.out.println("Appel de Leave de l'outbound de " + a.getNodeIdentifier());
     ((NodeManagementCI) this.getConnector()).leave(a);
   }
 

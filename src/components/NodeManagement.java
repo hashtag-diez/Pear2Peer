@@ -48,7 +48,7 @@ public class NodeManagement
     this.uriPrefix = this.uriPrefix + UUID.randomUUID();
   }
 
-  public Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
+  public synchronized Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
     HashMap<PeerNodeAddressI, OutboundPortCM> neighbors = (HashMap<PeerNodeAddressI, OutboundPortCM>) members.clone();
 
     String oportCM = AbstractOutboundPort.generatePortURI();
@@ -58,12 +58,13 @@ public class NodeManagement
         ContentManagementServiceConnector.class.getCanonicalName());
 
     members.put(a, peerOutPortCM);
-    return neighbors
-        .keySet()
-        .stream()
-        .skip(neighbors.size() > 3 ? neighbors.size() - 3 : 0)
-        .limit(3)
-        .collect(Collectors.toSet());
+    Set<PeerNodeAddressI> res = neighbors
+    .keySet()
+    .stream()
+    .skip(neighbors.size() > 0 ? neighbors.size() - 1 : 0)
+    .limit(1)
+    .collect(Collectors.toSet());
+    return res;
   }
 
   public void loadDescriptors(int number) throws Exception {

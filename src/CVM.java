@@ -16,7 +16,7 @@ public class CVM
 	/** URI of the consumer inbound port (simplifies the connection). */
 	protected static final String URIProviderInboundPortURI = "iport";
 
-	protected final int NB_PEER = 10;
+	protected final int NB_PEER = 4;
 	/**
 	 * Reference to the provider component to share between deploy
 	 * and shutdown.
