@@ -95,7 +95,7 @@ public class Node
 			peerOutPort.publishPort();
 			String iportNM = node.getNodeIdentifier().getSecond();
 			this.doPortConnection(oportCM, iportNM, ContentManagementServiceConnector.class.getCanonicalName());
-			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, peerOutPortCM));
+			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, null));
 
 			peerOutPort.connect(this);
 		}
@@ -198,9 +198,11 @@ public class Node
 
 		for (PeerNodeAddressI node : this.peersGetterPorts.keySet()) {
 			OutboundPortCM outBoundPort = peersGetterPorts.get(node).getSecond();
-			ContentDescriptorI res = ((ContentManagementCI) outBoundPort).find(request, hops);
-			if (res != null)
-				return res;
+			if (outBoundPort != null) {
+				ContentDescriptorI res = ((ContentManagementCI) outBoundPort).find(request, hops);
+				if (res != null)
+					return res;
+			}
 		}
 
 		return null;
