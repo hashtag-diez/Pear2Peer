@@ -49,16 +49,12 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
 
     @Override
     public boolean match(ContentTemplateI request) {
-        if (_isTitleEquals(request))
-            return true;
-        if (_isAlbumTitleEquals(request))
-            return true;
-        if (_isIntrepretersContains(request))
-            return true;
-        if (_isComposersContains(request))
-            return true;
-        return false;
-
+        boolean res = false;
+        if(request.getTitle()!=null) res = _isTitleEquals(request);
+        if(request.getAlbumTitle()!=null) res = _isAlbumTitleEquals(request);
+        if(request.getComposers().size()!=0) res = _isComposersContains(request);
+        if(request.getInterpreters().size()!=0) res =_isIntrepretersContains(request);
+        return res;
     }
 
     private boolean _isTitleEquals(ContentTemplateI request) {
@@ -89,7 +85,8 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return A boolean value.
      */
     private boolean _isComposersContains(ContentTemplateI request) {
-        return getComposers().containsAll(request.getInterpreters());
+        //System.out.println(getComposers().containsAll(request.getComposers()));
+        return getComposers().containsAll(request.getComposers());
     }
 
     @Override

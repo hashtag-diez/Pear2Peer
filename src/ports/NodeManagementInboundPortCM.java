@@ -16,7 +16,7 @@ public class NodeManagementInboundPortCM extends AbstractInboundPort
         implements ContentManagementCI {
 
     public NodeManagementInboundPortCM(String uri, ComponentI owner) throws Exception {
-        super(AbstractInboundPort.generatePortURI(), ContentManagementCI.class, owner);
+        super(uri, ContentManagementCI.class, owner);
     }
 
     @Override

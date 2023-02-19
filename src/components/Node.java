@@ -46,8 +46,8 @@ public class Node
 
 	protected List<ContentDescriptorI> contentsDescriptors;
 
-	protected Node(String reflectionInboundPortURI, String outboundURI, String NMInboundURI) throws Exception {
-		super(reflectionInboundPortURI, 1, 0);
+	protected Node(String reflectionInboundPortURI, String outboundURI, String NMInboundURI, int DescriptorId) throws Exception {
+		super(reflectionInboundPortURI, 2, 0);
 		this.NMGetterPort = new NodeOutboundPortNM(outboundURI, this);
 		this.NMGetterPort.publishPort();
 		this.peersGetterPorts = new HashMap<PeerNodeAddressI, Pair<NodeOutboundPortN, OutboundPortCM>>();
@@ -57,6 +57,7 @@ public class Node
 		this.CMSetterPort = new NodeInboundPortCM("cm" + reflectionInboundPortURI, this);
 		this.CMSetterPort.publishPort();
 		this.contentsDescriptors = new ArrayList<ContentDescriptorI>();
+		this.loadDescriptors(DescriptorId);
 		this.NMInboundURI = NMInboundURI;
 	}
 
@@ -64,7 +65,6 @@ public class Node
 	public void start() throws ComponentStartException {
 		super.start();
 		try {
-			this.loadDescriptors(1);
 			this.doPortConnection(NMGetterPort.getPortURI(), NMInboundURI,
 					NodeManagementServiceConnector.class.getCanonicalName());
 		} catch (Exception e) {
@@ -90,17 +90,17 @@ public class Node
 			String iportN = node.getNodeIdentifier().getFirst();
 			this.doPortConnection(oportN, iportN, NodeServiceConnector.class.getCanonicalName());
 
+			
 			OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
 			peerOutPort.publishPort();
 			String iportNM = node.getNodeIdentifier().getSecond();
 			this.doPortConnection(oportCM, iportNM, ContentManagementServiceConnector.class.getCanonicalName());
-
 			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, peerOutPortCM));
 
 			peerOutPort.connect(this);
 		}
 
-		Thread.sleep((long) (Math.random() % 4) * 1000L);
+		/* Thread.sleep((long) (Math.random() % 4) * 1000L);
 
 		this.runTask(
 				new AbstractComponent.AbstractTask() {
@@ -120,7 +120,7 @@ public class Node
 							throw new RuntimeException(e);
 						}
 					}
-				});
+				}); */
 	}
 
 	public PeerNodeAddressI addToNetwork(PeerNodeAddressI node) throws Exception {
@@ -138,7 +138,7 @@ public class Node
 		this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
 
 		this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPortN, peerOutPortCM));
-		System.out.println(getNodeIdentifier().getFirst() + " est connecté à " + node.getNodeIdentifier().getFirst());
+		System.out.println(getNodeIdentifier().getFirst() + " et " + node.getNodeIdentifier().getFirst() + " sont interconnectés.");
 		return node;
 	}
 
@@ -157,11 +157,11 @@ public class Node
 
 	public void loadDescriptors(int number) throws Exception {
 		ContentDataManager.DATA_DIR_NAME = "src/data";
-		ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(1);
+		ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
 		for (HashMap<String, Object> obj : result) {
 			ContentDescriptorI readDescriptor = new ContentDescriptor(obj);
 			contentsDescriptors.add(readDescriptor);
-			System.out.println(readDescriptor);
+			System.out.println(readDescriptor.getComposers());
 		}
 	}
 
@@ -187,10 +187,12 @@ public class Node
 
 	public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
 		for (ContentDescriptorI localCd : this.contentsDescriptors) {
-			if (localCd.equals(request))
+			if (localCd.match(request)){
+				System.out.println("TROUVÉ");
 				return localCd;
+			}	
 		}
-
+		System.out.println(this.getNodeIdentifier().getFirst() + " n'a pas");
 		if (hops-- == 0)
 			return null;
 

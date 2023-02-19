@@ -29,9 +29,8 @@ public class NodeOutboundPortNM
   }
 
   @Override
-  public ContentDescriptorI find(ContentTemplateI cd, int hops) {
-    // TODO Auto-generated method stub
-    return null;
+  public ContentDescriptorI find(ContentTemplateI cd, int hops) throws Exception {
+    return ((ContentManagementCI) this.getConnector()).find(cd, hops) ; 
   }
 
   @Override
