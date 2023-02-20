@@ -50,14 +50,19 @@ public class Node
 		super(reflectionInboundPortURI, 2, 0);
 		this.NMGetterPort = new NodeOutboundPortNM(outboundURI, this);
 		this.NMGetterPort.publishPort();
+
 		this.peersGetterPorts = new HashMap<PeerNodeAddressI, Pair<NodeOutboundPortN, OutboundPortCM>>();
+		
 		this.uriPrefix = this.uriPrefix + UUID.randomUUID();
+		
 		this.NSetterPort = new NodeInboundPort(reflectionInboundPortURI, this);
 		this.NSetterPort.publishPort();
+		
 		this.CMSetterPort = new NodeInboundPortCM("cm" + reflectionInboundPortURI, this);
 		this.CMSetterPort.publishPort();
+		
 		this.contentsDescriptors = new ArrayList<ContentDescriptorI>();
-		this.loadDescriptors(DescriptorId);
+		this.loadDescriptors(6 + DescriptorId);
 		this.NMInboundURI = NMInboundURI;
 	}
 
@@ -90,37 +95,10 @@ public class Node
 			String iportN = node.getNodeIdentifier().getFirst();
 			this.doPortConnection(oportN, iportN, NodeServiceConnector.class.getCanonicalName());
 
-			
-		/* 	OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
-			peerOutPort.publishPort();
-			String iportNM = node.getNodeIdentifier().getSecond();
-			this.doPortConnection(oportCM, iportNM, ContentManagementServiceConnector.class.getCanonicalName()); */
 			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, null));
 
 			peerOutPort.connect(this);
 		}
-
-		/* Thread.sleep((long) (Math.random() % 4) * 1000L);
-
-		this.runTask(
-				new AbstractComponent.AbstractTask() {
-					@Override
-					public void run() {
-						Node caller = (Node) this.taskOwner;
-						try {
-							caller.NMGetterPort.leave(caller);
-							for (PeerNodeAddressI p : caller.peersGetterPorts.keySet()) {
-								NodeOutboundPortN out = peersGetterPorts.get(p).getFirst();
-								out.disconnect(caller);
-								caller.doPortDisconnection(out.getPortURI());
-								out.unpublishPort();
-							}
-							caller.peersGetterPorts.clear();
-						} catch (Exception e) {
-							throw new RuntimeException(e);
-						}
-					}
-				}); */
 	}
 
 	public PeerNodeAddressI addToNetwork(PeerNodeAddressI node) throws Exception {
@@ -221,7 +199,9 @@ public class Node
 		if (hops != 0) {
 			for (PeerNodeAddressI node : this.peersGetterPorts.keySet()) {
 				OutboundPortCM outBoundPort = peersGetterPorts.get(node).getSecond();
-				matched.addAll(((ContentManagementCI) outBoundPort).match(cd, matched, --hops));
+				if (outBoundPort != null) {
+					matched.addAll(((ContentManagementCI) outBoundPort).match(cd, matched, --hops));
+				}
 			}
 		}
 		return matched;
