@@ -1,5 +1,6 @@
 package implem;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import interfaces.ContentDescriptorI;
@@ -9,13 +10,20 @@ import interfaces.ContentTemplateI;
 public class ContentDescriptor extends ContentTemplate implements ContentDescriptorI {
 
     public ContentDescriptor(String title, String albumTitle, Set<String> interpreters, Set<String> composers,
-            int fileSize, String nodeAddr) {
+            Long fileSize, String nodeAddr) {
         super(title, albumTitle, interpreters, composers);
         this._size = fileSize;
+        /* this._addr = "" */
     }
 
-    int _size = 0;
-    ContentNodeAddressI _addr;
+    public ContentDescriptor(HashMap<String, Object> toLoad) {
+        super(toLoad);
+        this._size = (Long) toLoad.get("size");
+        /* this._addr = "" */
+    }
+
+    protected Long _size = Long.valueOf(0);
+    protected ContentNodeAddressI _addr;
 
     @Override
     public ContentNodeAddressI getContentNodeAdressI() {
@@ -29,24 +37,24 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
 
     @Override
     public boolean equals(ContentDescriptorI cd) throws Exception {
-        boolean addrEqual = this._addr.getNodeIdentifier().equals(cd.getContentNodeAdressI().getNodeIdentifier());
-        boolean size = this.getSize() == cd.getSize();
+        /*
+         * boolean addrEqual =
+         * this._addr.getNodeIdentifier().equals(cd.getContentNodeAdressI().
+         * getNodeIdentifier());
+         * boolean size = this.getSize() == cd.getSize();
+         */
         return _isTitleEquals(cd) && _isAlbumTitleEquals(cd) && _isIntrepretersContains(cd)
-                && _isComposersContains(cd) && size && addrEqual;
+                && _isComposersContains(cd) /* && size && addrEqual */;
     }
 
     @Override
     public boolean match(ContentTemplateI request) {
-        if (_isTitleEquals(request))
-            return true;
-        if (_isAlbumTitleEquals(request))
-            return true;
-        if (_isIntrepretersContains(request))
-            return true;
-        if (_isComposersContains(request))
-            return true;
-        return false;
-
+        boolean res = false;
+        if(request.getTitle()!=null) res = _isTitleEquals(request);
+        if(request.getAlbumTitle()!=null) res = _isAlbumTitleEquals(request);
+        if(request.getComposers().size()!=0) res = _isComposersContains(request);
+        if(request.getInterpreters().size()!=0) res =_isIntrepretersContains(request);
+        return res;
     }
 
     private boolean _isTitleEquals(ContentTemplateI request) {
@@ -77,7 +85,14 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return A boolean value.
      */
     private boolean _isComposersContains(ContentTemplateI request) {
-        return getComposers().containsAll(request.getInterpreters());
+        //System.out.println(getComposers().containsAll(request.getComposers()));
+        return getComposers().containsAll(request.getComposers());
+    }
+
+    @Override
+    public String toString() {
+        String sup = super.toString();
+        return "ContentDescriptor [\n   " + sup + "\n   _size=" + _size + "\n   , _addr=" + _addr + "\n]";
     }
 
 }
