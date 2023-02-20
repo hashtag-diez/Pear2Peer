@@ -3,6 +3,8 @@ package components;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import components.interfaces.ContentManagementCI;
 import connectors.ContentManagementServiceConnector;
@@ -33,7 +35,6 @@ public class Client
   public void start() throws ComponentStartException {
     try {
       super.start();
-      System.out.println(CMNodeManagementInboundURI);
       this.doPortConnection(CMGetterPort.getPortURI(), CMNodeManagementInboundURI, ContentManagementServiceConnector.class.getCanonicalName());
     } catch (Exception e) {
       throw new ComponentStartException(e);
@@ -44,22 +45,36 @@ public class Client
   public void execute() throws Exception {
     super.execute();
     Thread.sleep(2000);
-
-    ContentTemplateI temp = pickTemplate();
+    exampleSearchContainsWichMatch();
+    /* ContentTemplateI temp = pickTemplate();
     System.out.println("Template recherché :\n" + temp.toString());
     ContentDescriptorI res = CMGetterPort.find(temp, 10);
     if(res==null){
       System.out.println("Pas trouvé !");
     } else{
       System.out.println("Trouvé :\n"+res.toString());
-    }
+    } */
   }
   
   public ContentTemplateI pickTemplate() throws ClassNotFoundException, IOException{
       ContentDataManager.DATA_DIR_NAME = "src/data";
-      ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(1);
+      ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates((int) Math.random()%2);
       HashMap<String, Object> random = result.get((int) Math.random()%result.size());
-      System.out.println(random);
       return new ContentTemplate(random);
   }
+  public void exampleSearchContainsWichMatch() throws Exception {
+    ContentTemplateI temp = pickTemplate();
+    System.out.println("Template recherche :\n" + temp.toString());
+    Set<ContentDescriptorI> matched = new HashSet<>();
+
+    matched =  CMGetterPort.match(temp, matched, 5);
+
+    if (matched.isEmpty()) {
+        System.out.println("Any matched element found");
+    } else {
+        for (ContentDescriptorI contentDescriptor : matched) {
+            System.out.println(contentDescriptor);
+        }
+    }
+}
 }
