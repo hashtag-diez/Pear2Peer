@@ -83,7 +83,7 @@ public class Node
 		Set<PeerNodeAddressI> neighbors = NMGetterPort.join(this);
 		for (PeerNodeAddressI node : neighbors) {
 			String oportN = AbstractOutboundPort.generatePortURI();
-			String oportCM = AbstractOutboundPort.generatePortURI();
+			// String oportCM = AbstractOutboundPort.generatePortURI();
 
 			NodeOutboundPortN peerOutPort = new NodeOutboundPortN(oportN, this);
 			peerOutPort.publishPort();
@@ -91,10 +91,10 @@ public class Node
 			this.doPortConnection(oportN, iportN, NodeServiceConnector.class.getCanonicalName());
 
 			
-			OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
+		/* 	OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
 			peerOutPort.publishPort();
 			String iportNM = node.getNodeIdentifier().getSecond();
-			this.doPortConnection(oportCM, iportNM, ContentManagementServiceConnector.class.getCanonicalName());
+			this.doPortConnection(oportCM, iportNM, ContentManagementServiceConnector.class.getCanonicalName()); */
 			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, null));
 
 			peerOutPort.connect(this);
@@ -188,7 +188,6 @@ public class Node
 	public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
 		for (ContentDescriptorI localCd : this.contentsDescriptors) {
 			if (localCd.match(request)){
-				System.out.println("TROUVÉ");
 				return localCd;
 			}	
 		}

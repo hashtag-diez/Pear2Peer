@@ -57,7 +57,6 @@ public class NodeManagement
       this.doPortConnection(oportCM, a.getNodeIdentifier().getSecond() ,
           ContentManagementServiceConnector.class.getCanonicalName());
       roots.put(a, peerOutPortCM);
-      System.out.println(roots.size());
     }
     members.add(a);
 
@@ -71,7 +70,6 @@ public class NodeManagement
 
   public void deletePeer(PeerNodeAddressI a) throws Exception {
     if(roots.containsKey(a)){
-      System.out.println("Ziak");
       OutboundPortCM peerPortCM = roots.get(a);
       this.doPortDisconnection(peerPortCM.getPortURI());
       peerPortCM.unpublishPort();
@@ -101,9 +99,7 @@ public class NodeManagement
   }
 
   public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
-    System.out.println("Clicos reçu");
     ContentDescriptorI res = null;
-    System.out.println(roots.size());
     for (PeerNodeAddressI node : this.roots.keySet()) {
       OutboundPortCM outBoundPort = roots.get(node);
       res = ((ContentManagementCI) outBoundPort).find(request, hops);

@@ -33,7 +33,6 @@ public class Client
   public void start() throws ComponentStartException {
     try {
       super.start();
-      System.out.println(CMNodeManagementInboundURI);
       this.doPortConnection(CMGetterPort.getPortURI(), CMNodeManagementInboundURI, ContentManagementServiceConnector.class.getCanonicalName());
     } catch (Exception e) {
       throw new ComponentStartException(e);
@@ -59,7 +58,6 @@ public class Client
       ContentDataManager.DATA_DIR_NAME = "src/data";
       ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(1);
       HashMap<String, Object> random = result.get((int) Math.random()%result.size());
-      System.out.println(random);
       return new ContentTemplate(random);
   }
 }
