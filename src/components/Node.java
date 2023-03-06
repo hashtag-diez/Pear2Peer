@@ -1,8 +1,6 @@
 package components;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -14,16 +12,16 @@ import connectors.ContentManagementServiceConnector;
 import connectors.NodeManagementServiceConnector;
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.PluginI;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
-import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.Pair;
-import implem.ContentDescriptor;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
 import interfaces.PeerNodeAddressI;
+import plugins.ContentManagementPlugin;
 import ports.NodeInboundPort;
 import ports.NodeInboundPortCM;
 import ports.NodeOutboundPortN;
@@ -37,32 +35,32 @@ public class Node
 		implements PeerNodeAddressI {
 
 	protected NodeOutboundPortNM NMGetterPort;
-	protected NodeInboundPortCM CMSetterPort;
 	protected NodeInboundPort NSetterPort;
 	protected String NMInboundURI;
-	protected Map<PeerNodeAddressI, Pair<NodeOutboundPortN, OutboundPortCM>> peersGetterPorts;
-
+	protected Map<PeerNodeAddressI, NodeOutboundPortN> peersGetterPorts;
+	private final String CM_PLUGIN_URI = "CM_PLUG";
 	protected String uriPrefix = "NodeC";
-
-	protected List<ContentDescriptorI> contentsDescriptors;
+	private NodeInboundPortCM CMSetterPort;
 
 	protected Node(String reflectionInboundPortURI, String outboundURI, String NMInboundURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 2, 0);
+		super(reflectionInboundPortURI, 4, 0);
 		this.NMGetterPort = new NodeOutboundPortNM(outboundURI, this);
 		this.NMGetterPort.publishPort();
 
-		this.peersGetterPorts = new HashMap<PeerNodeAddressI, Pair<NodeOutboundPortN, OutboundPortCM>>();
+		this.peersGetterPorts = new HashMap<PeerNodeAddressI, NodeOutboundPortN>();
 		
 		this.uriPrefix = this.uriPrefix + UUID.randomUUID();
 		
 		this.NSetterPort = new NodeInboundPort(reflectionInboundPortURI, this);
 		this.NSetterPort.publishPort();
 		
-		this.CMSetterPort = new NodeInboundPortCM("cm" + reflectionInboundPortURI, this);
-		this.CMSetterPort.publishPort();
+		PluginI plugin = new ContentManagementPlugin(DescriptorId) ;
+		plugin.setPluginURI(CM_PLUGIN_URI) ;
+		this.installPlugin(plugin); 
 		
-		this.contentsDescriptors = new ArrayList<ContentDescriptorI>();
-		this.loadDescriptors(6 + DescriptorId);
+		this.CMSetterPort = new NodeInboundPortCM("cm" + reflectionInboundPortURI, this);
+		this.CMSetterPort.publishPort(); 
+		
 		this.NMInboundURI = NMInboundURI;
 	}
 
@@ -88,14 +86,21 @@ public class Node
 		Set<PeerNodeAddressI> neighbors = NMGetterPort.join(this);
 		for (PeerNodeAddressI node : neighbors) {
 			String oportN = AbstractOutboundPort.generatePortURI();
-			// String oportCM = AbstractOutboundPort.generatePortURI();
+			String oportCM = AbstractOutboundPort.generatePortURI();
 
 			NodeOutboundPortN peerOutPort = new NodeOutboundPortN(oportN, this);
 			peerOutPort.publishPort();
 			String iportN = node.getNodeIdentifier().getFirst();
 			this.doPortConnection(oportN, iportN, NodeServiceConnector.class.getCanonicalName());
 
-			this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPort, null));
+
+			String iportCM = CMSetterPort.getPortURI();
+			OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
+			peerOutPortCM.publishPort();
+			this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
+
+			((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).put(node, peerOutPortCM);
+			this.peersGetterPorts.put(node, peerOutPort);
 
 			peerOutPort.connect(this);
 		}
@@ -110,19 +115,19 @@ public class Node
 		peerOutPortN.publishPort();
 		this.doPortConnection(oportNM, iportN, NodeServiceConnector.class.getCanonicalName());
 
-		String iportCM = node.getNodeIdentifier().getSecond();
+		String iportCM =  node.getNodeIdentifier().getSecond();
 		OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
 		peerOutPortCM.publishPort();
 		this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
 
-		this.peersGetterPorts.put(node, new Pair<NodeOutboundPortN, OutboundPortCM>(peerOutPortN, peerOutPortCM));
-		System.out.println(getNodeIdentifier().getFirst() + " et " + node.getNodeIdentifier().getFirst() + " sont interconnectés.");
+		((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).put(node, peerOutPortCM);
+		this.peersGetterPorts.put(node, peerOutPortN);
 		return node;
 	}
 
 	public void deleteFromNetwork(PeerNodeAddressI node) throws Exception {
-		NodeOutboundPortN outBoundPort = this.peersGetterPorts.get(node).getFirst();
-		OutboundPortCM outBoundPortCM = this.peersGetterPorts.get(node).getSecond();
+		NodeOutboundPortN outBoundPort = this.peersGetterPorts.get(node);
+		OutboundPortCM outBoundPortCM = ((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).get(node);
 
 		this.doPortDisconnection(outBoundPort.getPortURI());
 		this.doPortDisconnection(outBoundPortCM.getPortURI());
@@ -131,16 +136,7 @@ public class Node
 		outBoundPortCM.unpublishPort();
 
 		this.peersGetterPorts.remove(node);
-	}
-
-	public void loadDescriptors(int number) throws Exception {
-		ContentDataManager.DATA_DIR_NAME = "src/data";
-		ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
-		for (HashMap<String, Object> obj : result) {
-			ContentDescriptorI readDescriptor = new ContentDescriptor(obj);
-			contentsDescriptors.add(readDescriptor);
-			System.out.println(readDescriptor.getComposers());
-		}
+		((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).remove(node);
 	}
 
 	@Override
@@ -155,7 +151,7 @@ public class Node
 
 	@Override
 	public Pair<String, String> getNodeIdentifier() throws Exception {
-		return new Pair<String, String>(NSetterPort.getPortURI(), CMSetterPort.getPortURI());
+		return new Pair<String,String>(NSetterPort.getPortURI(), CMSetterPort.getPortURI());
 	}
 
 	@Override
@@ -164,46 +160,13 @@ public class Node
 	}
 
 	public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
-		for (ContentDescriptorI localCd : this.contentsDescriptors) {
-			if (localCd.match(request)){
-				return localCd;
-			}	
-		}
-		System.out.println(this.getNodeIdentifier().getFirst() + " n'a pas");
-		if (hops-- == 0)
-			return null;
-
-		for (PeerNodeAddressI node : this.peersGetterPorts.keySet()) {
-			OutboundPortCM outBoundPort = peersGetterPorts.get(node).getSecond();
-			if (outBoundPort != null) {
-				ContentDescriptorI res = ((ContentManagementCI) outBoundPort).find(request, hops);
-				if (res != null)
-					return res;
-			}
-		}
-
-		return null;
+		return ((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).find(request, hops);
 	}
 
-	/**
-	 * to review
-	 */
+
 	public Set<ContentDescriptorI> match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops)
 			throws Exception {
-		for (ContentDescriptorI localCd : this.contentsDescriptors) {
-			if (localCd.match(cd)) {
-				matched.add(localCd);
-			}
-		}
-
-		if (hops != 0) {
-			for (PeerNodeAddressI node : this.peersGetterPorts.keySet()) {
-				OutboundPortCM outBoundPort = peersGetterPorts.get(node).getSecond();
-				if (outBoundPort != null) {
-					matched.addAll(((ContentManagementCI) outBoundPort).match(cd, matched, --hops));
-				}
-			}
-		}
-		return matched;
+		Set<ContentDescriptorI> res = ((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).match(cd, matched, hops);
+		return res;
 	}
 }

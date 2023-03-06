@@ -32,7 +32,7 @@ public class CVM
 		AbstractComponent.createComponent(
 				NodeManagement.class.getCanonicalName(),
 				new Object[] { NODE_MANAGEMENT_COMPONENT_URI,
-						URIProviderInboundPortURI });
+						URIProviderInboundPortURI, -1 });
 
 		for (int i = 0; i < NB_PEER; i++) {
 			AbstractComponent.createComponent(
