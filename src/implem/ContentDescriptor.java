@@ -10,16 +10,17 @@ import interfaces.ContentTemplateI;
 public class ContentDescriptor extends ContentTemplate implements ContentDescriptorI {
 
     public ContentDescriptor(String title, String albumTitle, Set<String> interpreters, Set<String> composers,
-            Long fileSize, String nodeAddr) {
+            Long fileSize, ContentNodeAddressI addr) {
         super(title, albumTitle, interpreters, composers);
         this._size = fileSize;
-        /* this._addr = "" */
+        this._addr = addr;
+
     }
 
-    public ContentDescriptor(HashMap<String, Object> toLoad) {
+    public ContentDescriptor(HashMap<String, Object> toLoad, ContentNodeAddressI addr) {
         super(toLoad);
         this._size = (Long) toLoad.get("size");
-        /* this._addr = "" */
+        this._addr = addr;
     }
 
     protected Long _size = Long.valueOf(0);

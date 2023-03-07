@@ -17,6 +17,7 @@ import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkScannerStuff.NetworkScannerPlugin;
+import interfaces.ContentNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import ports.NodeInboundPort;
 import ports.NodeOutboundPortN;
@@ -26,7 +27,7 @@ import ports.NodeOutboundPortNM;
 @OfferedInterfaces(offered = { NodeCI.class, ContentManagementPI.class })
 public class Node
 		extends AbstractComponent
-		implements PeerNodeAddressI {
+		implements ContentNodeAddressI {
 
 	// The port used to connect to the NodeManagement component.
 	protected NodeOutboundPortNM NMGetterPort;
@@ -54,7 +55,7 @@ public class Node
 		this.NSetterPort.publishPort();
 		this.peersGetterPorts = new HashMap<PeerNodeAddressI, NodeOutboundPortN>();
 
-		ContentManagementPlug = new ContentManagementPlugin(DescriptorId);
+		ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlug = new NetworkScannerPlugin();
@@ -169,5 +170,10 @@ public class Node
 
 		}
 		throw new UnsupportedOperationException("Unimplemented plugin on node management");
+	}
+
+	@Override
+	public String getContentManagementURI() {
+		return ContentManagementPlug.getPluginURI();
 	}
 }

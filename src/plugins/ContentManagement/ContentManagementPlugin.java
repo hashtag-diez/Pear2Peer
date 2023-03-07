@@ -13,6 +13,7 @@ import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentDescriptor;
 import interfaces.ContentDescriptorI;
+import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
 import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.port_connector.CMInboundPort;
@@ -34,18 +35,18 @@ public class ContentManagementPlugin
   }
 
   public ContentManagementPlugin(
-      int DescriptorId) throws Exception {
+      int DescriptorId, ContentNodeAddressI addr) throws Exception {
     super();
     contentsDescriptors = new ArrayList<>();
-    this.loadDescriptors(6 + DescriptorId);
+    this.loadDescriptors(6 + DescriptorId, addr);
     setPluginURI(AbstractPort.generatePortURI());
   }
 
   public ContentManagementPlugin(String portUri,
-      int DescriptorId) throws Exception {
+      int DescriptorId, ContentNodeAddressI addr) throws Exception {
     super();
     contentsDescriptors = new ArrayList<>();
-    this.loadDescriptors(6 + DescriptorId);
+    this.loadDescriptors(6 + DescriptorId, addr);
     cmportUri = portUri;
     setPluginURI(AbstractPort.generatePortURI());
   }
@@ -91,11 +92,11 @@ public class ContentManagementPlugin
     outBoundPortCM.unpublishPort();
   }
 
-  public void loadDescriptors(int number) throws Exception {
+  public void loadDescriptors(int number, ContentNodeAddressI addr) throws Exception {
     ContentDataManager.DATA_DIR_NAME = "src/data";
     ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
     for (HashMap<String, Object> obj : result) {
-      ContentDescriptorI readDescriptor = new ContentDescriptor(obj);
+      ContentDescriptorI readDescriptor = new ContentDescriptor(obj, addr);
       contentsDescriptors.add(readDescriptor);
     }
   }

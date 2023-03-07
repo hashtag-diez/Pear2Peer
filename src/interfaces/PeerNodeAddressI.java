@@ -1,5 +1,5 @@
 package interfaces;
 
 public interface PeerNodeAddressI extends NodeAddressI {
-  String getNodeURI();
+  String getNodeURI() throws Exception;
 }
