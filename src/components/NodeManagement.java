@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
-import fr.sorbonne_u.components.PluginI;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import plugins.ContentManagement.ContentManagementPI;
@@ -24,7 +23,7 @@ import ports.NodeManagementInboundPort;
 @RequiredInterfaces(required = { ContentManagementPI.class })
 public class NodeManagement
     extends AbstractComponent
-    implements FacadeNodeAddressI, ContentNodeAddressI {
+    implements FacadeNodeAddressI, ContentNodeAddressI{
 
   protected NodeManagementInboundPort NMSetterPort;
 
@@ -38,10 +37,10 @@ public class NodeManagement
     this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
     this.NMSetterPort.publishPort();
 
-    ContentManagementPlug = new ContentManagementPlugin("cm" + inboundURI, DescriptorId, (ContentNodeAddressI) this);
+    ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
     this.installPlugin(ContentManagementPlug);
 
-    NetworkScannerPlug = new NetworkScannerPlugin("ns" + inboundURI);
+    NetworkScannerPlug = new NetworkScannerPlugin("ns" + reflectionInboundPortURI, ContentManagementPlug);
     this.installPlugin(NetworkScannerPlug);
 
     this.uriPrefix = this.uriPrefix + UUID.randomUUID();
@@ -92,48 +91,17 @@ public class NodeManagement
 
   @Override
   public String getNodeManagementURI() {
-    return uriPrefix;
-  }
-
-  @Override
-  public PluginI getPlugin(Plugins toGet) {
-    switch (toGet) {
-      case ContentManagementPlugin:
-        return ContentManagementPlug;
-
-      case NetworkScannerPlugin:
-        return NetworkScannerPlug;
-      default:
-        break;
-
-    }
-    throw new UnsupportedOperationException("Unimplemented plugin on node management");
-  }
-
-  @Override
-  public String getPluginPort(Plugins portToGet) {
-    switch (portToGet) {
-      case ContentManagementPlugin:
-        return ContentManagementPlug.getPluginURI();
-
-      case NetworkScannerPlugin:
-        return NetworkScannerPlug.getPluginURI();
-
-      default:
-        break;
-
-    }
-    throw new UnsupportedOperationException("Unimplemented plugin on node management");
+    return reflectionInboundPortURI;
   }
 
   @Override
   public String getContentManagementURI() {
-    return ContentManagementPlug.getPluginURI();
+    return "cm-" + reflectionInboundPortURI;
   }
 
   @Override
   public String getNodeURI() throws Exception {
-    return NMSetterPort.getPortURI();
+    throw new UnsupportedOperationException("Unimplemented method 'getNodeURI'");
   }
 
 }

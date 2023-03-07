@@ -10,11 +10,9 @@ import components.interfaces.NodeManagementCI;
 import connectors.NodeManagementServiceConnector;
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractComponent;
-import fr.sorbonne_u.components.PluginI;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
-import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkScannerStuff.NetworkScannerPlugin;
 import interfaces.ContentNodeAddressI;
@@ -23,8 +21,8 @@ import ports.NodeInboundPort;
 import ports.NodeOutboundPortN;
 import ports.NodeOutboundPortNM;
 
-@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class, ContentManagementPI.class })
-@OfferedInterfaces(offered = { NodeCI.class, ContentManagementPI.class })
+@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class  })
+@OfferedInterfaces(offered = { NodeCI.class })
 public class Node
 		extends AbstractComponent
 		implements ContentNodeAddressI {
@@ -58,7 +56,7 @@ public class Node
 		ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
 
-		NetworkScannerPlug = new NetworkScannerPlugin();
+		NetworkScannerPlug = new NetworkScannerPlugin("plug"+reflectionInboundPortURI, ContentManagementPlug);
 		this.installPlugin(NetworkScannerPlug);
 
 		this.NMInboundURI = NMInboundURI;
@@ -141,9 +139,9 @@ public class Node
 
 	@Override
 	public String getNodeURI() {
-		return this.uriPrefix;
+		return reflectionInboundPortURI;
 	}
-
+/* 
 	@Override
 	public PluginI getPlugin(Plugins toGet) {
 		switch (toGet) {
@@ -175,5 +173,10 @@ public class Node
 	@Override
 	public String getContentManagementURI() {
 		return ContentManagementPlug.getPluginURI();
+	} */
+
+	@Override
+	public String getContentManagementURI() {
+		return "cm-" + reflectionInboundPortURI;
 	}
 }

@@ -7,24 +7,26 @@ import java.util.Map;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
+import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
+import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
 import interfaces.ContentDescriptorI;
 import interfaces.NodeAddressI;
+import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkScannerStuff.port_connector.NSPInBoundPort;
 import plugins.NetworkScannerStuff.port_connector.NSPoutBoundPort;
 import plugins.NetworkScannerStuff.port_connector.NetworkScannerServiceConnector;
-import plugins.PluginOwnerI.Plugins;
 
 public class NetworkScannerPlugin extends AbstractPlugin {
 
     public NSPInBoundPort setterPort;
     protected Map<NodeAddressI, NSPoutBoundPort> getterPorts = new HashMap<>();;
-    protected String setterPortUri = null;
+    private ContentManagementPlugin plugin;
 
-    public NetworkScannerPlugin(String portUri) throws Exception {
+    public NetworkScannerPlugin(String pluginUri, ContentManagementPlugin plugin) throws Exception {
         super();
-        setterPortUri = portUri;
-        setPluginURI(AbstractPort.generatePortURI());
+        setPluginURI(pluginUri);
+        this.plugin = plugin;
     }
 
     public NetworkScannerPlugin() throws Exception {
@@ -39,10 +41,8 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     @Override
     public void initialise() throws Exception {
         this.getterPorts = new HashMap<>();
-        if (setterPortUri == null)
-            setterPortUri = this.getPluginURI();
 
-        this.setterPort = new NSPInBoundPort(setterPortUri, this.getOwner());
+        this.setterPort = new NSPInBoundPort(this.getPluginURI(), this.getOwner());
         this.setterPort.publishPort();
 
     }
@@ -54,13 +54,29 @@ public class NetworkScannerPlugin extends AbstractPlugin {
         this.addRequiredInterface(NetworkScannerPI.class);
     }
 
-    public void put(NodeAddressI node) throws Exception {
-
-        String iport = node.getPluginPort(Plugins.NetworkScannerPlugin);
+    public void put(PeerNodeAddressI node) throws Exception {
         NSPoutBoundPort peerOutPortCM = new NSPoutBoundPort(getOwner());
         peerOutPortCM.publishPort();
-        getOwner().doPortConnection(peerOutPortCM.getPortURI(), iport,
-                NetworkScannerServiceConnector.class.getCanonicalName());
+    
+        ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+        rop.publishPort();
+    
+        this.getOwner().doPortConnection(
+            rop.getPortURI(),
+            node.getNodeURI(),
+            ReflectionConnector.class.getCanonicalName());
+    
+        String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
+        if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+          System.out.println("NOPE");
+        } else {
+          this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), otherInboundPortUI[0],
+          NetworkScannerServiceConnector.class.getCanonicalName());
+        }
+    
+        this.getOwner().doPortDisconnection(rop.getPortURI());
+        rop.unpublishPort();
+        rop.destroyPort();
         this.getterPorts.put(node, peerOutPortCM);
     }
 
@@ -85,10 +101,8 @@ public class NetworkScannerPlugin extends AbstractPlugin {
             throws Exception {
 
         NodeAddressI owner = (NodeAddressI) this.getOwner();
-        ContentManagementPlugin contentManager = (ContentManagementPlugin) owner
-                .getPlugin(NodeAddressI.Plugins.ContentManagementPlugin);
 
-        NodeInformationI info = generateNodeInformation(owner, contentManager.getContentsDescriptors());
+        NodeInformationI info = generateNodeInformation(owner, plugin.getContentsDescriptors());
         before.put(owner, info);
         for (NodeAddressI node : this.getterPorts.keySet())
             if (!before.containsKey(node)) {

@@ -1,8 +1,7 @@
 package interfaces;
 
-import plugins.PluginOwnerI;
 
-public interface NodeAddressI extends PluginOwnerI {
+public interface NodeAddressI  {
   boolean isFacade();
 
   boolean isPeer();

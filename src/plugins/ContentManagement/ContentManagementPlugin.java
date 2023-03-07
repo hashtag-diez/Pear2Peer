@@ -10,6 +10,8 @@ import connectors.ClientReturnConnector;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
+import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
+import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentDescriptor;
 import interfaces.ContentDescriptorI;
@@ -19,14 +21,12 @@ import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.port_connector.CMInboundPort;
 import plugins.ContentManagement.port_connector.CMOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
-import plugins.PluginOwnerI.Plugins;
 import ports.ClientOutboundPort;
 
 public class ContentManagementPlugin
     extends AbstractPlugin {
 
   protected CMInboundPort setterPort;
-  protected String cmportUri = null;
   protected Map<PeerNodeAddressI, CMOutboundPort> getterPorts;
   protected List<ContentDescriptorI> contentsDescriptors;
 
@@ -42,22 +42,11 @@ public class ContentManagementPlugin
     setPluginURI(AbstractPort.generatePortURI());
   }
 
-  public ContentManagementPlugin(String portUri,
-      int DescriptorId, ContentNodeAddressI addr) throws Exception {
-    super();
-    contentsDescriptors = new ArrayList<>();
-    this.loadDescriptors(6 + DescriptorId, addr);
-    cmportUri = portUri;
-    setPluginURI(AbstractPort.generatePortURI());
-  }
-
   @Override
   public void initialise() throws Exception {
     this.getterPorts = new HashMap<>();
-    if (cmportUri == null)
-      cmportUri = this.getPluginURI();
 
-    this.setterPort = new CMInboundPort(cmportUri, this.getOwner());
+    this.setterPort = new CMInboundPort(this.getPluginURI(), this.getOwner());
     this.setterPort.publishPort();
   }
 
@@ -72,11 +61,28 @@ public class ContentManagementPlugin
   }
 
   public void put(PeerNodeAddressI node) throws Exception {
-    String iport = node.getPluginPort(Plugins.ContentManagementPlugin);
-    CMOutboundPort peerOutPortCM = new CMOutboundPort(getOwner());
+    CMOutboundPort peerOutPortCM = new CMOutboundPort(this.getOwner());
     peerOutPortCM.publishPort();
-    getOwner().doPortConnection(peerOutPortCM.getPortURI(), iport,
-        ContentManagementServiceConnector.class.getCanonicalName());
+
+    ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+    rop.publishPort();
+
+    this.getOwner().doPortConnection(
+        rop.getPortURI(),
+        node.getNodeURI(),
+        ReflectionConnector.class.getCanonicalName());
+
+    String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(ContentManagementPI.class);
+    if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+      System.out.println("NOPE");
+    } else {
+      this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), otherInboundPortUI[0],
+          ContentManagementServiceConnector.class.getCanonicalName());
+    }
+
+    this.getOwner().doPortDisconnection(rop.getPortURI());
+    rop.unpublishPort();
+    rop.destroyPort();
     this.getterPorts.put(node, peerOutPortCM);
   }
 
@@ -96,7 +102,7 @@ public class ContentManagementPlugin
     ContentDataManager.DATA_DIR_NAME = "src/data";
     ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
     for (HashMap<String, Object> obj : result) {
-      ContentDescriptorI readDescriptor = new ContentDescriptor(obj, addr);
+      ContentDescriptorI readDescriptor = new ContentDescriptor(obj, (ContentNodeAddressI) addr);
       contentsDescriptors.add(readDescriptor);
     }
   }

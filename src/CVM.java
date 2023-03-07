@@ -43,7 +43,7 @@ public class CVM
 		AbstractComponent.createComponent(
 				Client.class.getCanonicalName(),
 				new Object[] { "Clicos",
-						("cm" + URIProviderInboundPortURI), ("ns" + URIProviderInboundPortURI) });
+				NODE_MANAGEMENT_COMPONENT_URI });
 
 		super.deploy();
 	}

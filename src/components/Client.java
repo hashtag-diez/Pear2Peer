@@ -12,6 +12,8 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
+import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentTemplate;
 import interfaces.ContentDescriptorI;
@@ -36,25 +38,23 @@ public class Client
   protected CMOutboundPort CMGetterPort;
   // The port used to call the methods of the NetworkScannerPI.
   protected NSPoutBoundPort NSGetterPort;
-  protected String CMNodeManagementInboundURI;
-  protected String NSNodeManagementInboundURI;
+  protected String NodeManagementURI;
   protected boolean found = false;
 
   // The constructor of the Client class. It creates the Client object and
   // initializes the ports.
-  protected Client(String reflectionInboundPort, String CMNodeManagementInboundURI, String NSNodeManagementInboundURI)
+  protected Client(String reflectionInboundPort, String NodeManagementURI)
       throws Exception {
     super(reflectionInboundPort, 1, 0);
     this.CMGetterPort = new CMOutboundPort(this);
     this.CMGetterPort.publishPort();
-    this.CMNodeManagementInboundURI = CMNodeManagementInboundURI;
+    this.NodeManagementURI = NodeManagementURI;
 
     this.NSGetterPort = new NSPoutBoundPort(this);
     this.NSGetterPort.publishPort();
 
     this.ReturnPort = new ClientInboundPort(this);
     this.ReturnPort.publishPort();
-    this.NSNodeManagementInboundURI = NSNodeManagementInboundURI;
   }
 
   /**
@@ -65,10 +65,13 @@ public class Client
   public void start() throws ComponentStartException {
     try {
       super.start();
-      this.doPortConnection(CMGetterPort.getPortURI(), CMNodeManagementInboundURI,
-          ContentManagementServiceConnector.class.getCanonicalName());
-      this.doPortConnection(NSGetterPort.getPortURI(), NSNodeManagementInboundURI,
-          NetworkScannerServiceConnector.class.getCanonicalName());
+      ReflectionOutboundPort rop = new ReflectionOutboundPort(this);
+      rop.publishPort();
+      connectToFacadeViaCM(rop);
+      connectToFacadeViaNS(rop);
+      this.doPortDisconnection(rop.getPortURI());
+      rop.unpublishPort();
+      rop.destroyPort();
     } catch (Exception e) {
       throw new ComponentStartException(e);
     }
@@ -80,6 +83,39 @@ public class Client
     Thread.sleep(2000);
     mapNetwork();
     exampleSearchFind();
+  }
+
+  private void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {
+
+    this.doPortConnection(
+        rop.getPortURI(),
+        NodeManagementURI,
+        ReflectionConnector.class.getCanonicalName());
+
+    String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(ContentManagementPI.class);
+    if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+      System.out.println("NOPE");
+    } else {
+      this.doPortConnection(CMGetterPort.getPortURI(), otherInboundPortUI[0],
+          ContentManagementServiceConnector.class.getCanonicalName());
+    }
+  }
+
+  private void connectToFacadeViaNS(ReflectionOutboundPort rop) throws Exception {
+
+
+    this.doPortConnection(
+        rop.getPortURI(),
+        NodeManagementURI,
+        ReflectionConnector.class.getCanonicalName());
+
+    String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
+    if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+      System.out.println("NOPE");
+    } else {
+      this.doPortConnection(NSGetterPort.getPortURI(), otherInboundPortUI[0],
+          NetworkScannerServiceConnector.class.getCanonicalName());
+    }
   }
 
   /**
