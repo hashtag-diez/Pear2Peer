@@ -25,6 +25,11 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     protected Long _size = Long.valueOf(0);
     protected ContentNodeAddressI _addr;
 
+    /**
+     * > This function returns the address of the content node
+     * 
+     * @return The address of the content node.
+     */
     @Override
     public ContentNodeAddressI getContentNodeAdressI() {
         return this._addr;
@@ -50,10 +55,14 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     @Override
     public boolean match(ContentTemplateI request) {
         boolean res = false;
-        if(request.getTitle()!=null) res = _isTitleEquals(request);
-        if(request.getAlbumTitle()!=null) res = _isAlbumTitleEquals(request);
-        if(request.getComposers().size()!=0) res = _isComposersContains(request);
-        if(request.getInterpreters().size()!=0) res =_isIntrepretersContains(request);
+        if (request.getTitle() != null)
+            res = _isTitleEquals(request);
+        if (request.getAlbumTitle() != null)
+            res = _isAlbumTitleEquals(request);
+        if (request.getComposers().size() != 0)
+            res = _isComposersContains(request);
+        if (request.getInterpreters().size() != 0)
+            res = _isIntrepretersContains(request);
         return res;
     }
 
@@ -85,7 +94,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return A boolean value.
      */
     private boolean _isComposersContains(ContentTemplateI request) {
-        //System.out.println(getComposers().containsAll(request.getComposers()));
+        // System.out.println(getComposers().containsAll(request.getComposers()));
         return getComposers().containsAll(request.getComposers());
     }
 

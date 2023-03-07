@@ -5,10 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import components.interfaces.ContentManagementCI;
 import components.interfaces.NodeCI;
 import components.interfaces.NodeManagementCI;
-import connectors.ContentManagementServiceConnector;
 import connectors.NodeManagementServiceConnector;
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -16,51 +14,52 @@ import fr.sorbonne_u.components.PluginI;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
-import fr.sorbonne_u.components.ports.AbstractOutboundPort;
-import fr.sorbonne_u.utils.Pair;
-import interfaces.ContentDescriptorI;
-import interfaces.ContentTemplateI;
+import plugins.ContentManagement.ContentManagementPI;
+import plugins.ContentManagement.ContentManagementPlugin;
+import plugins.NetworkScannerStuff.NetworkScannerPlugin;
 import interfaces.PeerNodeAddressI;
-import plugins.ContentManagementPlugin;
 import ports.NodeInboundPort;
-import ports.NodeInboundPortCM;
 import ports.NodeOutboundPortN;
 import ports.NodeOutboundPortNM;
-import ports.OutboundPortCM;
 
-@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class, ContentManagementCI.class })
-@OfferedInterfaces(offered = { NodeCI.class, ContentManagementCI.class, ContentManagementCI.class })
+@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class, ContentManagementPI.class })
+@OfferedInterfaces(offered = { NodeCI.class, ContentManagementPI.class })
 public class Node
 		extends AbstractComponent
 		implements PeerNodeAddressI {
 
+	// The port used to connect to the NodeManagement component.
 	protected NodeOutboundPortNM NMGetterPort;
+
+	// The port used to be called by other nodes component.
 	protected NodeInboundPort NSetterPort;
 	protected String NMInboundURI;
+
+	// A map of all the peers that this node is connected to.
 	protected Map<PeerNodeAddressI, NodeOutboundPortN> peersGetterPorts;
-	private final String CM_PLUGIN_URI = "CM_PLUG";
 	protected String uriPrefix = "NodeC";
-	private NodeInboundPortCM CMSetterPort;
 
-	protected Node(String reflectionInboundPortURI, String outboundURI, String NMInboundURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 4, 0);
-		this.NMGetterPort = new NodeOutboundPortNM(outboundURI, this);
+	// Creating the plugins that will be used by the node.
+	protected ContentManagementPlugin ContentManagementPlug;
+	protected NetworkScannerPlugin NetworkScannerPlug;
+
+	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId)
+			throws Exception {
+		super(reflectionInboundPortURI, 5, 0);
+		this.uriPrefix += UUID.randomUUID();
+
+		this.NMGetterPort = new NodeOutboundPortNM(this);
 		this.NMGetterPort.publishPort();
-
-		this.peersGetterPorts = new HashMap<PeerNodeAddressI, NodeOutboundPortN>();
-		
-		this.uriPrefix = this.uriPrefix + UUID.randomUUID();
-		
 		this.NSetterPort = new NodeInboundPort(reflectionInboundPortURI, this);
 		this.NSetterPort.publishPort();
-		
-		PluginI plugin = new ContentManagementPlugin(DescriptorId) ;
-		plugin.setPluginURI(CM_PLUGIN_URI) ;
-		this.installPlugin(plugin); 
-		
-		this.CMSetterPort = new NodeInboundPortCM("cm" + reflectionInboundPortURI, this);
-		this.CMSetterPort.publishPort(); 
-		
+		this.peersGetterPorts = new HashMap<PeerNodeAddressI, NodeOutboundPortN>();
+
+		ContentManagementPlug = new ContentManagementPlugin(DescriptorId);
+		this.installPlugin(ContentManagementPlug);
+
+		NetworkScannerPlug = new NetworkScannerPlugin();
+		this.installPlugin(NetworkScannerPlug);
+
 		this.NMInboundURI = NMInboundURI;
 	}
 
@@ -85,58 +84,43 @@ public class Node
 	public void execute() throws Exception {
 		Set<PeerNodeAddressI> neighbors = NMGetterPort.join(this);
 		for (PeerNodeAddressI node : neighbors) {
-			String oportN = AbstractOutboundPort.generatePortURI();
-			String oportCM = AbstractOutboundPort.generatePortURI();
-
-			NodeOutboundPortN peerOutPort = new NodeOutboundPortN(oportN, this);
-			peerOutPort.publishPort();
-			String iportN = node.getNodeIdentifier().getFirst();
-			this.doPortConnection(oportN, iportN, NodeServiceConnector.class.getCanonicalName());
-
-
-			String iportCM = CMSetterPort.getPortURI();
-			OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
-			peerOutPortCM.publishPort();
-			this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
-
-			((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).put(node, peerOutPortCM);
-			this.peersGetterPorts.put(node, peerOutPort);
-
-			peerOutPort.connect(this);
+			addToNetwork(node);
+			this.peersGetterPorts.get(node).connect(this);
 		}
 	}
 
+	/**
+	 * It connects to the peer node, adds it to the content management and network
+	 * scanner plugs, and
+	 * stores the outbound port in the peersGetterPorts map
+	 * 
+	 * @param node the node to add to the network
+	 * @return The node that was added to the network.
+	 */
 	public PeerNodeAddressI addToNetwork(PeerNodeAddressI node) throws Exception {
-		String oportNM = AbstractOutboundPort.generatePortURI();
-		String oportCM = AbstractOutboundPort.generatePortURI();
-
-		String iportN = node.getNodeIdentifier().getFirst();
-		NodeOutboundPortN peerOutPortN = new NodeOutboundPortN(oportNM, this);
+		String iportN = node.getNodeIdentifier();
+		NodeOutboundPortN peerOutPortN = new NodeOutboundPortN(this);
 		peerOutPortN.publishPort();
-		this.doPortConnection(oportNM, iportN, NodeServiceConnector.class.getCanonicalName());
+		this.doPortConnection(peerOutPortN.getPortURI(), iportN, NodeServiceConnector.class.getCanonicalName());
 
-		String iportCM =  node.getNodeIdentifier().getSecond();
-		OutboundPortCM peerOutPortCM = new OutboundPortCM(oportCM, this);
-		peerOutPortCM.publishPort();
-		this.doPortConnection(oportCM, iportCM, ContentManagementServiceConnector.class.getCanonicalName());
-
-		((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).put(node, peerOutPortCM);
+		ContentManagementPlug.put(node);
+		NetworkScannerPlug.put(node);
 		this.peersGetterPorts.put(node, peerOutPortN);
 		return node;
 	}
 
+	/**
+	 * It deletes a peer from the network
+	 * 
+	 * @param node the node to be deleted from the network
+	 */
 	public void deleteFromNetwork(PeerNodeAddressI node) throws Exception {
 		NodeOutboundPortN outBoundPort = this.peersGetterPorts.get(node);
-		OutboundPortCM outBoundPortCM = ((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).get(node);
-
 		this.doPortDisconnection(outBoundPort.getPortURI());
-		this.doPortDisconnection(outBoundPortCM.getPortURI());
-
 		outBoundPort.unpublishPort();
-		outBoundPortCM.unpublishPort();
-
 		this.peersGetterPorts.remove(node);
-		((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).remove(node);
+		ContentManagementPlug.remove(node);
+		NetworkScannerPlug.remove(node);
 	}
 
 	@Override
@@ -150,8 +134,8 @@ public class Node
 	}
 
 	@Override
-	public Pair<String, String> getNodeIdentifier() throws Exception {
-		return new Pair<String,String>(NSetterPort.getPortURI(), CMSetterPort.getPortURI());
+	public String getNodeIdentifier() throws Exception {
+		return NSetterPort.getPortURI();
 	}
 
 	@Override
@@ -159,14 +143,31 @@ public class Node
 		return this.uriPrefix;
 	}
 
-	public ContentDescriptorI find(ContentTemplateI request, int hops) throws Exception {
-		return ((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).find(request, hops);
+	@Override
+	public PluginI getPlugin(Plugins toGet) {
+		switch (toGet) {
+			case ContentManagementPlugin:
+				return ContentManagementPlug;
+			case NetworkScannerPlugin:
+				return NetworkScannerPlug;
+			default:
+				break;
+
+		}
+		throw new UnsupportedOperationException("Unimplemented plugin on node management");
 	}
 
+	@Override
+	public String getPluginPort(Plugins portToGet) {
+		switch (portToGet) {
+			case ContentManagementPlugin:
+				return ContentManagementPlug.getPluginURI();
+			case NetworkScannerPlugin:
+				return NetworkScannerPlug.getPluginURI();
+			default:
+				break;
 
-	public Set<ContentDescriptorI> match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops)
-			throws Exception {
-		Set<ContentDescriptorI> res = ((ContentManagementPlugin)this.getPlugin(CM_PLUGIN_URI)).match(cd, matched, hops);
-		return res;
+		}
+		throw new UnsupportedOperationException("Unimplemented plugin on node management");
 	}
 }

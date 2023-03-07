@@ -1,9 +1,11 @@
 package interfaces;
 
-import fr.sorbonne_u.utils.Pair;
+import plugins.PluginOwnerI;
 
-public interface NodeAddressI {
+public interface NodeAddressI extends PluginOwnerI {
   boolean isFacade();
+
   boolean isPeer();
-  Pair<String, String> getNodeIdentifier() throws Exception;
+
+  String getNodeIdentifier() throws Exception;
 }

@@ -38,13 +38,12 @@ public class CVM
 			AbstractComponent.createComponent(
 					Node.class.getCanonicalName(),
 					new Object[] { NODE_COMPONENT_URI + i,
-							URIGetterOutboundPortURI + i,
 							URIProviderInboundPortURI, i });
 		}
 		AbstractComponent.createComponent(
-			Client.class.getCanonicalName(),
-			new Object[] { "Clicos",
-					("cm"+ URIProviderInboundPortURI) });
+				Client.class.getCanonicalName(),
+				new Object[] { "Clicos",
+						("cm" + URIProviderInboundPortURI), ("ns" + URIProviderInboundPortURI) });
 
 		super.deploy();
 	}
