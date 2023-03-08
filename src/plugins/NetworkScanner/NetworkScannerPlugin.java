@@ -1,4 +1,4 @@
-package plugins.NetworkScannerStuff;
+package plugins.NetworkScanner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +13,9 @@ import interfaces.ContentDescriptorI;
 import interfaces.NodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
-import plugins.NetworkScannerStuff.port_connector.NSPInBoundPort;
-import plugins.NetworkScannerStuff.port_connector.NSPoutBoundPort;
-import plugins.NetworkScannerStuff.port_connector.NetworkScannerServiceConnector;
+import plugins.NetworkScanner.port_connector.NSPInBoundPort;
+import plugins.NetworkScanner.port_connector.NSPoutBoundPort;
+import plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 
 public class NetworkScannerPlugin extends AbstractPlugin {
 

@@ -1,11 +1,11 @@
-package plugins.NetworkScannerStuff.port_connector;
+package plugins.NetworkScanner.port_connector;
 
 import java.util.HashMap;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
 import interfaces.NodeAddressI;
-import plugins.NetworkScannerStuff.NetworkScannerPI;
-import plugins.NetworkScannerStuff.NodeInformationI;
+import plugins.NetworkScanner.NetworkScannerPI;
+import plugins.NetworkScanner.NodeInformationI;
 
 public class NetworkScannerServiceConnector extends AbstractConnector
         implements NetworkScannerPI {

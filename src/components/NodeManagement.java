@@ -13,7 +13,7 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.ContentManagementPlugin;
-import plugins.NetworkScannerStuff.NetworkScannerPlugin;
+import plugins.NetworkScanner.NetworkScannerPlugin;
 import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;

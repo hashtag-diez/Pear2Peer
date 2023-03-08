@@ -22,10 +22,10 @@ import interfaces.NodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.port_connector.CMOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
-import plugins.NetworkScannerStuff.NetworkScannerPI;
-import plugins.NetworkScannerStuff.NodeInformationI;
-import plugins.NetworkScannerStuff.port_connector.NSPoutBoundPort;
-import plugins.NetworkScannerStuff.port_connector.NetworkScannerServiceConnector;
+import plugins.NetworkScanner.NetworkScannerPI;
+import plugins.NetworkScanner.NodeInformationI;
+import plugins.NetworkScanner.port_connector.NSPoutBoundPort;
+import plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 import ports.ClientInboundPort;
 
 @OfferedInterfaces(offered = { ClientCI.class })

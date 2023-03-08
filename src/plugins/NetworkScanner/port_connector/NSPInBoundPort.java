@@ -1,4 +1,4 @@
-package plugins.NetworkScannerStuff.port_connector;
+package plugins.NetworkScanner.port_connector;
 
 import java.util.HashMap;
 
@@ -6,9 +6,9 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import interfaces.NodeAddressI;
-import plugins.NetworkScannerStuff.NetworkScannerPI;
-import plugins.NetworkScannerStuff.NetworkScannerPlugin;
-import plugins.NetworkScannerStuff.NodeInformationI;
+import plugins.NetworkScanner.NetworkScannerPI;
+import plugins.NetworkScanner.NetworkScannerPlugin;
+import plugins.NetworkScanner.NodeInformationI;
 
 public class NSPInBoundPort extends AbstractInboundPort
         implements NetworkScannerPI {

@@ -1,12 +1,12 @@
-package plugins.NetworkScannerStuff.port_connector;
+package plugins.NetworkScanner.port_connector;
 
 import java.util.HashMap;
 
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 import interfaces.NodeAddressI;
-import plugins.NetworkScannerStuff.NetworkScannerPI;
-import plugins.NetworkScannerStuff.NodeInformationI;
+import plugins.NetworkScanner.NetworkScannerPI;
+import plugins.NetworkScanner.NodeInformationI;
 
 public class NSPoutBoundPort
     extends AbstractOutboundPort

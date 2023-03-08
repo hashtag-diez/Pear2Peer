@@ -1,4 +1,4 @@
-package plugins.NetworkScannerStuff;
+package plugins.NetworkScanner;
 
 import java.util.ArrayList;
 import java.util.HashSet;
