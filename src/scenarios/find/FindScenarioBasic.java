@@ -9,6 +9,7 @@ import components.NodeManagement;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import scenarios.match.ClientLookingForContentWhichMatch;
 
 public class FindScenarioBasic extends AbstractCVM {
 	/** URI of the provider component (convenience). */
@@ -60,6 +61,12 @@ public class FindScenarioBasic extends AbstractCVM {
 							URIProviderInboundPortURI, i });
 		}
 		
+		AbstractComponent.createComponent(
+				ClientLookingForContent.class.getCanonicalName(), 
+				new Object[] {"Clicos",
+						NODE_MANAGEMENT_COMPONENT_URI}
+		);
+		
 	}
 
 	public static void main(String[] args) {
@@ -67,7 +74,7 @@ public class FindScenarioBasic extends AbstractCVM {
 			// Create an instance of the defined component virtual machine.
 			FindScenarioBasic a = new FindScenarioBasic();
 			// Execute the application.
-			a.startStandardLifeCycle(15000L);
+			a.startStandardLifeCycle(20000L);
 			// Give some time to see the traces (convenience).
 			Thread.sleep(500L);
 			// Simplifies the termination (termination has yet to be treated

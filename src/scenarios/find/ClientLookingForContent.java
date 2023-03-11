@@ -15,9 +15,7 @@ public class ClientLookingForContent extends Client {
 	@Override
 	public void execute() throws Exception {
 		super.execute();
-		//super.execute();
 		Displayer.display("scenario 1:", DEBUG_MODE);
-		//exampleSearchContainsWichMatch();
 		exampleSearchFind();
 	}
 }

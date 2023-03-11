@@ -33,7 +33,7 @@ import utiles.Displayer;
 @RequiredInterfaces(required = { ContentManagementPI.class, NetworkScannerPI.class })
 public class Client extends AbstractComponent {
 
-	private static final boolean DEBUG_MODE = false;
+	private static final boolean DEBUG_MODE = true;
 	protected ClientInboundPort ReturnPort;
 	// The port used to call the methods of the ContentManagementPI.
 	protected CMOutboundPort CMGetterPort;
@@ -45,7 +45,7 @@ public class Client extends AbstractComponent {
 	// The constructor of the Client class. It creates the Client object and
 	// initializes the ports.
 	protected Client(String reflectionInboundPort, String NodeManagementURI) throws Exception {
-		super(reflectionInboundPort, 1, 0);
+		super(reflectionInboundPort, 1, 1);
 		this.CMGetterPort = new CMOutboundPort(this);
 		this.CMGetterPort.publishPort();
 		this.NodeManagementURI = NodeManagementURI;
@@ -80,10 +80,6 @@ public class Client extends AbstractComponent {
 	@Override
 	public void execute() throws Exception {
 		super.execute();
-		Displayer.display("waiting 2 seconds", DEBUG_MODE);
-		// mapNetwork();
-		// System.out.println("Map network");
-		// exampleSearchFind();
 	}
 
 	private void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {

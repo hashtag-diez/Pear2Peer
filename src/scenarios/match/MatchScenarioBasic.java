@@ -53,6 +53,14 @@ public class MatchScenarioBasic extends AbstractCVM {
 					new Object[] { NODE_COMPONENT_URI + i, URIProviderInboundPortURI, i });
 		}
 		
+		
+		AbstractComponent.createComponent(
+				ClientLookingForContentWhichMatch.class.getCanonicalName(), 
+				new Object[] {"Clicos",
+						NODE_MANAGEMENT_COMPONENT_URI}
+		);
+		
+		
 		super.deploy();
 	}
 
@@ -61,7 +69,7 @@ public class MatchScenarioBasic extends AbstractCVM {
 			// Create an instance of the defined component virtual machine.
 			MatchScenarioBasic a = new MatchScenarioBasic();
 			// Execute the application.
-			a.startStandardLifeCycle(15000L);
+			a.startStandardLifeCycle(25000L);
 			// Give some time to see the traces (convenience).
 			Thread.sleep(500L);
 			// Simplifies the termination (termination has yet to be treated

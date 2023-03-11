@@ -49,7 +49,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	// Creating the plugins that will be used by the node.
 	protected ContentManagementPlugin ContentManagementPlug;
 	protected NetworkScannerPlugin NetworkScannerPlug;
-	
+
 	protected ClocksServerOutboundPort csop;
 
 	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId) throws Exception {
@@ -96,59 +96,48 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	}
 
 	private void scheduleTasks() throws Exception {
-		
+
 		// connexion à l'horloge
-		this.doPortConnection(
-				this.csop.getPortURI(), 
-				ClocksServer.STANDARD_INBOUNDPORT_URI, 
+		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
-		
+
 		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
-		
-		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date 
+
+		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
-		
-		long delayInNanosToJoin =
-				clock.nanoDelayUntilAcceleratedInstant(
-												startInstant.plusSeconds(5));
-		
-		long delayInNanosToLeave =
-				clock.nanoDelayUntilAcceleratedInstant(
-												startInstant.plusSeconds(10));
-		
-		
-		this.scheduleTask(
-				o -> {
-					try {
-						((Node) o).joinNetwork();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				},
-				delayInNanosToJoin,
-				TimeUnit.NANOSECONDS);	
-		Displayer.display("action has been scheduled", DEBUG_MODE);
-		this.scheduleTask(
-				o -> {
-					try {
-						((Node) o).leaveNetwork();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				},
-				delayInNanosToLeave,
-				TimeUnit.NANOSECONDS);	
-		
-		
+
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2));
+
+		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(15));
+
+		scheduleConnectionToNetwork(delayInNanosToJoin);
+		Displayer.display("[node join network] has been scheduled", DEBUG_MODE);
+		scheduleDisconnectionToNetwork(delayInNanosToLeave);
+		Displayer.display("[node disconnection] has been scheduled", DEBUG_MODE);
+
 	}
 
-	private void doSomething() throws Exception {
-		Displayer.display(this.getNodeURI() + " started task", DEBUG_MODE);
-		Thread.sleep(2000);
-		Displayer.display(this.getNodeURI() + " finished task", DEBUG_MODE);
+	private void scheduleDisconnectionToNetwork(long delayInNanosToLeave) throws AssertionError {
+		this.scheduleTask(o -> {
+			try {
+				((Node) o).leaveNetwork();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}, delayInNanosToLeave, TimeUnit.NANOSECONDS);
+	}
+
+	private void scheduleConnectionToNetwork(long delayInNanosToJoin) throws AssertionError {
+		this.scheduleTask(o -> {
+			try {
+				((Node) o).joinNetwork();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}, delayInNanosToJoin, TimeUnit.NANOSECONDS);
 	}
 
 	private void joinNetwork() throws Exception {
