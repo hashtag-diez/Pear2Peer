@@ -20,12 +20,15 @@ import interfaces.PeerNodeAddressI;
 import ports.NodeInboundPort;
 import ports.NodeOutboundPortN;
 import ports.NodeOutboundPortNM;
+import utiles.Displayer;
 
 @RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class  })
 @OfferedInterfaces(offered = { NodeCI.class })
 public class Node
 		extends AbstractComponent
 		implements ContentNodeAddressI {
+
+	private static final boolean DEBUG_MODE = false;
 
 	// The port used to connect to the NodeManagement component.
 	protected NodeOutboundPortNM NMGetterPort;
@@ -81,6 +84,11 @@ public class Node
 
 	@Override
 	public void execute() throws Exception {
+		joinNetwork();
+		leaveNetwork();
+	}
+
+	private void joinNetwork() throws Exception {
 		Set<PeerNodeAddressI> neighbors = NMGetterPort.join(this);
 		for (PeerNodeAddressI node : neighbors) {
 			addToNetwork(node);
@@ -88,6 +96,10 @@ public class Node
 		}
 	}
 
+	private void leaveNetwork() throws Exception {
+		NMGetterPort.leave(this);
+	}
+	
 	/**
 	 * It connects to the peer node, adds it to the content management and network
 	 * scanner plugs, and
@@ -108,6 +120,7 @@ public class Node
 		return node;
 	}
 
+	
 	/**
 	 * It deletes a peer from the network
 	 * 
@@ -141,39 +154,6 @@ public class Node
 	public String getNodeURI() {
 		return reflectionInboundPortURI;
 	}
-/* 
-	@Override
-	public PluginI getPlugin(Plugins toGet) {
-		switch (toGet) {
-			case ContentManagementPlugin:
-				return ContentManagementPlug;
-			case NetworkScannerPlugin:
-				return NetworkScannerPlug;
-			default:
-				break;
-
-		}
-		throw new UnsupportedOperationException("Unimplemented plugin on node management");
-	}
-
-	@Override
-	public String getPluginPort(Plugins portToGet) {
-		switch (portToGet) {
-			case ContentManagementPlugin:
-				return ContentManagementPlug.getPluginURI();
-			case NetworkScannerPlugin:
-				return NetworkScannerPlug.getPluginURI();
-			default:
-				break;
-
-		}
-		throw new UnsupportedOperationException("Unimplemented plugin on node management");
-	}
-
-	@Override
-	public String getContentManagementURI() {
-		return ContentManagementPlug.getPluginURI();
-	} */
 
 	@Override
 	public String getContentManagementURI() {
