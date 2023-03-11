@@ -17,87 +17,87 @@ import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import ports.NodeManagementInboundPort;
+import utiles.Displayer;
 
 @OfferedInterfaces(offered = { NodeManagementCI.class, ContentManagementPI.class })
 @RequiredInterfaces(required = { ContentManagementPI.class })
-public class NodeManagement
-    extends AbstractComponent
-    implements FacadeNodeAddressI, ContentNodeAddressI{
+public class NodeManagement extends AbstractComponent implements FacadeNodeAddressI, ContentNodeAddressI {
 
-  protected NodeManagementInboundPort NMSetterPort;
+	private static final boolean DEBUG_MODE = true;
 
-  protected Set<PeerNodeAddressI> members = new HashSet<>();
-  protected ContentManagementPlugin ContentManagementPlug;
-  protected NetworkScannerPlugin NetworkScannerPlug;
+	protected NodeManagementInboundPort NMSetterPort;
 
-  protected NodeManagement(String reflectionInboundPortURI, String inboundURI, int DescriptorId) throws Exception {
-    super(reflectionInboundPortURI, 1, 0);
-    this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
-    this.NMSetterPort.publishPort();
+	protected Set<PeerNodeAddressI> members = new HashSet<>();
+	protected ContentManagementPlugin ContentManagementPlug;
+	protected NetworkScannerPlugin NetworkScannerPlug;
 
-    ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
-    this.installPlugin(ContentManagementPlug);
+	protected NodeManagement(String reflectionInboundPortURI, String inboundURI, int DescriptorId) throws Exception {
+		super(reflectionInboundPortURI, 4, 0);
+		this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
+		this.NMSetterPort.publishPort();
 
-    NetworkScannerPlug = new NetworkScannerPlugin("ns" + reflectionInboundPortURI, ContentManagementPlug);
-    this.installPlugin(NetworkScannerPlug);
-  }
+		ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
+		this.installPlugin(ContentManagementPlug);
 
-  public synchronized Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
-    List<PeerNodeAddressI> neighbors = new ArrayList<>(members);
-    if (members.size() % 4 == 0) {
-      System.out.println("Nouvelle racine !");
-      ContentManagementPlug.put(a);
-      NetworkScannerPlug.put(a);
-    }
-    members.add(a);
+		NetworkScannerPlug = new NetworkScannerPlugin("ns" + reflectionInboundPortURI, ContentManagementPlug);
+		this.installPlugin(NetworkScannerPlug);
+	}
 
-    Set<PeerNodeAddressI> res = neighbors
-        .stream()
-        .skip(neighbors.size() > 0 ? neighbors.size() - 1 : 0)
-        .limit(1)
-        .collect(Collectors.toSet());
-    return res;
-  }
+	public synchronized Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
+		Displayer.display(a.getNodeURI() + " veut se connecter au reseau.", DEBUG_MODE);
+		List<PeerNodeAddressI> neighbors = new ArrayList<>(members);
+		if (members.size() % 4 == 0) {
+			Displayer.display("Nouvelle racine !", DEBUG_MODE);
+			ContentManagementPlug.put(a);
+			NetworkScannerPlug.put(a);
+		}
+		members.add(a);
 
-  /**
-   * It removes a peer from the network
-   * 
-   * @param a the peer to be deleted
-   */
-  public void deletePeer(PeerNodeAddressI a) throws Exception {
-    ContentManagementPlug.remove(a);
-    NetworkScannerPlug.remove(a);
-    members.remove(a);
-  }
+		Set<PeerNodeAddressI> res = neighbors.stream().skip(neighbors.size() > 0 ? neighbors.size() - 1 : 0).limit(1)
+				.collect(Collectors.toSet());
+		return res;
+	}
 
-  @Override
-  public boolean isFacade() {
-    return true;
-  }
+	/**
+	 * It removes a peer from the network
+	 * 
+	 * @param a the peer to be deleted
+	 */
+	public void deletePeer(PeerNodeAddressI a) throws Exception {
+		Displayer.display(a.getNodeURI() + " veut se deconnecter du reseau.", DEBUG_MODE);
+		ContentManagementPlug.remove(a);
+		NetworkScannerPlug.remove(a);
+		members.remove(a);
+	}
 
-  @Override
-  public boolean isPeer() {
-    return false;
-  }
+	@Override
+	public boolean isFacade() {
+		return true;
+	}
 
-  @Override
-  public String getNodeIdentifier() throws Exception {
-    return NMSetterPort.getPortURI();
-  }
+	@Override
+	public boolean isPeer() {
+		return false;
+	}
 
-  @Override
-  public String getNodeManagementURI() {
-    return reflectionInboundPortURI;
-  }
+	@Override
+	public String getNodeIdentifier() throws Exception {
+		return NMSetterPort.getPortURI();
+	}
 
-  @Override
-  public String getContentManagementURI() {
-    return "cm-" + reflectionInboundPortURI;
-  }
+	@Override
+	public String getNodeManagementURI() {
+		return reflectionInboundPortURI;
+	}
 
-  @Override
-  public String getNodeURI() throws Exception {
-    throw new UnsupportedOperationException("Unimplemented method 'getNodeURI'");
-  }
+	@Override
+	public String getContentManagementURI() {
+		return "cm-" + reflectionInboundPortURI;
+	}
+
+	@Override
+	public String getNodeURI() throws Exception {
+		throw new UnsupportedOperationException("Unimplemented method 'getNodeURI'");
+	}
 
 }
