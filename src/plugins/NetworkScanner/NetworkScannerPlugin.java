@@ -54,6 +54,12 @@ public class NetworkScannerPlugin extends AbstractPlugin {
         this.addRequiredInterface(NetworkScannerPI.class);
     }
 
+    /**
+     * It creates a new outbound port, connects it to the inbound port of the node we want to connect
+     * to, and then adds it to the map of outbound ports
+     * 
+     * @param node the node to connect to
+     */
     public void put(PeerNodeAddressI node) throws Exception {
         NSPoutBoundPort peerOutPortCM = new NSPoutBoundPort(getOwner());
         peerOutPortCM.publishPort();
@@ -96,6 +102,12 @@ public class NetworkScannerPlugin extends AbstractPlugin {
         return new NodeInformation(owner.isPeer(), owner.isFacade(), this.getterPorts.keySet(), descriptors);
     }
 
+    /**
+     * It returns a map of all the nodes in the network, and their information
+     * 
+     * @param before the map of nodes that have already been scanned
+     * @return A HashMap of NodeAddressI and NodeInformationI
+     */
     public HashMap<NodeAddressI, NodeInformationI> mapNetwork(
             HashMap<NodeAddressI, NodeInformationI> before)
             throws Exception {

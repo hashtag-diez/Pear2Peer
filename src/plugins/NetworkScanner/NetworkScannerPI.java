@@ -6,6 +6,14 @@ import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 import interfaces.NodeAddressI;
 
+/**
+ * The interface <code>NetworkScannerPI</code> is offered and required by
+ * both facades and node components to allow network scanning
+ * 
+ * @author ABSSI (Team)
+ *
+ */
+
 public interface NetworkScannerPI extends RequiredCI, OfferedCI {
     HashMap<NodeAddressI, NodeInformationI> mapNetwork(HashMap<NodeAddressI, NodeInformationI> before) throws Exception;
 }

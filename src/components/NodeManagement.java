@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import components.interfaces.NodeManagementCI;
@@ -28,12 +27,11 @@ public class NodeManagement
   protected NodeManagementInboundPort NMSetterPort;
 
   protected Set<PeerNodeAddressI> members = new HashSet<>();
-  protected String uriPrefix = "NodeC";
   protected ContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
 
   protected NodeManagement(String reflectionInboundPortURI, String inboundURI, int DescriptorId) throws Exception {
-    super(reflectionInboundPortURI, 4, 0);
+    super(reflectionInboundPortURI, 1, 0);
     this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
     this.NMSetterPort.publishPort();
 
@@ -42,8 +40,6 @@ public class NodeManagement
 
     NetworkScannerPlug = new NetworkScannerPlugin("ns" + reflectionInboundPortURI, ContentManagementPlug);
     this.installPlugin(NetworkScannerPlug);
-
-    this.uriPrefix = this.uriPrefix + UUID.randomUUID();
   }
 
   public synchronized Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {

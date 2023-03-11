@@ -54,7 +54,6 @@ public class Client
     this.NSGetterPort.publishPort();
 
     this.ReturnPort = new ClientInboundPort(this);
-    this.ReturnPort.publishPort();
   }
 
   /**
@@ -81,7 +80,8 @@ public class Client
   public void execute() throws Exception {
     super.execute();
     Thread.sleep(2000);
-    mapNetwork();
+    // mapNetwork();
+    // exampleSearchContainsWichMatch();
     exampleSearchFind();
   }
 
@@ -102,7 +102,6 @@ public class Client
   }
 
   private void connectToFacadeViaNS(ReflectionOutboundPort rop) throws Exception {
-
 
     this.doPortConnection(
         rop.getPortURI(),
@@ -138,7 +137,7 @@ public class Client
     ContentTemplateI temp = pickTemplate();
     System.out.println("Template recherche :\n" + temp.toString());
     Set<ContentDescriptorI> matched = new HashSet<>();
-
+    this.ReturnPort.publishPort();
     CMGetterPort.match(temp, matched, 5, ReturnPort.getPortURI());
   }
 
@@ -149,6 +148,7 @@ public class Client
     ContentTemplateI temp = pickTemplate();
     System.out.println("Template recherche :\n" + temp.toString());
     found = false;
+    this.ReturnPort.publishPort();
     CMGetterPort.find(temp, 5, ReturnPort.getPortURI());
   }
 
@@ -158,12 +158,16 @@ public class Client
    * 
    * @param matched The ContentDescriptorI object that matched the search
    *                criteria.
+   * @throws Exception
    */
-  public void findResult(ContentDescriptorI matched) {
-    if (found == false) {
-      System.out.println("Found : " + matched.toString());
-    } else
-      found = true;
+  public void findResult(ContentDescriptorI matched) throws Exception {
+    if (this.ReturnPort.isPublished()) {
+      this.ReturnPort.unpublishPort();
+      if (found == false) {
+        System.out.println("Found : " + matched.toString());
+      } else
+        found = true;
+    }
   }
 
   /**
@@ -171,12 +175,16 @@ public class Client
    * content descriptors
    * 
    * @param matched A set of ContentDescriptorI objects that matched the query.
+   * @throws Exception
    */
-  public void matchResult(Set<ContentDescriptorI> matched) {
-    if (!matched.isEmpty()) {
-      System.out.println("Matched : ");
-      for (ContentDescriptorI contentDescriptor : matched) {
-        System.out.println(contentDescriptor);
+  public void matchResult(Set<ContentDescriptorI> matched) throws Exception {
+    if (this.ReturnPort.isPublished()) {
+      this.ReturnPort.unpublishPort();
+      if (!matched.isEmpty()) {
+        System.out.println("Matched : ");
+        for (ContentDescriptorI contentDescriptor : matched) {
+          System.out.println(contentDescriptor);
+        }
       }
     }
   }

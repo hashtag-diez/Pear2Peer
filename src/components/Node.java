@@ -3,7 +3,6 @@ package components;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import components.interfaces.NodeCI;
 import components.interfaces.NodeManagementCI;
@@ -36,7 +35,6 @@ public class Node
 
 	// A map of all the peers that this node is connected to.
 	protected Map<PeerNodeAddressI, NodeOutboundPortN> peersGetterPorts;
-	protected String uriPrefix = "NodeC";
 
 	// Creating the plugins that will be used by the node.
 	protected ContentManagementPlugin ContentManagementPlug;
@@ -44,8 +42,7 @@ public class Node
 
 	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId)
 			throws Exception {
-		super(reflectionInboundPortURI, 5, 0);
-		this.uriPrefix += UUID.randomUUID();
+		super(reflectionInboundPortURI, 2, 0);
 
 		this.NMGetterPort = new NodeOutboundPortNM(this);
 		this.NMGetterPort.publishPort();
@@ -90,8 +87,7 @@ public class Node
 
 	/**
 	 * It connects to the peer node, adds it to the content management and network
-	 * scanner plugs, and
-	 * stores the outbound port in the peersGetterPorts map
+	 * scanner plugs, and stores the outbound port in the peersGetterPorts map
 	 * 
 	 * @param node the node to add to the network
 	 * @return The node that was added to the network.
@@ -109,7 +105,7 @@ public class Node
 	}
 
 	/**
-	 * It deletes a peer from the network
+	 * It deletes a peer from the network and alert others plugins
 	 * 
 	 * @param node the node to be deleted from the network
 	 */
@@ -141,39 +137,6 @@ public class Node
 	public String getNodeURI() {
 		return reflectionInboundPortURI;
 	}
-/* 
-	@Override
-	public PluginI getPlugin(Plugins toGet) {
-		switch (toGet) {
-			case ContentManagementPlugin:
-				return ContentManagementPlug;
-			case NetworkScannerPlugin:
-				return NetworkScannerPlug;
-			default:
-				break;
-
-		}
-		throw new UnsupportedOperationException("Unimplemented plugin on node management");
-	}
-
-	@Override
-	public String getPluginPort(Plugins portToGet) {
-		switch (portToGet) {
-			case ContentManagementPlugin:
-				return ContentManagementPlug.getPluginURI();
-			case NetworkScannerPlugin:
-				return NetworkScannerPlug.getPluginURI();
-			default:
-				break;
-
-		}
-		throw new UnsupportedOperationException("Unimplemented plugin on node management");
-	}
-
-	@Override
-	public String getContentManagementURI() {
-		return ContentManagementPlug.getPluginURI();
-	} */
 
 	@Override
 	public String getContentManagementURI() {

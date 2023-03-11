@@ -11,17 +11,10 @@ public class CVM
 	protected static final String NODE_MANAGEMENT_COMPONENT_URI = "my-NODE_MANAGEMENT";
 	/** URI of the consumer component (convenience). */
 	protected static final String NODE_COMPONENT_URI = "my-NODE";
-	/** URI of the provider outbound port (simplifies the connection). */
-	protected static final String URIGetterOutboundPortURI = "oport";
 	/** URI of the consumer inbound port (simplifies the connection). */
-	protected static final String URIProviderInboundPortURI = "iport";
+	protected static final String NodeManagementInboundPortURI = "NM-iport";
 
-	protected final int NB_PEER = 4;
-	/**
-	 * Reference to the provider component to share between deploy
-	 * and shutdown.
-	 */
-	protected String uriNodeManagement;
+	protected final int NB_PEER = 9;
 
 	public CVM() throws Exception {
 		super();
@@ -32,17 +25,17 @@ public class CVM
 		AbstractComponent.createComponent(
 				NodeManagement.class.getCanonicalName(),
 				new Object[] { NODE_MANAGEMENT_COMPONENT_URI,
-						URIProviderInboundPortURI, -1 });
+						NodeManagementInboundPortURI, 0 });
 
-		for (int i = 0; i < NB_PEER; i++) {
+		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(
 					Node.class.getCanonicalName(),
 					new Object[] { NODE_COMPONENT_URI + i,
-							URIProviderInboundPortURI, i });
+							NodeManagementInboundPortURI, i });
 		}
 		AbstractComponent.createComponent(
 				Client.class.getCanonicalName(),
-				new Object[] { "Clicos",
+				new Object[] { "Client",
 				NODE_MANAGEMENT_COMPONENT_URI });
 
 		super.deploy();
