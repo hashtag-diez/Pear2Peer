@@ -36,9 +36,9 @@ public class ContentTemplate implements ContentTemplateI {
             this._composers.add((String) object);
 
         ArrayList<?> intepretersBeforeCast = (ArrayList<?>) toLoad.get("interpreters");
-        if(intepretersBeforeCast!=null){
+        if (intepretersBeforeCast != null) {
             for (Object object : intepretersBeforeCast)
-            this._interpreters.add((String) object);
+                this._interpreters.add((String) object);
         }
     }
 

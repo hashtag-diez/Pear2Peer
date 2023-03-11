@@ -9,8 +9,8 @@ import interfaces.PeerNodeAddressI;
 public class NodeOutboundPortN
     extends AbstractOutboundPort
     implements NodeCI {
-  public NodeOutboundPortN(String uri, ComponentI owner) throws Exception {
-    super(uri, NodeCI.class, owner);
+  public NodeOutboundPortN(ComponentI owner) throws Exception {
+    super(generatePortURI(), NodeCI.class, owner);
   }
 
   @Override
