@@ -24,7 +24,6 @@ public class NodeManagementInboundPort
 
   @Override
   public void leave(PeerNodeAddressI a) throws Exception {
-	  System.out.println(">>> deleting node");
     this.getOwner().runTask(
         owner -> {
           try {

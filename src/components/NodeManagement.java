@@ -48,7 +48,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 	}
 
 	public synchronized Set<PeerNodeAddressI> addNewComers(PeerNodeAddressI a) throws Exception {
-		Displayer.display(a.getNodeIdentifier() + " veux se connecter au reseau.", DEBUG_MODE);
+		Displayer.display(a.getNodeURI() + " veut se connecter au reseau.", DEBUG_MODE);
 		List<PeerNodeAddressI> neighbors = new ArrayList<>(members);
 		if (members.size() % 4 == 0) {
 			Displayer.display("Nouvelle racine !", DEBUG_MODE);
@@ -68,7 +68,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 	 * @param a the peer to be deleted
 	 */
 	public void deletePeer(PeerNodeAddressI a) throws Exception {
-		Displayer.display(this.getNodeIdentifier() + " veux se deconnecter du reseau.", DEBUG_MODE);
+		Displayer.display(a.getNodeURI() + " veut se deconnecter du reseau.", DEBUG_MODE);
 		ContentManagementPlug.remove(a);
 		NetworkScannerPlug.remove(a);
 		members.remove(a);

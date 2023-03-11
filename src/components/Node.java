@@ -22,11 +22,9 @@ import ports.NodeOutboundPortN;
 import ports.NodeOutboundPortNM;
 import utiles.Displayer;
 
-@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class  })
+@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class })
 @OfferedInterfaces(offered = { NodeCI.class })
-public class Node
-		extends AbstractComponent
-		implements ContentNodeAddressI {
+public class Node extends AbstractComponent implements ContentNodeAddressI {
 
 	private static final boolean DEBUG_MODE = false;
 
@@ -45,8 +43,7 @@ public class Node
 	protected ContentManagementPlugin ContentManagementPlug;
 	protected NetworkScannerPlugin NetworkScannerPlug;
 
-	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId)
-			throws Exception {
+	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId) throws Exception {
 		super(reflectionInboundPortURI, 5, 0);
 		this.uriPrefix += UUID.randomUUID();
 
@@ -59,7 +56,7 @@ public class Node
 		ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
 
-		NetworkScannerPlug = new NetworkScannerPlugin("plug"+reflectionInboundPortURI, ContentManagementPlug);
+		NetworkScannerPlug = new NetworkScannerPlugin("plug" + reflectionInboundPortURI, ContentManagementPlug);
 		this.installPlugin(NetworkScannerPlug);
 
 		this.NMInboundURI = NMInboundURI;
@@ -85,7 +82,14 @@ public class Node
 	@Override
 	public void execute() throws Exception {
 		joinNetwork();
+		doSomething();
 		leaveNetwork();
+	}
+
+	private void doSomething() throws Exception {
+		System.out.println(this.getNodeURI() + " started task");
+		Thread.sleep(2000);
+		System.out.println(this.getNodeURI() + " finished task");
 	}
 
 	private void joinNetwork() throws Exception {
@@ -99,11 +103,10 @@ public class Node
 	private void leaveNetwork() throws Exception {
 		NMGetterPort.leave(this);
 	}
-	
+
 	/**
 	 * It connects to the peer node, adds it to the content management and network
-	 * scanner plugs, and
-	 * stores the outbound port in the peersGetterPorts map
+	 * scanner plugs, and stores the outbound port in the peersGetterPorts map
 	 * 
 	 * @param node the node to add to the network
 	 * @return The node that was added to the network.
@@ -120,7 +123,6 @@ public class Node
 		return node;
 	}
 
-	
 	/**
 	 * It deletes a peer from the network
 	 * 
