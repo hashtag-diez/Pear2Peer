@@ -33,7 +33,7 @@ import utiles.Displayer;
 @OfferedInterfaces(offered = { NodeCI.class })
 public class Node extends AbstractComponent implements ContentNodeAddressI {
 
-	private static final boolean DEBUG_MODE = false;
+	private static final boolean DEBUG_MODE = true;
 
 	// The port used to connect to the NodeManagement component.
 	protected NodeOutboundPortNM NMGetterPort;
@@ -130,7 +130,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 				},
 				delayInNanosToJoin,
 				TimeUnit.NANOSECONDS);	
-		System.out.println("action has been scheduled");
+		Displayer.display("action has been scheduled", DEBUG_MODE);
 		this.scheduleTask(
 				o -> {
 					try {
@@ -146,9 +146,9 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	}
 
 	private void doSomething() throws Exception {
-		System.out.println(this.getNodeURI() + " started task");
+		Displayer.display(this.getNodeURI() + " started task", DEBUG_MODE);
 		Thread.sleep(2000);
-		System.out.println(this.getNodeURI() + " finished task");
+		Displayer.display(this.getNodeURI() + " finished task", DEBUG_MODE);
 	}
 
 	private void joinNetwork() throws Exception {
