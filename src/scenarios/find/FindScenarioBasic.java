@@ -42,7 +42,7 @@ public class FindScenarioBasic extends AbstractCVM {
 		// decide for a start time as an Instant that will be used as the base
 		// time to plan all the actions of the test scenario
 		Instant	startInstant = Instant.parse("2023-03-06T15:37:00Z");
-		double accelerationFactor = 1.0;
+		double accelerationFactor = 10.0;
 		
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
