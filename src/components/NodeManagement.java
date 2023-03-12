@@ -32,7 +32,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 	protected NetworkScannerPlugin NetworkScannerPlug;
 
 	protected NodeManagement(String reflectionInboundPortURI, String inboundURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 4, 0);
+		super(reflectionInboundPortURI, 8, 0);
 		this.NMSetterPort = new NodeManagementInboundPort(inboundURI, this);
 		this.NMSetterPort.publishPort();
 

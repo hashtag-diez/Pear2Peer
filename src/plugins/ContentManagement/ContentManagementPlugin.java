@@ -138,7 +138,6 @@ public class ContentManagementPlugin
               ClientReturnConnector.class.getCanonicalName());
           clientOutboundPort.findResult(localCd);
         } catch (Exception e) {
-  
         } finally {
           this.getOwner().doPortDisconnection(clientOutboundPort.getPortURI());
           clientOutboundPort.unpublishPort();

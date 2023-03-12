@@ -39,7 +39,7 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(5);
 	public static final String CLOCK_URI = "my-clock-uri";
 
-	protected final int NB_PEER = 4;
+	protected final int NB_PEER = 9;
 	/**
 	 * Reference to the provider component to share between deploy and shutdown.
 	 */
@@ -62,9 +62,9 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 							 startInstant, accelerationFactor});
 
 		AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
-				new Object[] { NODE_MANAGEMENT_COMPONENT_URI, URIProviderInboundPortURI, -1 });
+				new Object[] { NODE_MANAGEMENT_COMPONENT_URI, URIProviderInboundPortURI, 0 });
 
-		for (int i = 0; i < NB_PEER; i++) {
+		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
 					new Object[] { NODE_COMPONENT_URI + i, URIProviderInboundPortURI, i });
 		}

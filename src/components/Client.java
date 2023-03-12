@@ -129,6 +129,7 @@ public class Client extends AbstractComponent {
 		Displayer.display("Template recherche :\\n"+temp, DEBUG_MODE);
 		Set<ContentDescriptorI> matched = new HashSet<>();
 
+		ReturnPort.publishPort();
 		CMGetterPort.match(temp, matched, 5, ReturnPort.getPortURI());
 		Displayer.display("Matched count: " + matched.size(), DEBUG_MODE);
 	}
@@ -141,6 +142,7 @@ public class Client extends AbstractComponent {
 		ContentTemplateI temp = pickTemplate();
 		Displayer.display("Template recherche :\n" + temp.toString(), DEBUG_MODE);
 		found = false;
+		ReturnPort.publishPort();
 		CMGetterPort.find(temp, 5, ReturnPort.getPortURI());
 	}
 
@@ -150,12 +152,17 @@ public class Client extends AbstractComponent {
 	 * 
 	 * @param matched The ContentDescriptorI object that matched the search
 	 *                criteria.
+	 * @throws Exception
 	 */
-	public void findResult(ContentDescriptorI matched) {
-		if (found == false) {
-			Displayer.display("Found : " + matched.toString(), DEBUG_MODE);
-		} else
-			found = true;
+	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
+		if(ReturnPort.isPublished()){
+			if (found == false) {
+				ReturnPort.unpublishPort();
+				Displayer.display("Found : " + matched.toString(), DEBUG_MODE);
+			} else
+				found = true;
+		}
+		
 	}
 
 	/**
@@ -164,11 +171,14 @@ public class Client extends AbstractComponent {
 	 * 
 	 * @param matched A set of ContentDescriptorI objects that matched the query.
 	 */
-	public void matchResult(Set<ContentDescriptorI> matched) {
-		if (!matched.isEmpty()) {
-			Displayer.display("Matched : ", DEBUG_MODE);
-			for (ContentDescriptorI contentDescriptor : matched) {
-				Displayer.display(contentDescriptor.toString(), DEBUG_MODE);
+	public synchronized void matchResult(Set<ContentDescriptorI> matched) throws Exception{
+		if(ReturnPort.isPublished()){
+			if (!matched.isEmpty()) {
+				ReturnPort.unpublishPort();
+				Displayer.display("Matched : ", DEBUG_MODE);
+				for (ContentDescriptorI contentDescriptor : matched) {
+					Displayer.display(contentDescriptor.toString(), DEBUG_MODE);
+				}
 			}
 		}
 	}
