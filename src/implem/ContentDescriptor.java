@@ -9,6 +9,10 @@ import interfaces.ContentTemplateI;
 
 public class ContentDescriptor extends ContentTemplate implements ContentDescriptorI {
 
+    /* TODO
+     * Ne pas transmettre la référence à l'objet ContentNodeAddressI directement, 
+     * mais plutôt l'adresse en elle-même
+     */
     public ContentDescriptor(String title, String albumTitle, Set<String> interpreters, Set<String> composers,
             Long fileSize, ContentNodeAddressI addr) {
         super(title, albumTitle, interpreters, composers);
@@ -45,8 +49,8 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     public boolean equals(ContentDescriptorI cd) throws Exception {
         /*
          * boolean addrEqual =
-         * this._addr.getNodeIdentifier().equals(cd.getContentNodeAdressI().
-         * getNodeIdentifier());
+         * this._addr.getNodeURI().equals(cd.getContentNodeAdressI().
+         * getNodeURI());
          * boolean size = this.getSize() == cd.getSize();
          */
         return _isTitleEquals(cd) && _isAlbumTitleEquals(cd) && _isIntrepretersContains(cd)

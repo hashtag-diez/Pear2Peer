@@ -191,7 +191,7 @@ public class Client extends AbstractComponent {
 		result = NSGetterPort.mapNetwork(result);
 		Displayer.display("Contain " + result.size() + " Nodes",DEBUG_MODE);
 		for (Entry<NodeAddressI, NodeInformationI> nodeInfo : result.entrySet()) {
-			Displayer.display("Node " + nodeInfo.getKey().getNodeIdentifier() + " : ", DEBUG_MODE);
+			Displayer.display("Node " + nodeInfo.getKey().getNodeURI() + " : ", DEBUG_MODE);
 			Displayer.display(nodeInfo.getValue().toString(), DEBUG_MODE);
 			Displayer.display("--------------------------------", DEBUG_MODE);
 		}

@@ -1,27 +1,28 @@
-package ports;
+package plugins.NetworkNode.port_connector;
 
-import components.Node;
-import components.interfaces.NodeCI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
 import interfaces.PeerNodeAddressI;
+import plugins.NetworkNode.NodePI;
+import plugins.NetworkNode.NodePlugin;
 
 public class NodeInboundPort
     extends AbstractInboundPort
-    implements NodeCI {
+    implements NodePI {
 
-  public NodeInboundPort(String uri, ComponentI owner) throws Exception {
-    super(AbstractInboundPort.generatePortURI(), NodeCI.class, owner);
+
+  public NodeInboundPort(String pluginUri, ComponentI owner) throws Exception {
+    super(NodePI.class, owner, pluginUri,null);
   }
 
   @Override
   public PeerNodeAddressI connect(PeerNodeAddressI a) throws Exception {
     return this.getOwner().handleRequest(
-        new AbstractComponent.AbstractService<PeerNodeAddressI>() {
+        new AbstractComponent.AbstractService<PeerNodeAddressI>(this.getPluginURI()) {
           @Override
           public PeerNodeAddressI call() throws Exception {
-            return ((Node) this.getServiceOwner()).addToNetwork(a);
+            return ((NodePlugin) this.getServiceProviderReference()).connect(a);
           }
         });
   }
@@ -29,13 +30,16 @@ public class NodeInboundPort
   @Override
   public void disconnect(PeerNodeAddressI a) throws Exception {
     this.getOwner().runTask(
-        owner -> {
+      new AbstractComponent.AbstractTask(this.getPluginURI()) {
+        @Override
+        public void run() {
           try {
-            ((Node) owner).deleteFromNetwork(a);
+            ((NodePlugin) this.getTaskProviderReference()).disconnect(a);
           } catch (Exception e) {
             throw new RuntimeException(e);
           }
-        });
+        }
+      });
   }
 
 }

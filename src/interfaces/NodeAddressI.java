@@ -6,5 +6,5 @@ public interface NodeAddressI  {
 
   boolean isPeer();
 
-  String getNodeIdentifier() throws Exception;
+  String getNodeURI() throws Exception;
 }

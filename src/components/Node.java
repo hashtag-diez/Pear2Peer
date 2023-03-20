@@ -1,15 +1,10 @@
 package components;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import components.interfaces.NodeCI;
 import components.interfaces.NodeManagementCI;
-import connectors.NodeManagementServiceConnector;
-import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
@@ -19,12 +14,9 @@ import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import plugins.ContentManagement.ContentManagementPlugin;
+import plugins.NetworkNode.NodePlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 import interfaces.ContentNodeAddressI;
-import interfaces.PeerNodeAddressI;
-import ports.NodeInboundPort;
-import ports.NodeOutboundPortN;
-import ports.NodeOutboundPortNM;
 import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.Displayer;
 
@@ -34,38 +26,22 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 
 	private static final boolean DEBUG_MODE = true;
 
-	// The port used to connect to the NodeManagement component.
-	protected NodeOutboundPortNM NMGetterPort;
-
-	// The port used to be called by other nodes component.
-	protected NodeInboundPort NSetterPort;
-	protected String NMInboundURI;
-
-	// A map of all the peers that this node is connected to.
-	protected Map<PeerNodeAddressI, NodeOutboundPortN> peersGetterPorts;
-
-	// Creating the plugins that will be used by the node.
-	protected ContentManagementPlugin ContentManagementPlug;
-	protected NetworkScannerPlugin NetworkScannerPlug;
-
 	protected ClocksServerOutboundPort csop;
+
+	private NodePlugin plugin;
 
 	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId) throws Exception {
 		super(reflectionInboundPortURI, 1, 1);
 
-		this.NMGetterPort = new NodeOutboundPortNM(this);
-		this.NMGetterPort.publishPort();
-		this.NSetterPort = new NodeInboundPort(reflectionInboundPortURI, this);
-		this.NSetterPort.publishPort();
-		this.peersGetterPorts = new HashMap<PeerNodeAddressI, NodeOutboundPortN>();
-
-		ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
+		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
 
-		NetworkScannerPlug = new NetworkScannerPlugin("plug" + reflectionInboundPortURI, ContentManagementPlug);
+		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
 		this.installPlugin(NetworkScannerPlug);
 
-		this.NMInboundURI = NMInboundURI;
+		plugin = new NodePlugin(NMInboundURI, ContentManagementPlug, NetworkScannerPlug);
+		this.installPlugin(plugin);
+
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 	}
@@ -73,18 +49,6 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	@Override
 	public void start() throws ComponentStartException {
 		super.start();
-		try {
-			this.doPortConnection(NMGetterPort.getPortURI(), NMInboundURI,
-					NodeManagementServiceConnector.class.getCanonicalName());
-		} catch (Exception e) {
-			throw new ComponentStartException(e);
-		}
-	}
-
-	@Override
-	public void finalise() throws Exception {
-		super.finalise();
-		this.doPortDisconnection(NMGetterPort.getPortURI());
 	}
 
 	@Override
@@ -120,7 +84,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	private void scheduleDisconnectionToNetwork(long delayInNanosToLeave) throws AssertionError {
 		this.scheduleTask(o -> {
 			try {
-				((Node) o).leaveNetwork();
+				plugin.leaveNetwork();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -130,56 +94,11 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	private void scheduleConnectionToNetwork(long delayInNanosToJoin) throws AssertionError {
 		this.scheduleTask(o -> {
 			try {
-				((Node) o).joinNetwork();
+				plugin.joinNetwork();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}, delayInNanosToJoin, TimeUnit.NANOSECONDS);
-	}
-
-	private void joinNetwork() throws Exception {
-		Set<PeerNodeAddressI> neighbors = NMGetterPort.join(this);
-		for (PeerNodeAddressI node : neighbors) {
-			addToNetwork(node);
-			this.peersGetterPorts.get(node).connect(this);
-		}
-	}
-
-	private void leaveNetwork() throws Exception {
-		NMGetterPort.leave(this);
-	}
-
-	/**
-	 * It connects to the peer node, adds it to the content management and network
-	 * scanner plugs, and stores the outbound port in the peersGetterPorts map
-	 * 
-	 * @param node the node to add to the network
-	 * @return The node that was added to the network.
-	 */
-	public PeerNodeAddressI addToNetwork(PeerNodeAddressI node) throws Exception {
-		String iportN = node.getNodeIdentifier();
-		NodeOutboundPortN peerOutPortN = new NodeOutboundPortN(this);
-		peerOutPortN.publishPort();
-		this.doPortConnection(peerOutPortN.getPortURI(), iportN, NodeServiceConnector.class.getCanonicalName());
-
-		ContentManagementPlug.put(node);
-		NetworkScannerPlug.put(node);
-		this.peersGetterPorts.put(node, peerOutPortN);
-		return node;
-	}
-
-	/**
-	 * It deletes a peer from the network and alert others plugins
-	 * 
-	 * @param node the node to be deleted from the network
-	 */
-	public void deleteFromNetwork(PeerNodeAddressI node) throws Exception {
-		NodeOutboundPortN outBoundPort = this.peersGetterPorts.get(node);
-		this.doPortDisconnection(outBoundPort.getPortURI());
-		outBoundPort.unpublishPort();
-		this.peersGetterPorts.remove(node);
-		ContentManagementPlug.remove(node);
-		NetworkScannerPlug.remove(node);
 	}
 
 	@Override
@@ -194,7 +113,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 
 	@Override
 	public String getNodeIdentifier() throws Exception {
-		return NSetterPort.getPortURI();
+		return plugin.getPluginURI();
 	}
 
 	@Override

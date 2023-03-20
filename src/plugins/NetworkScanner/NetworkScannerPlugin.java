@@ -23,9 +23,9 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     protected Map<NodeAddressI, NSPoutBoundPort> getterPorts = new HashMap<>();;
     private ContentManagementPlugin plugin;
 
-    public NetworkScannerPlugin(String pluginUri, ContentManagementPlugin plugin) throws Exception {
+    public NetworkScannerPlugin(ContentManagementPlugin plugin) throws Exception {
         super();
-        setPluginURI(pluginUri);
+        setPluginURI(AbstractPort.generatePortURI());
         this.plugin = plugin;
     }
 
