@@ -29,6 +29,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 		super.execute();
 
 		scheduleClientTasks();
+
 		Displayer.display("Client task [match] sheduled", DEBUG_MODE);
 	}
 
@@ -53,6 +54,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 				o -> {
 					try {
 						((ClientLookingForContentWhichMatch) o).exampleSearchContainsWichMatch();
+						mapNetwork();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

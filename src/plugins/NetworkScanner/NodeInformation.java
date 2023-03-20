@@ -12,6 +12,7 @@ public class NodeInformation implements NodeInformationI {
 
     protected boolean isPeer = false;
     protected boolean isFacade = false;
+    protected boolean isRoot = false;
     protected Set<NodeAddressI> voisins = new HashSet<NodeAddressI>();
     protected List<ContentDescriptorI> contentsDescriptors;
 
@@ -63,4 +64,13 @@ public class NodeInformation implements NodeInformationI {
         return "NodeInformation [is: " + nodeis + ", voisins=" + voisinaddr + ", content = " + contentsDescriptors
                 + "]";
     }
+
+    public boolean isRoot() {
+        return isRoot;
+    }
+
+    public void setRoot(boolean isRoot) {
+        this.isRoot = isRoot;
+    }
+
 }

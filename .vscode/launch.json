@@ -6,6 +6,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "MatchScenarioBasic",
+      "request": "launch",
+      "mainClass": "scenarios.match.MatchScenarioBasic",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
+      "name": "FindScenarioBasic",
+      "request": "launch",
+      "mainClass": "scenarios.find.FindScenarioBasic",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
       "name": "Launch CVM",
       "request": "launch",
       "mainClass": "CVM",

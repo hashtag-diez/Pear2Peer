@@ -55,7 +55,8 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     }
 
     /**
-     * It creates a new outbound port, connects it to the inbound port of the node we want to connect
+     * It creates a new outbound port, connects it to the inbound port of the node
+     * we want to connect
      * to, and then adds it to the map of outbound ports
      * 
      * @param node the node to connect to
@@ -63,23 +64,23 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     public void put(PeerNodeAddressI node) throws Exception {
         NSPoutBoundPort peerOutPortCM = new NSPoutBoundPort(getOwner());
         peerOutPortCM.publishPort();
-    
+
         ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
         rop.publishPort();
-    
+
         this.getOwner().doPortConnection(
-            rop.getPortURI(),
-            node.getNodeURI(),
-            ReflectionConnector.class.getCanonicalName());
-    
+                rop.getPortURI(),
+                node.getNodeURI(),
+                ReflectionConnector.class.getCanonicalName());
+
         String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
         if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-          System.out.println("NOPE");
+            System.out.println("NOPE");
         } else {
-          this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), otherInboundPortUI[0],
-          NetworkScannerServiceConnector.class.getCanonicalName());
+            this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), otherInboundPortUI[0],
+                    NetworkScannerServiceConnector.class.getCanonicalName());
         }
-    
+
         this.getOwner().doPortDisconnection(rop.getPortURI());
         rop.unpublishPort();
         rop.destroyPort();
@@ -122,6 +123,15 @@ public class NetworkScannerPlugin extends AbstractPlugin {
                 if (outBoundPort != null)
                     before.putAll(((NetworkScannerPI) outBoundPort).mapNetwork(before));
             }
+
+        if (owner.isFacade()) {
+            for (NodeAddressI node : this.getterPorts.keySet()) {
+                NodeInformationI root = before.get(node);
+                root.setRoot(true);
+                before.put(node, root);
+            }
+        }
+
         return before;
     }
 

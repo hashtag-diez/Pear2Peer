@@ -14,5 +14,9 @@ public interface NodeInformationI {
     Set<NodeAddressI> getConnectedNodes();
 
     List<ContentDescriptorI> getContents();
+
+    public boolean isRoot();
+
+    public void setRoot(boolean isRoot);
     /* Other Information to add */
 }

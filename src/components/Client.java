@@ -16,6 +16,7 @@ import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
 import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentTemplate;
+import implem.GraphVisualiser;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
 import interfaces.NodeAddressI;
@@ -53,8 +54,8 @@ public class Client extends AbstractComponent {
 		this.NSGetterPort = new NSPoutBoundPort(this);
 		this.NSGetterPort.publishPort();
 
-    this.ReturnPort = new ClientInboundPort(this);
-  }
+		this.ReturnPort = new ClientInboundPort(this);
+	}
 
 	/**
 	 * It connects the two ports of the component to the two ports of the two
@@ -126,7 +127,7 @@ public class Client extends AbstractComponent {
 	public void exampleSearchContainsWichMatch() throws Exception {
 		Displayer.display("Client start searching [match]", DEBUG_MODE);
 		ContentTemplateI temp = pickTemplate();
-		Displayer.display("Template recherche :\\n"+temp, DEBUG_MODE);
+		Displayer.display("Template recherche :\\n" + temp, DEBUG_MODE);
 		Set<ContentDescriptorI> matched = new HashSet<>();
 
 		ReturnPort.publishPort();
@@ -155,14 +156,14 @@ public class Client extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
-		if(ReturnPort.isPublished()){
+		if (ReturnPort.isPublished()) {
 			if (found == false) {
 				ReturnPort.unpublishPort();
 				Displayer.display("Found : " + matched.toString(), DEBUG_MODE);
 			} else
 				found = true;
 		}
-		
+
 	}
 
 	/**
@@ -171,8 +172,8 @@ public class Client extends AbstractComponent {
 	 * 
 	 * @param matched A set of ContentDescriptorI objects that matched the query.
 	 */
-	public synchronized void matchResult(Set<ContentDescriptorI> matched) throws Exception{
-		if(ReturnPort.isPublished()){
+	public synchronized void matchResult(Set<ContentDescriptorI> matched) throws Exception {
+		if (ReturnPort.isPublished()) {
 			if (!matched.isEmpty()) {
 				ReturnPort.unpublishPort();
 				Displayer.display("Matched : ", DEBUG_MODE);
@@ -189,11 +190,14 @@ public class Client extends AbstractComponent {
 	public void mapNetwork() throws Exception {
 		HashMap<NodeAddressI, NodeInformationI> result = new HashMap<>();
 		result = NSGetterPort.mapNetwork(result);
-		Displayer.display("Contain " + result.size() + " Nodes",DEBUG_MODE);
+		Displayer.display("Contain " + result.size() + " Nodes", DEBUG_MODE);
 		for (Entry<NodeAddressI, NodeInformationI> nodeInfo : result.entrySet()) {
 			Displayer.display("Node " + nodeInfo.getKey().getNodeIdentifier() + " : ", DEBUG_MODE);
 			Displayer.display(nodeInfo.getValue().toString(), DEBUG_MODE);
 			Displayer.display("--------------------------------", DEBUG_MODE);
 		}
+
+		GraphVisualiser g = new GraphVisualiser();
+		System.out.println(g.makeGraph(result));
 	}
 }
