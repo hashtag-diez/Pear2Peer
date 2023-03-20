@@ -44,7 +44,7 @@ public class GraphVisualiser {
 
     protected String makeHeader() {
         return String
-                .format("graph [ dpi = %d ];\n fontname=\"%s\";\nnode [fontname=\"%s\"];\nedge [fontname=\"%s\"];",
+                .format("  graph [ dpi = %d ];\n  fontname=\"%s\";\n  node [fontname=\"%s\"];\n  edge [fontname=\"%s\"];",
                         quality_dpi, frontname, frontname, frontname);
     }
 
