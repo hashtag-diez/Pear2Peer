@@ -1,5 +1,8 @@
 package components.interfaces;
 
+import java.util.Set;
+import java.util.concurrent.RejectedExecutionException;
+
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 import interfaces.PeerNodeAddressI;
@@ -19,7 +22,7 @@ import interfaces.PeerNodeAddressI;
  * @author ABSSI (Team)
  *
  */
-public interface NodeCI extends OfferedCI, RequiredCI {
+public interface NodeCI extends OfferedCI, RequiredCI, ProbingCI {
 
 	/**
 	 * receives as a parameter the address of a new peer that wishes to connect to
@@ -30,7 +33,7 @@ public interface NodeCI extends OfferedCI, RequiredCI {
 	 * @return the address of the current node
 	 * @throws Exception
 	 */
-	PeerNodeAddressI connect(PeerNodeAddressI a) throws Exception;
+	void connect(PeerNodeAddressI a) throws Exception;
 
 	/**
 	 * receive the address of a neighbor and disconnects from it.
@@ -39,4 +42,8 @@ public interface NodeCI extends OfferedCI, RequiredCI {
 	 * @throws Exception
 	 */
 	void disconnect(PeerNodeAddressI a) throws Exception;
+
+	void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws RejectedExecutionException, AssertionError, Exception;
+	void acceptConnected(PeerNodeAddressI connected) throws RejectedExecutionException, AssertionError, Exception;
+	
 }

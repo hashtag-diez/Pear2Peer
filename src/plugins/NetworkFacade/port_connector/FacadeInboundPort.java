@@ -1,12 +1,13 @@
 package plugins.NetworkFacade.port_connector;
 
-import java.util.Set;
+import java.util.concurrent.RejectedExecutionException;
 
 import plugins.NetworkFacade.NodeManagementPI;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
+import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 
 public class FacadeInboundPort
@@ -18,14 +19,18 @@ public class FacadeInboundPort
   }
 
   @Override
-  public Set<PeerNodeAddressI> join(PeerNodeAddressI a) throws Exception {
-    return this.getOwner().handleRequest(
-        new AbstractComponent.AbstractService<Set<PeerNodeAddressI>>(this.getPluginURI()) {
-          @Override
-          public Set<PeerNodeAddressI> call() throws Exception {
-            return ((NodeManagementPlugin) this.getServiceProviderReference()).join(a);
+  public void join(PeerNodeAddressI a) throws Exception {
+    this.getOwner().runTask(
+      new AbstractComponent.AbstractTask(this.getPluginURI()) {
+        @Override
+        public void run() {
+          try {
+            ((NodeManagementPlugin) this.getTaskProviderReference()).join(a);
+          } catch (Exception e) {
+            e.printStackTrace();
           }
-        });
+        }
+      });
   }
 
   @Override
@@ -36,6 +41,39 @@ public class FacadeInboundPort
           public void run() {
             try {
               ((NodeManagementPlugin) this.getTaskProviderReference()).leave(a);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+        });
+  }
+
+  @Override
+  public void acceptProbed(PeerNodeAddressI peer, String requestURI)
+      throws RejectedExecutionException, AssertionError, Exception {
+    this.getOwner().runTask(
+        new AbstractComponent.AbstractTask(this.getPluginURI()) {
+          @Override
+          public void run() {
+            try {
+              ((NodeManagementPlugin) this.getTaskProviderReference()).acceptProbed(peer, requestURI);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+        });
+  }
+
+  @Override
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
+      throws RejectedExecutionException, AssertionError, Exception {
+    this.getOwner().runTask(
+        new AbstractComponent.AbstractTask(this.getPluginURI()) {
+          @Override
+          public void run() {
+            try {
+              ((NodeManagementPlugin) this.getTaskProviderReference()).probe(requestURI, facade, remainingHops,
+                  requester);
             } catch (Exception e) {
               e.printStackTrace();
             }

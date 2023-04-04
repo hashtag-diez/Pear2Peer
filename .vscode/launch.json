@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "ConnectionDisconnectionScenario",
+      "request": "launch",
+      "mainClass": "scenarios.connect_disconnect.ConnectionDisconnectionScenario",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
       "name": "Launch CVM",
       "request": "launch",
       "mainClass": "CVM",

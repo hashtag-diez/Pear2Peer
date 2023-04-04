@@ -1,6 +1,6 @@
 package components.interfaces;
 
-import java.util.Set;
+import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
@@ -20,7 +20,7 @@ import interfaces.PeerNodeAddressI;
  * @author ABSSI (Team)
  *
  */
-public interface NodeManagementCI extends OfferedCI, RequiredCI {
+public interface NodeManagementCI extends OfferedCI, RequiredCI, ProbingCI {
 
 	/**
 	 * Takes as a parameter the address of the peer node to be inserted into the
@@ -31,7 +31,7 @@ public interface NodeManagementCI extends OfferedCI, RequiredCI {
 	 * @return
 	 * @throws Exception
 	 */
-	Set<PeerNodeAddressI> join(PeerNodeAddressI a) throws Exception;
+	void join(PeerNodeAddressI a) throws Exception;
 
 	/**
 	 * Takes as a parameter the address of the peer node leaving the network.
@@ -42,4 +42,6 @@ public interface NodeManagementCI extends OfferedCI, RequiredCI {
 	 * @throws Exception
 	 */
 	void leave(PeerNodeAddressI a) throws Exception;
+
+	void acceptProbed(PeerNodeAddressI peer, String requestURI) throws RejectedExecutionException, AssertionError, Exception;
 }

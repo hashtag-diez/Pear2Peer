@@ -113,7 +113,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 
 	@Override
 	public String getNodeIdentifier() throws Exception {
-		return plugin.getPluginURI();
+		return plugin.getNodeInboundPort().getPortURI();
 	}
 
 	@Override
