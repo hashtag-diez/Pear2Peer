@@ -20,7 +20,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
 		this.installPlugin(NetworkScannerPlug);
 
-		plugin = new NodeManagementPlugin(ContentManagementPlug,NetworkScannerPlug);
+		plugin = new NodeManagementPlugin(ContentManagementPlug, NetworkScannerPlug);
 		this.installPlugin(plugin);
 	}
 

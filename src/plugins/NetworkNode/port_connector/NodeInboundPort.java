@@ -22,16 +22,16 @@ public class NodeInboundPort
   @Override
   public void connect(PeerNodeAddressI a) throws Exception {
     this.getOwner().runTask(
-      new AbstractComponent.AbstractTask(this.getPluginURI()) {
-        @Override
-        public void run() {
-          try {
-            ((NodePlugin) this.getTaskProviderReference()).connect(a);
-          } catch (Exception e) {
-            throw new RuntimeException(e);
+        new AbstractComponent.AbstractTask(this.getPluginURI()) {
+          @Override
+          public void run() {
+            try {
+              ((NodePlugin) this.getTaskProviderReference()).connect(a);
+            } catch (Exception e) {
+              throw new RuntimeException(e);
+            }
           }
-        }
-      });
+        });
   }
 
   @Override

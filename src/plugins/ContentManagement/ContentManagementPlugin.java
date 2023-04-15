@@ -62,7 +62,7 @@ public class ContentManagementPlugin
 
   /**
    * It connects to the peer node via its reflectionOutboundPort,
-   * gets its ContentManagementPlugin Port, connects to it, and 
+   * gets its ContentManagementPlugin Port, connects to it, and
    * stores the connection in a map
    * 
    * @param node the node to connect to
@@ -98,7 +98,8 @@ public class ContentManagementPlugin
   }
 
   /**
-   * It removes the node from the list of nodes that the owner of the `GetterPorts` object can get data
+   * It removes the node from the list of nodes that the owner of the
+   * `GetterPorts` object can get data
    * from
    * 
    * @param node the node to remove
@@ -106,8 +107,10 @@ public class ContentManagementPlugin
   public void remove(PeerNodeAddressI node) throws Exception {
     this.getterPorts.remove(node);
     CMOutboundPort outBoundPortCM = get(node);
-    getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
-    outBoundPortCM.unpublishPort();
+    if (outBoundPortCM != null) {
+      getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
+      outBoundPortCM.unpublishPort();
+    }
   }
 
   public void loadDescriptors(int number, ContentNodeAddressI addr) throws Exception {
@@ -119,15 +122,17 @@ public class ContentManagementPlugin
     }
   }
 
- /**
-  * The function `find` is used to find a content descriptor that matches the request. If the content
-  * descriptor is found, the result is sent to the client. If the content descriptor is not found and 
-  * enough hops are available, the request is forwarded to the next peer
-  * 
-  * @param request the content template to match
-  * @param hops the number of hops to go through
-  * @param returnAddr the address of the client that made the request
-  */
+  /**
+   * The function `find` is used to find a content descriptor that matches the
+   * request. If the content
+   * descriptor is found, the result is sent to the client. If the content
+   * descriptor is not found and
+   * enough hops are available, the request is forwarded to the next peer
+   * 
+   * @param request    the content template to match
+   * @param hops       the number of hops to go through
+   * @param returnAddr the address of the client that made the request
+   */
   public void find(ContentTemplateI request, int hops, String returnAddr) throws Exception {
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(request)) {
@@ -155,13 +160,15 @@ public class ContentManagementPlugin
   }
 
   /**
-   * It checks if the local content descriptors match the given content descriptor, if they do, it adds
-   * them to the matched set. If the hops are not 0, it calls the match function on the other peers. If
+   * It checks if the local content descriptors match the given content
+   * descriptor, if they do, it adds
+   * them to the matched set. If the hops are not 0, it calls the match function
+   * on the other peers. If
    * the hops are 0, it connects to the client and sends the matched set
    * 
-   * @param cd the content descriptor to match
-   * @param matched the set of content descriptors that match the query
-   * @param hops the number of hops to go through
+   * @param cd         the content descriptor to match
+   * @param matched    the set of content descriptors that match the query
+   * @param hops       the number of hops to go through
    * @param returnAddr the address of the client that requested the match
    */
   public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, String returnAddr)

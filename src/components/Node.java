@@ -70,9 +70,9 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2));
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(1));
 
-		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(12));
+		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(7));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
 		Displayer.display("[node join network] has been scheduled", DEBUG_MODE);

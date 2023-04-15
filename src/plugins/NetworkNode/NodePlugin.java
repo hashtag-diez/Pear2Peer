@@ -2,8 +2,10 @@ package plugins.NetworkNode;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
+import components.Node;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
@@ -19,6 +21,7 @@ import plugins.NetworkNode.port_connector.NodeInboundPort;
 import plugins.NetworkNode.port_connector.NodeOutboundPort;
 import plugins.NetworkNode.port_connector.NodeServiceConnector;
 import plugins.NetworkScanner.NetworkScannerPlugin;
+import utiles.Displayer;
 
 public class NodePlugin
     extends AbstractPlugin {
@@ -86,11 +89,17 @@ public class NodePlugin
   }
 
   public void joinNetwork() throws Exception {
+    Displayer.display(this.getPluginURI() + " is joining : ", true);
     NMGetterPort.join((PeerNodeAddressI) this.getOwner());
   }
 
   public void leaveNetwork() throws Exception {
+    Displayer.display(this.getPluginURI() + " is leaving : ", true);
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
+    for (NodeOutboundPort outBoundPort : this.peersGetterPorts.values()) {
+      outBoundPort.disconnect((PeerNodeAddressI) this.getOwner());
+    }
+    this.peersGetterPorts.clear();
   }
 
   public String getNMOutboundPortURI() throws Exception {
@@ -191,7 +200,20 @@ public class NodePlugin
     this.peersGetterPorts.put(node, peerOutPortN);
   }
 
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester) {
-
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
+      throws Exception {
+    if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
+      NMGetterPort.acceptProbed((Node) this.getOwner(), requestURI);
+      return;
+    }
+    int randindex = new Random().nextInt(peersGetterPorts.size());
+    int i = 0;
+    for (NodeOutboundPort nodeOutboundPort : peersGetterPorts.values()) {
+      if (i == randindex) {
+        nodeOutboundPort.probe(requestURI, facade, remainingHops - 1, requester);
+        return;
+      }
+      i++;
+    }
   }
 }

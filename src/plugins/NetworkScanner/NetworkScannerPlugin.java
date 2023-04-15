@@ -55,7 +55,8 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     }
 
     /**
-     * It creates a new outbound port, connects it to the inbound port of the node we want to connect
+     * It creates a new outbound port, connects it to the inbound port of the node
+     * we want to connect
      * to, and then adds it to the map of outbound ports
      * 
      * @param node the node to connect to
@@ -63,23 +64,23 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     public void put(PeerNodeAddressI node) throws Exception {
         NSPoutBoundPort peerOutPortCM = new NSPoutBoundPort(getOwner());
         peerOutPortCM.publishPort();
-    
+
         ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
         rop.publishPort();
-    
+
         this.getOwner().doPortConnection(
-            rop.getPortURI(),
-            node.getNodeURI(),
-            ReflectionConnector.class.getCanonicalName());
-    
+                rop.getPortURI(),
+                node.getNodeURI(),
+                ReflectionConnector.class.getCanonicalName());
+
         String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
         if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-          System.out.println("NOPE");
+            System.out.println("NOPE");
         } else {
-          this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), otherInboundPortUI[0],
-          NetworkScannerServiceConnector.class.getCanonicalName());
+            this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), otherInboundPortUI[0],
+                    NetworkScannerServiceConnector.class.getCanonicalName());
         }
-    
+
         this.getOwner().doPortDisconnection(rop.getPortURI());
         rop.unpublishPort();
         rop.destroyPort();
@@ -89,8 +90,10 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     public void remove(NodeAddressI node) throws Exception {
         this.getterPorts.remove(node);
         NSPoutBoundPort outBoundPortCM = get(node);
-        getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
-        outBoundPortCM.unpublishPort();
+        if (outBoundPortCM != null) {
+            getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
+            outBoundPortCM.unpublishPort();
+        }
     }
 
     public NSPoutBoundPort get(NodeAddressI node) {
