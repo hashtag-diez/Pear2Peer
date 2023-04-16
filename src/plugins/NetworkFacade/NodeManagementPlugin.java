@@ -1,9 +1,12 @@
 package plugins.NetworkFacade;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractPlugin;
@@ -28,6 +31,7 @@ public class NodeManagementPlugin
   protected FacadeInboundPort NMSetterPort;
   protected ContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
+  private ReentrantLock lock = new ReentrantLock();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
   protected HashMap<String, Pair<Integer, Set<PeerNodeAddressI>>> probeCollector = new HashMap<>();
 
@@ -51,17 +55,16 @@ public class NodeManagementPlugin
     this.addOfferedInterface(NodeManagementPI.class);
   }
 
-  synchronized public void join(PeerNodeAddressI a) throws Exception {
+  public void join(PeerNodeAddressI a) throws Exception {
     Displayer.display(a.getNodeURI() + " veut se connecter au reseau.", DEBUG_MODE);
-    Displayer.display("Nombre de racines : " + roots.size(), DEBUG_MODE);
-
-    probe(a.getNodeIdentifier(), (FacadeNodeAddressI) this.getOwner(), nbSaut, a);
+    lock.lock();
     if (roots.size() < nbRacine) {
-      Displayer.display("Nouvelle racine !", DEBUG_MODE);
       ContentManagementPlug.put(a);
       NetworkScannerPlug.put(a);
       roots.add(a);
     }
+    lock.unlock();
+    probe(a.getNodeIdentifier(), (FacadeNodeAddressI) this.getOwner(), nbSaut, a);
   }
 
   /**
@@ -70,11 +73,13 @@ public class NodeManagementPlugin
    * @param a the peer to be deleted
    */
   public void leave(PeerNodeAddressI a) throws Exception {
-    Displayer.display(a.getNodeURI() + " veut se deconnecter du reseau.", DEBUG_MODE);
+    lock.lock();
     if (roots.remove(a)) {
       ContentManagementPlug.remove(a);
       NetworkScannerPlug.remove(a);
     }
+    lock.unlock();
+    Displayer.display(a.getNodeURI() + " veut se déconnecter du reseau", DEBUG_MODE);
   }
 
   public void acceptProbed(PeerNodeAddressI peer, String requestURI) throws Exception {
@@ -102,23 +107,21 @@ public class NodeManagementPlugin
       return;
 
     probeCollector.put(requestURI, value);
+    lock.lock();
+    List<PeerNodeAddressI> ports = new ArrayList<>(this.roots);
+    lock.unlock();
     for (int i = 0; i < ndSendProbe; i++) {
-      int randindex = new Random().nextInt(roots.size());
-      for (int j = 0; j < roots.size(); j++) {
-        for (PeerNodeAddressI toProb : roots)
-          if (j == randindex) {
-            NodeOutboundPort port = new NodeOutboundPort(this.getOwner());
-            port.publishPort();
-            this.getOwner().doPortConnection(port.getPortURI(), toProb.getNodeIdentifier(),
-                NodeServiceConnector.class.getCanonicalName());
+      int randindex = new Random().nextInt(ports.size());
+      PeerNodeAddressI chosen = ports.get(randindex);
+      NodeOutboundPort port = new NodeOutboundPort(this.getOwner());
+      port.publishPort();
+      this.getOwner().doPortConnection(port.getPortURI(), chosen.getNodeIdentifier(),
+          NodeServiceConnector.class.getCanonicalName());
 
-            port.probe(requestURI, (FacadeNodeAddressI) this.getOwner(), nbSaut, null);
+      port.probe(requestURI, (FacadeNodeAddressI) this.getOwner(), nbSaut, null);
 
-            this.getOwner().doPortDisconnection(port.getPortURI());
-            port.unpublishPort();
-            break;
-          }
-      }
+      this.getOwner().doPortDisconnection(port.getPortURI());
+      port.unpublishPort();
 
     }
   }

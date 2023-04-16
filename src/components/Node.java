@@ -1,6 +1,7 @@
 package components;
 
 import java.time.Instant;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import components.interfaces.NodeCI;
@@ -31,7 +32,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	private NodePlugin plugin;
 
 	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 1, 1);
+		super(reflectionInboundPortURI, 6, 6);
 
 		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
@@ -70,9 +71,10 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(1));
+		int delay = new Random().nextInt(2);
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay));
 
-		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(7));
+		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(4 + new Random().nextInt(3)));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
 		Displayer.display("[node join network] has been scheduled", DEBUG_MODE);

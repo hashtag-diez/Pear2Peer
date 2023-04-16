@@ -1,9 +1,14 @@
 package plugins.NetworkNode;
 
-import java.util.HashMap;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 import components.Node;
 import fr.sorbonne_u.components.AbstractPlugin;
@@ -35,8 +40,8 @@ public class NodePlugin
   protected ContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
   // A map of all the peers that this node is connected to.
-  protected Map<PeerNodeAddressI, NodeOutboundPort> peersGetterPorts;
-
+  protected ConcurrentMap<PeerNodeAddressI, NodeOutboundPort> peersGetterPorts;
+  private ReentrantLock lock = new ReentrantLock();
   private String NMReflectionInboundURI;
 
   public NodePlugin(String NMReflectionInboundURI, ContentManagementPlugin ContentManagementPlug,
@@ -46,7 +51,7 @@ public class NodePlugin
     this.ContentManagementPlug = ContentManagementPlug;
     this.NetworkScannerPlug = NetworkScannerPlug;
     this.NMReflectionInboundURI = NMReflectionInboundURI;
-    this.peersGetterPorts = new HashMap<>();
+    this.peersGetterPorts = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -89,15 +94,16 @@ public class NodePlugin
   }
 
   public void joinNetwork() throws Exception {
-    Displayer.display(this.getPluginURI() + " is joining : ", true);
+    Displayer.display(((Node)this.getOwner()).getNodeURI() + " is joining : ", true);
     NMGetterPort.join((PeerNodeAddressI) this.getOwner());
   }
 
   public void leaveNetwork() throws Exception {
-    Displayer.display(this.getPluginURI() + " is leaving : ", true);
+    Displayer.display(((Node)this.getOwner()).getNodeURI() + " is leaving : ", true);
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
-    for (NodeOutboundPort outBoundPort : this.peersGetterPorts.values()) {
-      outBoundPort.disconnect((PeerNodeAddressI) this.getOwner());
+    for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
+      // System.out.println(((Node)this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
+      peersGetterPorts.get(peerNodeAddressI).disconnect((PeerNodeAddressI) this.getOwner());
     }
     this.peersGetterPorts.clear();
   }
@@ -168,6 +174,7 @@ public class NodePlugin
 
   public void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws Exception {
     for (PeerNodeAddressI peerNodeAddressI : neighbours) {
+      System.out.println(((Node)this.getOwner()).getNodeURI() + "<->" + peerNodeAddressI.getNodeURI());
       connect(peerNodeAddressI);
     }
   }
@@ -202,18 +209,16 @@ public class NodePlugin
 
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
       throws Exception {
-    if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
-      NMGetterPort.acceptProbed((Node) this.getOwner(), requestURI);
-      return;
-    }
-    int randindex = new Random().nextInt(peersGetterPorts.size());
-    int i = 0;
-    for (NodeOutboundPort nodeOutboundPort : peersGetterPorts.values()) {
-      if (i == randindex) {
-        nodeOutboundPort.probe(requestURI, facade, remainingHops - 1, requester);
+      lock.lock();
+      if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
+        NMGetterPort.acceptProbed((Node) this.getOwner(), requestURI);
+        lock.unlock();
         return;
       }
-      i++;
-    }
+      int randindex = new Random().nextInt(peersGetterPorts.size());
+      List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
+      NodeOutboundPort chosen = ports.get(randindex);
+      chosen.probe(requestURI, facade, 1, requester); 
+      lock.unlock();
   }
 }
