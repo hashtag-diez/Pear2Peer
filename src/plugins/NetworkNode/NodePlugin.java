@@ -56,7 +56,7 @@ public class NodePlugin
 
   @Override
   public void initialise() throws Exception {
-    this.NSetterPort = new NodeInboundPort(this.getPluginURI(), this.getOwner());
+    this.NSetterPort = new NodeInboundPort(this.getPluginURI(), this.getOwner(), this.getPreferredExecutionServiceURI());
     this.NSetterPort.publishPort();
 
     this.NMGetterPort = new FacadeOutboundPort(this.getOwner());
@@ -99,10 +99,10 @@ public class NodePlugin
   }
 
   public void leaveNetwork() throws Exception {
-    Displayer.display(((Node)this.getOwner()).getNodeURI() + " is leaving : ", true);
+    Displayer.display(((Node)this.getOwner()).getNodeURI() + " is leaving : "+this.peersGetterPorts.size(), true);
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
     for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
-      // System.out.println(((Node)this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
+      System.out.println(((Node)this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
       peersGetterPorts.get(peerNodeAddressI).disconnect((PeerNodeAddressI) this.getOwner());
     }
     this.peersGetterPorts.clear();

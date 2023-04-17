@@ -31,20 +31,40 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 
 	private NodePlugin plugin;
 
+	private static final int DEFAULT_NB_OF_THREADS = 4;
+
+	//private static final String NS_EXECUTION_SERVICE_URI = "networkscanner-tasks-execution-service";
+	private static final String NM_EXECUTION_SERVICE_URI = "networkmanagement-tasks-execution-service";
+	private static final String CM_EXECUTION_SERVICE_URI = "content-tasks-execution-service";
+
 	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 6, 6);
+		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
+		this.initialise(DEFAULT_NB_OF_THREADS);
 
 		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
+		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
+		//NetworkScannerPlug.setPreferredExecutionServiceURI(NS_EXECUTION_SERVICE_URI);
 		this.installPlugin(NetworkScannerPlug);
-
+		
 		plugin = new NodePlugin(NMInboundURI, ContentManagementPlug, NetworkScannerPlug);
+		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
 		this.installPlugin(plugin);
 
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
+	}
+
+	protected void initialise(int nbThreads) {
+		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
+		int nbThreadsNetwork = 2;
+		int nbThreadsContent = nbThreads-nbThreadsNetwork;
+
+		//this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
+		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
+		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
 	}
 
 	@Override
@@ -74,7 +94,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		int delay = new Random().nextInt(2);
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay));
 
-		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(4 + new Random().nextInt(3)));
+		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2 + new Random().nextInt(3)));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
 		Displayer.display("[node join network] has been scheduled", DEBUG_MODE);

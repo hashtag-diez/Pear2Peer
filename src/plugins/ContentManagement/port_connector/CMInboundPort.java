@@ -16,29 +16,35 @@ import plugins.ContentManagement.ContentManagementPlugin;
 public class CMInboundPort extends AbstractInboundPort
         implements ContentManagementPI {
 
-    public CMInboundPort(String pluginUri, ComponentI owner) throws Exception {
-        super(ContentManagementPI.class, owner, pluginUri, null);
+    public CMInboundPort(String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
+        super(ContentManagementPI.class, owner, pluginUri, executorServiceURI);
     }
 
     @Override
     public void find(ContentTemplateI cd, int hops, String returnaddr) throws Exception {
         this.getOwner().runTask(
-                new AbstractComponent.AbstractTask(this.getPluginURI()) {
-                    @Override
-                    public void run() {
-                        try {
-                            ((ContentManagementPlugin) this.getTaskProviderReference()).find(cd, hops, returnaddr);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+            // service executor vise
+            this.getExecutorServiceURI(), 
+            // tache à executer
+            new AbstractComponent.AbstractTask(this.getPluginURI()) {
+                @Override
+                public void run() {
+                    try {
+                        ((ContentManagementPlugin) this.getTaskProviderReference()).find(cd, hops, returnaddr);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                });
+                }
+            });
     }
 
     @Override
     public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, String returnaddr)
             throws Exception {
         this.getOwner().runTask(
+                // service executor vise
+                this.getExecutorServiceURI(), 
+                // tache à executer
                 new AbstractComponent.AbstractTask(this.getPluginURI()) {
                     @Override
                     public void run() {

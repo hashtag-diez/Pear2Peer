@@ -15,13 +15,16 @@ public class NodeInboundPort
     extends AbstractInboundPort
     implements NodePI {
 
-  public NodeInboundPort(String pluginUri, ComponentI owner) throws Exception {
-    super(NodePI.class, owner, pluginUri, null);
+  public NodeInboundPort(String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
+    super(NodePI.class, owner, pluginUri, executorServiceURI);
   }
 
   @Override
   public void connect(PeerNodeAddressI a) throws Exception {
     this.getOwner().runTask(
+        // pool
+        this.getExecutorServiceURI(),
+        // task
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
           @Override
           public void run() {
@@ -37,6 +40,9 @@ public class NodeInboundPort
   @Override
   public void disconnect(PeerNodeAddressI a) throws Exception {
     this.getOwner().runTask(
+        // pool
+        this.getExecutorServiceURI(),
+        // task
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
           @Override
           public void run() {

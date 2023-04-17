@@ -46,7 +46,7 @@ public class ContentManagementPlugin
   public void initialise() throws Exception {
     this.getterPorts = new HashMap<>();
 
-    this.setterPort = new CMInboundPort(this.getPluginURI(), this.getOwner());
+    this.setterPort = new CMInboundPort(this.getPluginURI(), this.getOwner(), this.getPreferredExecutionServiceURI());
     this.setterPort.publishPort();
   }
 
