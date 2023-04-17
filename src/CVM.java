@@ -24,8 +24,7 @@ public class CVM
 	public void deploy() throws Exception {
 		AbstractComponent.createComponent(
 				NodeManagement.class.getCanonicalName(),
-				new Object[] { NODE_MANAGEMENT_COMPONENT_URI,
-						NodeManagementInboundPortURI, 0 });
+				new Object[] { NodeManagementInboundPortURI, 0 });
 
 		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(
@@ -36,7 +35,7 @@ public class CVM
 		AbstractComponent.createComponent(
 				Client.class.getCanonicalName(),
 				new Object[] { "Client",
-				NODE_MANAGEMENT_COMPONENT_URI });
+				NodeManagementInboundPortURI });
 
 		super.deploy();
 	}

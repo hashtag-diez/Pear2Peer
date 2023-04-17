@@ -49,8 +49,7 @@ public class FindScenarioBasic extends AbstractCVM {
 		
 		AbstractComponent.createComponent(
 				NodeManagement.class.getCanonicalName(),
-				new Object[] { NODE_MANAGEMENT_COMPONENT_URI,
-						URIProviderInboundPortURI, 0 });
+				new Object[] { URIProviderInboundPortURI, 0 });
 
 		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(
@@ -62,7 +61,7 @@ public class FindScenarioBasic extends AbstractCVM {
 		AbstractComponent.createComponent(
 				ClientLookingForContent.class.getCanonicalName(), 
 				new Object[] {"Clicos",
-						NODE_MANAGEMENT_COMPONENT_URI}
+				URIProviderInboundPortURI}
 		);
 		
 	}
