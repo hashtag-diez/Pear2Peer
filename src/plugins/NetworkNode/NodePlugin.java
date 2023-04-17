@@ -103,7 +103,10 @@ public class NodePlugin
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
     for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
       System.out.println(((Node)this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
-      peersGetterPorts.get(peerNodeAddressI).disconnect((PeerNodeAddressI) this.getOwner());
+      NodeOutboundPort out = peersGetterPorts.getOrDefault(peerNodeAddressI, null);
+      if(out!=null){
+        out.disconnect((PeerNodeAddressI) this.getOwner());
+      }
     }
     this.peersGetterPorts.clear();
   }
