@@ -1,13 +1,11 @@
 package plugins.NetworkNode;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import components.Node;
@@ -40,7 +38,7 @@ public class NodePlugin
   protected ContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
   // A map of all the peers that this node is connected to.
-  protected ConcurrentMap<PeerNodeAddressI, NodeOutboundPort> peersGetterPorts;
+  protected Map<PeerNodeAddressI, NodeOutboundPort> peersGetterPorts;
   private ReentrantLock lock = new ReentrantLock();
   private String NMReflectionInboundURI;
 
@@ -51,12 +49,13 @@ public class NodePlugin
     this.ContentManagementPlug = ContentManagementPlug;
     this.NetworkScannerPlug = NetworkScannerPlug;
     this.NMReflectionInboundURI = NMReflectionInboundURI;
-    this.peersGetterPorts = new ConcurrentHashMap<>();
+    this.peersGetterPorts = new HashMap<>();
   }
 
   @Override
   public void initialise() throws Exception {
-    this.NSetterPort = new NodeInboundPort(this.getPluginURI(), this.getOwner(), this.getPreferredExecutionServiceURI());
+    this.NSetterPort = new NodeInboundPort(this.getPluginURI(), this.getOwner(),
+        this.getPreferredExecutionServiceURI());
     this.NSetterPort.publishPort();
 
     this.NMGetterPort = new FacadeOutboundPort(this.getOwner());
@@ -94,21 +93,23 @@ public class NodePlugin
   }
 
   public void joinNetwork() throws Exception {
-    Displayer.display(((Node)this.getOwner()).getNodeURI() + " is joining : ", true);
+    Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ", true);
     NMGetterPort.join((PeerNodeAddressI) this.getOwner());
   }
 
   public void leaveNetwork() throws Exception {
-    Displayer.display(((Node)this.getOwner()).getNodeURI() + " is leaving : "+this.peersGetterPorts.size(), true);
+    lock.lock();
+    Displayer.display(((Node) this.getOwner()).getNodeURI() + " is leaving : " + this.peersGetterPorts.size(), true);
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
     for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
-      System.out.println(((Node)this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
+      System.out.println(((Node) this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
       NodeOutboundPort out = peersGetterPorts.getOrDefault(peerNodeAddressI, null);
-      if(out!=null){
+      if (out != null) {
         out.disconnect((PeerNodeAddressI) this.getOwner());
       }
     }
     this.peersGetterPorts.clear();
+    lock.unlock();
   }
 
   public String getNMOutboundPortURI() throws Exception {
@@ -123,6 +124,7 @@ public class NodePlugin
    * @return The node that was added to the network.
    */
   public void connect(PeerNodeAddressI node) throws Exception {
+    lock.lock();
     NodeOutboundPort peerOutPortN = new NodeOutboundPort(this.getOwner());
     peerOutPortN.publishPort();
 
@@ -149,6 +151,7 @@ public class NodePlugin
     NetworkScannerPlug.put(node);
     this.peersGetterPorts.put(node, peerOutPortN);
     peerOutPortN.acceptConnected((PeerNodeAddressI) this.getOwner());
+    lock.unlock();
   }
 
   /**
@@ -157,12 +160,14 @@ public class NodePlugin
    * @param node the node to be deleted from the network
    */
   public void disconnect(PeerNodeAddressI node) throws Exception {
+    lock.lock();
     NodeOutboundPort outBoundPort = this.peersGetterPorts.get(node);
     this.getOwner().doPortDisconnection(outBoundPort.getPortURI());
     outBoundPort.unpublishPort();
     this.peersGetterPorts.remove(node);
     ContentManagementPlug.remove(node);
     NetworkScannerPlug.remove(node);
+    lock.unlock();
   }
 
   @Override
@@ -177,8 +182,11 @@ public class NodePlugin
 
   public void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws Exception {
     for (PeerNodeAddressI peerNodeAddressI : neighbours) {
-      System.out.println(((Node)this.getOwner()).getNodeURI() + "<->" + peerNodeAddressI.getNodeURI());
-      connect(peerNodeAddressI);
+      if (peerNodeAddressI.getNodeURI() != ((Node) (this.getOwner())).getNodeURI()) {
+        System.out.println(((Node) this.getOwner()).getNodeURI() + "<->" + peerNodeAddressI.getNodeURI());
+        connect(peerNodeAddressI);
+      }
+
     }
   }
 
@@ -212,16 +220,16 @@ public class NodePlugin
 
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
       throws Exception {
-      lock.lock();
-      if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
-        NMGetterPort.acceptProbed((Node) this.getOwner(), requestURI);
-        lock.unlock();
-        return;
-      }
-      int randindex = new Random().nextInt(peersGetterPorts.size());
-      List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
-      NodeOutboundPort chosen = ports.get(randindex);
-      chosen.probe(requestURI, facade, 1, requester); 
+    lock.lock();
+    if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
+      NMGetterPort.acceptProbed((Node) this.getOwner(), requestURI);
       lock.unlock();
+      return;
+    }
+    int randindex = new Random().nextInt(peersGetterPorts.size());
+    List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
+    NodeOutboundPort chosen = ports.get(randindex);
+    chosen.probe(requestURI, facade, 1, requester);
+    lock.unlock();
   }
 }

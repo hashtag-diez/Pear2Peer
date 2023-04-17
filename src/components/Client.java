@@ -53,8 +53,8 @@ public class Client extends AbstractComponent {
 		this.NSGetterPort = new NSPoutBoundPort(this);
 		this.NSGetterPort.publishPort();
 
-    this.ReturnPort = new ClientInboundPort(this);
-  }
+		this.ReturnPort = new ClientInboundPort(this);
+	}
 
 	/**
 	 * It connects the two ports of the component to the two ports of the two
@@ -126,11 +126,11 @@ public class Client extends AbstractComponent {
 	public void exampleSearchContainsWichMatch() throws Exception {
 		Displayer.display("Client start searching [match]", DEBUG_MODE);
 		ContentTemplateI temp = pickTemplate();
-		Displayer.display("Template recherche :\\n"+temp, DEBUG_MODE);
+		Displayer.display("Template recherche :\\n" + temp, DEBUG_MODE);
 		Set<ContentDescriptorI> matched = new HashSet<>();
 
 		ReturnPort.publishPort();
-		CMGetterPort.match(temp, matched, 5, ReturnPort.getPortURI());
+		CMGetterPort.match(temp, matched, 5, null, ReturnPort.getPortURI());
 		Displayer.display("Matched count: " + matched.size(), DEBUG_MODE);
 	}
 
@@ -143,7 +143,7 @@ public class Client extends AbstractComponent {
 		Displayer.display("Template recherche :\n" + temp.toString(), DEBUG_MODE);
 		found = false;
 		ReturnPort.publishPort();
-		CMGetterPort.find(temp, 5, ReturnPort.getPortURI());
+		CMGetterPort.find(temp, 5, null, ReturnPort.getPortURI());
 	}
 
 	/**
@@ -155,14 +155,14 @@ public class Client extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
-		if(ReturnPort.isPublished()){
+		if (ReturnPort.isPublished()) {
 			if (found == false) {
 				ReturnPort.unpublishPort();
 				Displayer.display("Found : " + matched.toString(), DEBUG_MODE);
 			} else
 				found = true;
 		}
-		
+
 	}
 
 	/**
@@ -171,8 +171,8 @@ public class Client extends AbstractComponent {
 	 * 
 	 * @param matched A set of ContentDescriptorI objects that matched the query.
 	 */
-	public synchronized void matchResult(Set<ContentDescriptorI> matched) throws Exception{
-		if(ReturnPort.isPublished()){
+	public synchronized void matchResult(Set<ContentDescriptorI> matched) throws Exception {
+		if (ReturnPort.isPublished()) {
 			if (!matched.isEmpty()) {
 				ReturnPort.unpublishPort();
 				Displayer.display("Matched : ", DEBUG_MODE);
@@ -189,7 +189,7 @@ public class Client extends AbstractComponent {
 	public void mapNetwork() throws Exception {
 		HashMap<NodeAddressI, NodeInformationI> result = new HashMap<>();
 		result = NSGetterPort.mapNetwork(result);
-		Displayer.display("Contain " + result.size() + " Nodes",DEBUG_MODE);
+		Displayer.display("Contain " + result.size() + " Nodes", DEBUG_MODE);
 		for (Entry<NodeAddressI, NodeInformationI> nodeInfo : result.entrySet()) {
 			Displayer.display("Node " + nodeInfo.getKey().getNodeURI() + " : ", DEBUG_MODE);
 			Displayer.display(nodeInfo.getValue().toString(), DEBUG_MODE);

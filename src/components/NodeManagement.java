@@ -1,7 +1,7 @@
 package components;
 
 import fr.sorbonne_u.components.AbstractComponent;
-import plugins.ContentManagement.ContentManagementPlugin;
+import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 import interfaces.ContentNodeAddressI;
@@ -14,7 +14,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId) throws Exception {
 		super(reflectionInboundPortURI, 8, 0);
 
-		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
+		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);

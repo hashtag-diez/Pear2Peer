@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import connectors.ClientReturnConnector;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
@@ -17,11 +16,14 @@ import implem.ContentDescriptor;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
+import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
+import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
+import plugins.ContentManagement.FacadeContentManagement.port_connector.CMFacadeOutboundPort;
+import plugins.ContentManagement.FacadeContentManagement.port_connector.CMFacadeServiceConnector;
 import plugins.ContentManagement.port_connector.CMInboundPort;
 import plugins.ContentManagement.port_connector.CMOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
-import ports.ClientOutboundPort;
 
 public class ContentManagementPlugin
     extends AbstractPlugin {
@@ -133,20 +135,11 @@ public class ContentManagementPlugin
    * @param hops       the number of hops to go through
    * @param returnAddr the address of the client that made the request
    */
-  public void find(ContentTemplateI request, int hops, String returnAddr) throws Exception {
+  public void find(ContentTemplateI cd, int hops, FacadeNodeAddressI requester, String clientAddr) throws Exception {
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
-      if (localCd.match(request)) {
-        ClientOutboundPort clientOutboundPort = new ClientOutboundPort(this.getOwner());
-        clientOutboundPort.publishPort();
-        try {
-          this.getOwner().doPortConnection(clientOutboundPort.getPortURI(), returnAddr,
-              ClientReturnConnector.class.getCanonicalName());
-          clientOutboundPort.findResult(localCd);
-        } catch (Exception e) {
-        } finally {
-          this.getOwner().doPortDisconnection(clientOutboundPort.getPortURI());
-          clientOutboundPort.unpublishPort();
-        }
+      if (localCd.match(cd)) {
+        CMFacadeOutboundPort port = makeFacadeOutboundPort(requester);
+        port.acceptFound(localCd, clientAddr);
       }
     }
     if (hops-- == 0)
@@ -154,8 +147,8 @@ public class ContentManagementPlugin
 
     for (PeerNodeAddressI node : this.getterPorts.keySet()) {
       CMOutboundPort outBoundPort = getterPorts.get(node);
-      ((ContentManagementPI) outBoundPort).find(request,
-          hops, returnAddr);
+      ((ContentManagementPI) outBoundPort).find(cd,
+          hops, requester, clientAddr);
     }
   }
 
@@ -171,7 +164,8 @@ public class ContentManagementPlugin
    * @param hops       the number of hops to go through
    * @param returnAddr the address of the client that requested the match
    */
-  public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, String returnAddr)
+  public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, FacadeNodeAddressI requester,
+      String clientAddr)
       throws Exception {
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(cd)) {
@@ -184,26 +178,40 @@ public class ContentManagementPlugin
         CMOutboundPort outBoundPort = getterPorts.get(node);
         if (outBoundPort != null) {
           ((ContentManagementPI) outBoundPort).match(cd, matched,
-              hops, returnAddr);
+              hops, requester, clientAddr);
         }
       }
     } else {
-      ClientOutboundPort clientOutboundPort = new ClientOutboundPort(this.getOwner());
-      clientOutboundPort.publishPort();
-      try {
-        this.getOwner().doPortConnection(clientOutboundPort.getPortURI(), returnAddr,
-            ClientReturnConnector.class.getCanonicalName());
-        clientOutboundPort.matchResult(matched);
-      } catch (Exception e) {
-
-      } finally {
-        this.getOwner().doPortDisconnection(clientOutboundPort.getPortURI());
-        clientOutboundPort.unpublishPort();
-      }
+      CMFacadeOutboundPort port = makeFacadeOutboundPort(requester);
+      port.acceptMatched(matched, clientAddr);
     }
   }
 
   public boolean containsKey(PeerNodeAddressI a) {
     return this.getterPorts.containsKey(a);
+  }
+
+  private CMFacadeOutboundPort makeFacadeOutboundPort(FacadeNodeAddressI addr) throws Exception {
+
+    CMFacadeOutboundPort outboundPort = new CMFacadeOutboundPort(this.getOwner());
+    ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+    rop.publishPort();
+
+    this.getOwner().doPortConnection(
+        rop.getPortURI(),
+        addr.getNodeURI(),
+        ReflectionConnector.class.getCanonicalName());
+
+    String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(FacadeContentManagementPI.class);
+    if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+      System.out.println("NOPE");
+    } else {
+      this.getOwner().doPortConnection(outboundPort.getPortURI(), otherInboundPortUI[0],
+          CMFacadeServiceConnector.class.getCanonicalName());
+    }
+    this.getOwner().doPortDisconnection(rop.getPortURI());
+    rop.unpublishPort();
+    rop.destroyPort();
+    return outboundPort;
   }
 }
