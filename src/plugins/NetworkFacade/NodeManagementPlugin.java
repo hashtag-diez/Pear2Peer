@@ -64,7 +64,7 @@ public class NodeManagementPlugin
       roots.add(a);
     }
     lock.unlock();
-    probe(a.getNodeIdentifier(), (FacadeNodeAddressI) this.getOwner(), nbSaut, a);
+    probe(a.getNodeIdentifier(), (FacadeNodeAddressI) this.getOwner(), nbSaut, null, 0);
   }
 
   /**
@@ -98,7 +98,7 @@ public class NodeManagementPlugin
     }
   }
 
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int chosenNeighbourCount)
       throws Exception {
     Pair<Integer, Set<PeerNodeAddressI>> value = new Pair<Integer, Set<PeerNodeAddressI>>(ndSendProbe,
         new HashSet<PeerNodeAddressI>());
@@ -112,17 +112,16 @@ public class NodeManagementPlugin
     lock.unlock();
     for (int i = 0; i < ndSendProbe; i++) {
       int randindex = new Random().nextInt(ports.size());
-      PeerNodeAddressI chosen = ports.get(randindex);
+      PeerNodeAddressI chosenNeighbour = ports.get(randindex);
       NodeOutboundPort port = new NodeOutboundPort(this.getOwner());
       port.publishPort();
-      this.getOwner().doPortConnection(port.getPortURI(), chosen.getNodeIdentifier(),
+      this.getOwner().doPortConnection(port.getPortURI(), chosenNeighbour.getNodeIdentifier(),
           NodeServiceConnector.class.getCanonicalName());
 
-      port.probe(requestURI, (FacadeNodeAddressI) this.getOwner(), nbSaut, null);
+      port.probe(requestURI, (FacadeNodeAddressI) this.getOwner(), nbSaut, null, 0);
 
       this.getOwner().doPortDisconnection(port.getPortURI());
       port.unpublishPort();
-
     }
   }
 }

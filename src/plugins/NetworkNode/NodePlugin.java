@@ -73,8 +73,6 @@ public class NodePlugin
     if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
       System.out.println("NOPE");
     } else {
-      System.out.println(otherInboundPortUI[0]);
-      System.out.println(NMGetterPort.getPortURI());
       this.getOwner().doPortConnection(NMGetterPort.getPortURI(), otherInboundPortUI[0],
           FacadeServiceConnector.class.getCanonicalName());
     }
@@ -93,7 +91,7 @@ public class NodePlugin
   }
 
   public void joinNetwork() throws Exception {
-    Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ", true);
+    // Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ", true);
     NMGetterPort.join((PeerNodeAddressI) this.getOwner());
   }
 
@@ -102,7 +100,7 @@ public class NodePlugin
     Displayer.display(((Node) this.getOwner()).getNodeURI() + " is leaving : " + this.peersGetterPorts.size(), true);
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
     for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
-      System.out.println(((Node) this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
+      System.out.println("\t\t\t\t" + "\t\t\t\t" +  ((Node) this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
       NodeOutboundPort out = peersGetterPorts.getOrDefault(peerNodeAddressI, null);
       if (out != null) {
         out.disconnect((PeerNodeAddressI) this.getOwner());
@@ -183,7 +181,7 @@ public class NodePlugin
   public void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws Exception {
     for (PeerNodeAddressI peerNodeAddressI : neighbours) {
       if (peerNodeAddressI.getNodeURI() != ((Node) (this.getOwner())).getNodeURI()) {
-        System.out.println(((Node) this.getOwner()).getNodeURI() + "<->" + peerNodeAddressI.getNodeURI());
+        System.out.println("\t\t\t\t" + ((Node) this.getOwner()).getNodeURI() + "<->" + peerNodeAddressI.getNodeURI());
         connect(peerNodeAddressI);
       }
 
@@ -218,18 +216,23 @@ public class NodePlugin
     this.peersGetterPorts.put(node, peerOutPortN);
   }
 
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int count)
       throws Exception {
     lock.lock();
+   //  System.out.println("NB SAUTS : " + remainingHops + ", SIZE : " + peersGetterPorts.size() + ", CHOSEN NULL ? " + (chosen==null ? "True": "False") );
     if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
-      NMGetterPort.acceptProbed((Node) this.getOwner(), requestURI);
+      NMGetterPort.acceptProbed((chosen==null ? (Node) this.getOwner() : chosen), requestURI);
       lock.unlock();
       return;
     }
     int randindex = new Random().nextInt(peersGetterPorts.size());
     List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
-    NodeOutboundPort chosen = ports.get(randindex);
-    chosen.probe(requestURI, facade, 1, requester);
+    NodeOutboundPort chosenNeighbour = ports.get(randindex);
+    if(chosen==null || count > peersGetterPorts.size()){
+      chosenNeighbour.probe(requestURI, facade, remainingHops-1, (Node) this.getOwner(), peersGetterPorts.size());
+    } else{
+      chosenNeighbour.probe(requestURI, facade, remainingHops-1, chosen, count);
+    }
     lock.unlock();
   }
 }

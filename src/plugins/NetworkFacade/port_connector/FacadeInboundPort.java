@@ -65,7 +65,7 @@ public class FacadeInboundPort
   }
 
   @Override
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops,PeerNodeAddressI chosen, int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
     this.getOwner().runTask(
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
@@ -73,7 +73,7 @@ public class FacadeInboundPort
           public void run() {
             try {
               ((NodeManagementPlugin) this.getTaskProviderReference()).probe(requestURI, facade, remainingHops,
-                  requester);
+                  chosen, chosenNeighbourCount);
             } catch (Exception e) {
               e.printStackTrace();
             }

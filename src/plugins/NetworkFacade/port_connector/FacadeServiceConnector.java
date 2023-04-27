@@ -28,9 +28,9 @@ public class FacadeServiceConnector
   }
 
   @Override
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI requester)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
-    ((NodeManagementPI) this.offering).probe(requestURI, facade, remainingHops, requester);
+    ((NodeManagementPI) this.offering).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
   }
 
 }
