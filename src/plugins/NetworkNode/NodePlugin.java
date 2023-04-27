@@ -91,7 +91,8 @@ public class NodePlugin
   }
 
   public void joinNetwork() throws Exception {
-    // Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ", true);
+    // Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ",
+    // true);
     NMGetterPort.join((PeerNodeAddressI) this.getOwner());
   }
 
@@ -100,7 +101,8 @@ public class NodePlugin
     Displayer.display(((Node) this.getOwner()).getNodeURI() + " is leaving : " + this.peersGetterPorts.size(), true);
     NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
     for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
-      System.out.println("\t\t\t\t" + "\t\t\t\t" +  ((Node) this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
+      System.out.println(
+          "\t\t\t\t" + "\t\t\t\t" + ((Node) this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
       NodeOutboundPort out = peersGetterPorts.getOrDefault(peerNodeAddressI, null);
       if (out != null) {
         out.disconnect((PeerNodeAddressI) this.getOwner());
@@ -219,19 +221,22 @@ public class NodePlugin
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int count)
       throws Exception {
     lock.lock();
-   //  System.out.println("NB SAUTS : " + remainingHops + ", SIZE : " + peersGetterPorts.size() + ", CHOSEN NULL ? " + (chosen==null ? "True": "False") );
+    // System.out.println("NB SAUTS : " + remainingHops + ", SIZE : " +
+    // peersGetterPorts.size() + ", CHOSEN NULL ? " + (chosen==null ? "True":
+    // "False") );
     if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
-      NMGetterPort.acceptProbed((chosen==null ? (Node) this.getOwner() : chosen), requestURI);
+      NMGetterPort.acceptProbed((chosen == null ? (Node) this.getOwner()
+          : (count > peersGetterPorts.size() ? (Node) this.getOwner() : chosen)), requestURI);
       lock.unlock();
       return;
     }
     int randindex = new Random().nextInt(peersGetterPorts.size());
     List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
     NodeOutboundPort chosenNeighbour = ports.get(randindex);
-    if(chosen==null || count > peersGetterPorts.size()){
-      chosenNeighbour.probe(requestURI, facade, remainingHops-1, (Node) this.getOwner(), peersGetterPorts.size());
-    } else{
-      chosenNeighbour.probe(requestURI, facade, remainingHops-1, chosen, count);
+    if (chosen == null || count > peersGetterPorts.size()) {
+      chosenNeighbour.probe(requestURI, facade, remainingHops - 1, (Node) this.getOwner(), peersGetterPorts.size());
+    } else {
+      chosenNeighbour.probe(requestURI, facade, remainingHops - 1, chosen, count);
     }
     lock.unlock();
   }
