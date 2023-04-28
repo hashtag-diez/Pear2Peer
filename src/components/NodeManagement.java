@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import distributed_scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
@@ -50,7 +49,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
 
-		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 
