@@ -80,4 +80,19 @@ public class FacadeInboundPort
           }
         });
   }
+
+  @Override
+  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception {
+    this.getOwner().runTask(
+      new AbstractComponent.AbstractTask(this.getPluginURI()) {
+        @Override
+        public void run() {
+          try {
+            ((NodeManagementPlugin) this.getTaskProviderReference()).interconnect(f);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      });
+  }
 }

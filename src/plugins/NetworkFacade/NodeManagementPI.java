@@ -1,6 +1,9 @@
 package plugins.NetworkFacade;
 
+import java.util.concurrent.RejectedExecutionException;
+
 import components.interfaces.NodeManagementCI;
+import interfaces.FacadeNodeAddressI;
 
 /**
  * The interface <code>NodeManagementCI</code> represents an interface which is
@@ -17,5 +20,5 @@ import components.interfaces.NodeManagementCI;
  *
  */
 public interface NodeManagementPI extends NodeManagementCI{
-
+  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception;
 }

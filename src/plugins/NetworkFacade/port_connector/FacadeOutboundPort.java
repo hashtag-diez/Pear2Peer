@@ -39,4 +39,10 @@ public class FacadeOutboundPort
     ((NodeManagementPI) this.getConnector()).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
   }
 
+  @Override
+  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception {
+    ((NodeManagementPI) this.getConnector()).interconnect(f);
+
+  }
+
 }

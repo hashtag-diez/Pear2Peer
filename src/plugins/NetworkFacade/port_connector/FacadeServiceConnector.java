@@ -33,4 +33,8 @@ public class FacadeServiceConnector
     ((NodeManagementPI) this.offering).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
   }
 
+  @Override
+  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception {
+    ((NodeManagementPI) this.offering).interconnect(f);
+  }
 }

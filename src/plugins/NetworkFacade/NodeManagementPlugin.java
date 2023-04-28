@@ -8,15 +8,19 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import components.NodeManagement;
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
+import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
+import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
 import fr.sorbonne_u.utils.Pair;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkFacade.port_connector.FacadeInboundPort;
+import plugins.NetworkFacade.port_connector.FacadeOutboundPort;
 import plugins.NetworkNode.port_connector.NodeOutboundPort;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 import utiles.Displayer;
@@ -32,6 +36,7 @@ public class NodeManagementPlugin
   protected ContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
   private ReentrantLock lock = new ReentrantLock();
+  protected Set<FacadeOutboundPort> facades = new HashSet<>();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
   protected HashMap<String, Pair<Integer, Set<PeerNodeAddressI>>> probeCollector = new HashMap<>();
 
@@ -123,5 +128,64 @@ public class NodeManagementPlugin
       this.getOwner().doPortDisconnection(port.getPortURI());
       port.unpublishPort();
     }
+  }
+  public void connectWithFacade() throws Exception{
+    System.out.println(((NodeManagement) this.getOwner()).getNodeIdentifier() + " : CONNEXION AUX AUTRES FACADES");
+    String basename =  ((NodeManagement) this.getOwner()).getNodeManagementURI().split("-")[0];
+    int FacadeIndex = Integer.parseInt(((NodeManagement) this.getOwner()).getNodeManagementURI().split("-")[1]);
+    for(int i = 1; i<=5; i++){
+      if(i!=FacadeIndex){
+        FacadeOutboundPort facadeOutPortNM = new FacadeOutboundPort(this.getOwner());
+        facadeOutPortNM.publishPort();
+    
+        ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+        rop.publishPort();
+    
+        this.getOwner().doPortConnection(
+            rop.getPortURI(),
+            basename+"-"+i,
+            ReflectionConnector.class.getCanonicalName());
+    
+        String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
+        if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+          System.out.println("NOPE");
+        } else {
+          this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
+              NodeServiceConnector.class.getCanonicalName());
+          facades.add(facadeOutPortNM);
+          System.out.println("\t\t\t\t" + ((FacadeNodeAddressI) this.getOwner()).getNodeManagementURI() + "<->" + (basename+"-"+i));
+          facadeOutPortNM.interconnect((NodeManagement) this.getOwner());
+        }
+        this.getOwner().doPortDisconnection(rop.getPortURI());
+        rop.unpublishPort();
+        rop.destroyPort();
+      }
+    }
+    System.out.println(((NodeManagement) this.getOwner()).getNodeIdentifier() + " : NB DE CONNEXIONS ->" + facades.size());
+  }
+  public void interconnect(FacadeNodeAddressI f) throws Exception {
+    FacadeOutboundPort facadeOutPortNM = new FacadeOutboundPort(this.getOwner());
+    facadeOutPortNM.publishPort();
+
+    ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+    rop.publishPort();
+
+    this.getOwner().doPortConnection(
+        rop.getPortURI(),
+        f.getNodeManagementURI(),
+        ReflectionConnector.class.getCanonicalName());
+
+    String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
+    if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+      System.out.println("NOPE");
+    } else {
+      this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
+          NodeServiceConnector.class.getCanonicalName());
+      System.out.println("\t\t\t\t" + ((FacadeNodeAddressI) this.getOwner()).getNodeManagementURI() + "<->" + f.getNodeManagementURI());
+      facades.add(facadeOutPortNM);
+    }
+    this.getOwner().doPortDisconnection(rop.getPortURI());
+    rop.unpublishPort();
+    rop.destroyPort();
   }
 }
