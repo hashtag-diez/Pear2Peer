@@ -4,7 +4,9 @@ import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
@@ -15,6 +17,7 @@ import plugins.NetworkScanner.NetworkScannerPlugin;
 import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 
+@RequiredInterfaces(required = { NodeManagementCI.class })
 public class NodeManagement extends AbstractComponent implements FacadeNodeAddressI, ContentNodeAddressI {
 
 	private NodeManagementPlugin plugin;
@@ -22,7 +25,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 	protected ClocksServerOutboundPort csop;
 
 	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 8, 0);
+		super(reflectionInboundPortURI, 8, 4);
 
 		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(DescriptorId, this);
 		this.installPlugin(ContentManagementPlug);
@@ -37,7 +40,6 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 		this.installPlugin(plugin);
 	}
 
-
 	@Override
 	public void execute() throws Exception {
 		scheduleTasks();
@@ -49,7 +51,8 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
 
-		AcceleratedClock clock = this.csop.getClock(scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop
+				.getClock(scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 
@@ -72,7 +75,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 			}
 		}, delayInNanosToJoin, TimeUnit.NANOSECONDS);
 	}
-	
+
 	@Override
 	public boolean isFacade() {
 		return true;
