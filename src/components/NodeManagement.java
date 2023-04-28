@@ -6,8 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPlugin;
@@ -17,7 +19,8 @@ import plugins.NetworkScanner.NetworkScannerPlugin;
 import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 
-@RequiredInterfaces(required = { NodeManagementCI.class })
+@RequiredInterfaces(required = { NodeManagementCI.class, ClocksServerCI.class})
+@OfferedInterfaces(offered = { NodeManagementCI.class })
 public class NodeManagement extends AbstractComponent implements FacadeNodeAddressI, ContentNodeAddressI {
 
 	private NodeManagementPlugin plugin;

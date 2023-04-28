@@ -12,6 +12,7 @@ import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import plugins.ContentManagement.ContentManagementPlugin;
@@ -21,7 +22,7 @@ import interfaces.ContentNodeAddressI;
 import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.Displayer;
 
-@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class })
+@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class, ClocksServerCI.class})
 @OfferedInterfaces(offered = { NodeCI.class })
 public class Node extends AbstractComponent implements ContentNodeAddressI {
 
@@ -46,7 +47,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
-		//NetworkScannerPlug.setPreferredExecutionServiceURI(NS_EXECUTION_SERVICE_URI);
+		NetworkScannerPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(NetworkScannerPlug);
 		
 		plugin = new NodePlugin(NMInboundURI, ContentManagementPlug, NetworkScannerPlug);
