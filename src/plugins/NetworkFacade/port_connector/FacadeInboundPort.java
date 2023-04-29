@@ -7,6 +7,7 @@ import plugins.NetworkFacade.NodeManagementPlugin;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
+import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 
@@ -35,6 +36,35 @@ public class FacadeInboundPort
 
   @Override
   public void leave(PeerNodeAddressI a) throws Exception {
+    this.getOwner().runTask(
+        new AbstractComponent.AbstractTask(this.getPluginURI()) {
+          @Override
+          public void run() {
+            try {
+              ((NodeManagementPlugin) this.getTaskProviderReference()).leave(a);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+        });
+  }
+  @Override
+  public void join(ContentNodeAddressI a) throws Exception {
+    this.getOwner().runTask(
+      new AbstractComponent.AbstractTask(this.getPluginURI()) {
+        @Override
+        public void run() {
+          try {
+            ((NodeManagementPlugin) this.getTaskProviderReference()).join(a);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      });
+  }
+
+  @Override
+  public void leave(ContentNodeAddressI a) throws Exception {
     this.getOwner().runTask(
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
           @Override

@@ -20,6 +20,7 @@ import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
 import interfaces.NodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
+import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
 import plugins.ContentManagement.port_connector.CMOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
 import plugins.NetworkScanner.NetworkScannerPI;
@@ -84,8 +85,8 @@ public class Client extends AbstractComponent {
 	private void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {
 
 		this.doPortConnection(rop.getPortURI(), NodeManagementURI, ReflectionConnector.class.getCanonicalName());
-
-		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(ContentManagementPI.class);
+		
+		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(FacadeContentManagementPI.class);
 		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
 			Displayer.display("NOPE", DEBUG_MODE);
 		} else {
@@ -114,9 +115,9 @@ public class Client extends AbstractComponent {
 	 * @return A ContentTemplate object
 	 */
 	public ContentTemplateI pickTemplate() throws ClassNotFoundException, IOException {
-		ContentDataManager.DATA_DIR_NAME = "src/data";
-		ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates((int) Math.random() % 2);
-		HashMap<String, Object> random = result.get((int) Math.random() % result.size());
+		ContentDataManager.DATA_DIR_NAME = "src/data2";
+		ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(0);
+		HashMap<String, Object> random = result.get(0);
 		return new ContentTemplate(random);
 	}
 
@@ -143,7 +144,8 @@ public class Client extends AbstractComponent {
 		Displayer.display("Template recherche :\n" + temp.toString(), DEBUG_MODE);
 		found = false;
 		ReturnPort.publishPort();
-		CMGetterPort.find(temp, 5, null, ReturnPort.getPortURI());
+		System.out.println("\t\t\t\t\t\t " + ReturnPort.getPortURI());
+		CMGetterPort.find(temp, 4, null, ReturnPort.getPortURI());
 	}
 
 	/**

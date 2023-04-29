@@ -5,6 +5,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
+import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkNode.NodePI;
@@ -41,6 +42,12 @@ public class NodeOutboundPort
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
     ((NodePI) this.getConnector()).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
+  }
+
+  @Override
+  public void share(ContentNodeAddressI a) throws Exception {
+    ((NodePI) this.getConnector()).share(a);
+
   }
 
 }

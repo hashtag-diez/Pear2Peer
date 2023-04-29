@@ -2,21 +2,33 @@ package plugins.ContentManagement.FacadeContentManagement;
 
 import java.util.Set;
 
+import components.NodeManagement;
 import components.interfaces.ClientCI;
 import connectors.ClientReturnConnector;
 import fr.sorbonne_u.components.ComponentI;
 import implem.ApplicationNode;
+import interfaces.ApplicationNodeAddressI;
 import interfaces.ContentDescriptorI;
 import plugins.ContentManagement.ContentManagementPlugin;
+import plugins.ContentManagement.FacadeContentManagement.port_connector.CMFacadeInboundPort;
+import plugins.ContentManagement.port_connector.CMOutboundPort;
+import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
 import ports.ClientOutboundPort;
-import interfaces.ContentManagementNodeAddressI;
-
+import interfaces.ContentNodeAddressI;
+import interfaces.ContentTemplateI;
 
 public class FacadeContentManagementPlugin
     extends ContentManagementPlugin implements FacadeContentManagementPI {
 
   public FacadeContentManagementPlugin(String URI, int DescriptorId, ApplicationNode addr) throws Exception {
-    super(URI, DescriptorId, (ContentManagementNodeAddressI) addr);
+    super(URI, DescriptorId, addr);
+  }
+
+  @Override
+  public void initialise() throws Exception {
+    this.setterPort = new CMFacadeInboundPort(URI, this.getPluginURI(), this.getOwner(),
+        this.getPreferredExecutionServiceURI());
+    this.setterPort.publishPort();
   }
 
   @Override
@@ -24,6 +36,50 @@ public class FacadeContentManagementPlugin
     super.installOn(owner);
     this.addOfferedInterface(FacadeContentManagementPI.class);
     this.addRequiredInterface(ClientCI.class);
+  }
+
+  @Override
+  public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr)
+      throws Exception {
+    for (ContentDescriptorI localCd : this.contentsDescriptors) {
+      if (localCd.match(cd)) {
+        acceptFound(localCd, clientAddr);
+      }
+    }
+
+    for (String peerNodeURI : this.getterPorts.keySet()) {
+      CMOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+      outBoundPort.find(cd, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
+    }
+  }
+
+  /**
+   * It checks if the local content descriptors match the given content
+   * descriptor, if they do, it adds
+   * them to the matched set. If the hops are not 0, it calls the match function
+   * on the other peers. If
+   * the hops are 0, it connects to the client and sends the matched set
+   * 
+   * @param cd         the content descriptor to match
+   * @param matched    the set of content descriptors that match the query
+   * @param hops       the number of hops to go through
+   * @param returnAddr the address of the client that requested the match
+   */
+  @Override
+  public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, ApplicationNodeAddressI requester,
+      String clientAddr)
+      throws Exception {
+    for (ContentDescriptorI localCd : this.contentsDescriptors) {
+      if (localCd.match(cd)) {
+        matched.add(localCd);
+      }
+    }
+    for (String peerNodeURI : this.getterPorts.keySet()) {
+      CMOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+      if (outBoundPort != null) {
+        outBoundPort.match(cd, matched, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
+      }
+    }
   }
 
   private ClientOutboundPort makeClientOutboundPort(String clientUri) throws Exception {
@@ -36,12 +92,36 @@ public class FacadeContentManagementPlugin
 
   @Override
   public void acceptFound(ContentDescriptorI found, String requestOwner) throws Exception {
-    makeClientOutboundPort(requestOwner).findResult(found);
+    try {
+      makeClientOutboundPort(requestOwner).findResult(found);
+    } catch (NullPointerException e) {
+
+    }
   }
 
   @Override
   public void acceptMatched(Set<ContentDescriptorI> found, String requestOwner) throws Exception {
-    makeClientOutboundPort(requestOwner).matchResult(found);
+    try {
+      makeClientOutboundPort(requestOwner).matchResult(found);
+    } catch (NullPointerException e) {
+
+    }
+  }
+
+  /**
+   * It connects to the peer node via its reflectionOutboundPort,
+   * gets its ContentManagementPlugin Port, connects to it, and
+   * stores the connection in a map
+   * 
+   * @param node the node to connect to
+   */
+  @Override
+  public void put(ContentNodeAddressI node) throws Exception {
+    CMOutboundPort peerOutPortCM = new CMOutboundPort(this.getOwner());
+    peerOutPortCM.publishPort();
+    this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), node.getContentManagementURI(),
+        ContentManagementServiceConnector.class.getCanonicalName());
+    this.getterPorts.put(node.getContentManagementURI(), peerOutPortCM);
   }
 
 }

@@ -27,15 +27,21 @@ public class NodeManagement extends AbstractComponent {
 	protected ClocksServerOutboundPort csop;
 
 	private ApplicationNode app;
+	private static final int DEFAULT_NB_OF_THREADS = 8;
+
+	private static final String NM_EXECUTION_SERVICE_URI = "app-networkmanagement-tasks-execution-service";
+	private static final String CM_EXECUTION_SERVICE_URI = "app-content-tasks-execution-service";
 
 	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId) throws Exception {
-		super(reflectionInboundPortURI, 8, 4);
+		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
+		this.initialise(DEFAULT_NB_OF_THREADS);
 
 		String NodeManagementURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		app = new ApplicationNode(NodeManagementURI, ContentManagementURI, reflectionInboundPortURI);
 
-		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(NodeManagementURI, DescriptorId, app);
+		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(ContentManagementURI, DescriptorId, app);
+		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
@@ -44,8 +50,20 @@ public class NodeManagement extends AbstractComponent {
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 
-		plugin = new NodeManagementPlugin(ContentManagementURI, ContentManagementPlug, NetworkScannerPlug);
+		plugin = new NodeManagementPlugin(NodeManagementURI, ContentManagementPlug, NetworkScannerPlug);
+		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
 		this.installPlugin(plugin);
+	}
+
+	protected void initialise(int nbThreads) {
+		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
+		int nbThreadsNetwork = 4;
+		int nbThreadsContent = nbThreads - nbThreadsNetwork;
+
+		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,
+		// false);
+		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
+		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
 	}
 
 	@Override
@@ -68,7 +86,7 @@ public class NodeManagement extends AbstractComponent {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		int delay = new Random().nextInt(3);
+		int delay = new Random().nextInt(1);
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay));
 
 		scheduleConnectionWithFacades(delayInNanosToJoin);

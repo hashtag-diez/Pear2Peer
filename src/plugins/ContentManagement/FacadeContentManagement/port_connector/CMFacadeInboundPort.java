@@ -15,8 +15,8 @@ import fr.sorbonne_u.components.ComponentI;
 public class CMFacadeInboundPort extends CMInboundPort
         implements FacadeContentManagementPI {
 
-    public CMFacadeInboundPort(String pluginUri, ComponentI owner) throws Exception {
-        super(pluginUri, owner, FacadeContentManagementPI.class);
+    public CMFacadeInboundPort(String uri, String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
+        super(uri,  pluginUri, owner, FacadeContentManagementPI.class, executorServiceURI);
     }
 
     @Override

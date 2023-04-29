@@ -4,6 +4,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
+import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkFacade.NodeManagementPI;
@@ -24,6 +25,17 @@ public class FacadeOutboundPort
 
   @Override
   public void leave(PeerNodeAddressI a) throws Exception {
+    ((NodeManagementPI) this.getConnector()).leave(a);
+  }
+
+  @Override
+  public void join(ContentNodeAddressI a) throws Exception {
+    ((NodeManagementPI) this.getConnector()).join(a);
+
+  }
+
+  @Override
+  public void leave(ContentNodeAddressI a) throws Exception {
     ((NodeManagementPI) this.getConnector()).leave(a);
   }
 

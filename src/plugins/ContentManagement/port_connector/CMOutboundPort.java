@@ -5,8 +5,9 @@ import java.util.Set;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
 import interfaces.ContentDescriptorI;
+import interfaces.ContentManagementNodeAddressI;
 import interfaces.ContentTemplateI;
-import interfaces.FacadeNodeAddressI;
+import interfaces.ApplicationNodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
 
@@ -21,14 +22,18 @@ public class CMOutboundPort
     super(generatePortURI(),ContentManagementPI.class, owner);
   }
   @Override
-  public void find(ContentTemplateI cd, int hops, FacadeNodeAddressI requester, String clientAddr) throws Exception {
+  public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr) throws Exception {
     ((ContentManagementPI) this.getConnector()).find(cd, hops, requester, clientAddr);
   }
 
   @Override
-  public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, FacadeNodeAddressI requester,
+  public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, ApplicationNodeAddressI requester,
       String clientAddr)
       throws Exception {
     ((ContentManagementPI) this.getConnector()).match(cd, matched, hops, requester, clientAddr);
+  }
+  @Override
+  public void acceptShared(ContentManagementNodeAddressI connected) throws Exception {
+    ((ContentManagementPI) this.getConnector()).acceptShared(connected);
   }
 }

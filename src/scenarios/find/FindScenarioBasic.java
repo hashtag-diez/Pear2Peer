@@ -14,10 +14,6 @@ public class FindScenarioBasic extends AbstractCVM {
 	protected static final String NODE_MANAGEMENT_COMPONENT_URI = "my-NODE_MANAGEMENT";
 	/** URI of the consumer component (convenience). */
 	protected static final String NODE_COMPONENT_URI = "my-NODE";
-	/** URI of the provider outbound port (simplifies the connection). */
-	protected static final String URIGetterOutboundPortURI = "oport";
-	/** URI of the consumer inbound port (simplifies the connection). */
-	protected static final String URIProviderInboundPortURI = "iport";
 
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(5);
 	public static final String CLOCK_URI = "my-clock-uri";
@@ -49,19 +45,19 @@ public class FindScenarioBasic extends AbstractCVM {
 		
 		AbstractComponent.createComponent(
 				NodeManagement.class.getCanonicalName(),
-				new Object[] { URIProviderInboundPortURI, 0 });
+				new Object[] { NODE_MANAGEMENT_COMPONENT_URI + "-" + 1, 0 });
 
 		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(
 					Node.class.getCanonicalName(),
 					new Object[] { NODE_COMPONENT_URI + i,
-							URIProviderInboundPortURI, i });
+						NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1, i });
 		}
 		
 		AbstractComponent.createComponent(
 				ClientLookingForContent.class.getCanonicalName(), 
 				new Object[] {"Clicos",
-				URIProviderInboundPortURI}
+				NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1}
 		);
 		
 	}

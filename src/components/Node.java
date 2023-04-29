@@ -56,7 +56,7 @@ public class Node extends AbstractComponent {
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
-		NetworkScannerPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
+		// NetworkScannerPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(NetworkScannerPlug);
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug, NetworkScannerPlug);
@@ -102,15 +102,15 @@ public class Node extends AbstractComponent {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		int delay = new Random().nextInt(7);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(3 + delay));
+		int delay = new Random().nextInt(2);
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2+delay));
 
 		long delayInNanosToLeave = clock
-				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(3 + 7 + new Random().nextInt(3)));
+				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(10));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
 		// Displayer.display("[node join network] has been scheduled", DEBUG_MODE);
-		scheduleDisconnectionToNetwork(delayInNanosToLeave);
+		// scheduleDisconnectionToNetwork(delayInNanosToLeave);
 		// Displayer.display("[node disconnection] has been scheduled", DEBUG_MODE);
 
 	}

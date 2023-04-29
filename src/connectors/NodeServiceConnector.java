@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
+import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkNode.NodePI;
@@ -37,5 +38,11 @@ public class NodeServiceConnector
   @Override
   public void acceptConnected(PeerNodeAddressI connected) throws RejectedExecutionException, AssertionError, Exception {
     ((NodePI) this.offering).acceptConnected(connected);
+  }
+
+  @Override
+  public void share(ContentNodeAddressI a) throws Exception {
+    ((NodePI) this.offering).share(a);
+
   }
 }

@@ -1,6 +1,7 @@
 package plugins.NetworkNode;
 
 import components.interfaces.NodeCI;
+import interfaces.ContentNodeAddressI;
 
 /**
  * The interface <code>NodeCI</code> is offered and required by both facade
@@ -18,5 +19,5 @@ import components.interfaces.NodeCI;
  *
  */
 public interface NodePI extends NodeCI{
-
+  void share(ContentNodeAddressI a) throws Exception;
 }

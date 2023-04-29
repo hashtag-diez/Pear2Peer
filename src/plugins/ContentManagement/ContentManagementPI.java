@@ -4,7 +4,9 @@ import java.util.Set;
 
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
+import interfaces.ApplicationNodeAddressI;
 import interfaces.ContentDescriptorI;
+import interfaces.ContentManagementNodeAddressI;
 import interfaces.ContentTemplateI;
 import interfaces.FacadeNodeAddressI;
 
@@ -17,9 +19,10 @@ import interfaces.FacadeNodeAddressI;
  */
 public interface ContentManagementPI extends RequiredCI, OfferedCI {
 
-	void find(ContentTemplateI cd, int hops, FacadeNodeAddressI requester, String clientAddr) throws Exception;
+	void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr) throws Exception;
 
-	void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, FacadeNodeAddressI requester,
+	void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, ApplicationNodeAddressI requester,
 			String clientAddr)
 			throws Exception;
+	void acceptShared(ContentManagementNodeAddressI connected) throws Exception;
 }

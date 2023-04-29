@@ -6,6 +6,7 @@ import java.util.concurrent.RejectedExecutionException;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
+import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkNode.NodePI;
@@ -87,19 +88,37 @@ public class NodeInboundPort
   }
 
   @Override
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int chosenNeighbourCount)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
+      int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
     this.getOwner().runTask(
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
           @Override
           public void run() {
             try {
-              ((NodePlugin) this.getTaskProviderReference()).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
+              ((NodePlugin) this.getTaskProviderReference()).probe(requestURI, facade, remainingHops, chosen,
+                  chosenNeighbourCount);
             } catch (Exception e) {
               throw new RuntimeException(e);
             }
           }
         });
   }
+
+  @Override
+  public void share(ContentNodeAddressI a) throws Exception {
+    this.getOwner().runTask(
+        new AbstractComponent.AbstractTask(this.getPluginURI()) {
+          @Override
+          public void run() {
+            try {
+              ((NodePlugin) this.getTaskProviderReference()).share(a);
+            } catch (Exception e) {
+              throw new RuntimeException(e);
+            }
+          }
+        });
+  }
+
 
 }

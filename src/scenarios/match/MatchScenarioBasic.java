@@ -19,10 +19,6 @@ public class MatchScenarioBasic extends AbstractCVM {
 	protected static final String NODE_MANAGEMENT_COMPONENT_URI = "my-NODE_MANAGEMENT";
 	/** URI of the consumer component (convenience). */
 	protected static final String NODE_COMPONENT_URI = "my-NODE";
-	/** URI of the provider outbound port (simplifies the connection). */
-	protected static final String URIGetterOutboundPortURI = "oport";
-	/** URI of the consumer inbound port (simplifies the connection). */
-	protected static final String URIProviderInboundPortURI = "iport";
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(5);
 	public static final String CLOCK_URI = "my-clock-uri";
 
@@ -41,21 +37,27 @@ public class MatchScenarioBasic extends AbstractCVM {
 		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 10.0;
 
-		AbstractComponent.createComponent(ClocksServer.class.getCanonicalName(),
-				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos, startInstant, accelerationFactor });
-
-		AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
-				new Object[] { NODE_MANAGEMENT_COMPONENT_URI, URIProviderInboundPortURI, 0 });
+		AbstractComponent.createComponent(
+				ClocksServer.class.getCanonicalName(),
+				new Object[]{CLOCK_URI, unixEpochStartTimeInNanos,
+							 startInstant, accelerationFactor});
+		
+		AbstractComponent.createComponent(
+				NodeManagement.class.getCanonicalName(),
+				new Object[] { NODE_MANAGEMENT_COMPONENT_URI + "-" + 1, 0 });
 
 		for (int i = 1; i <= NB_PEER; i++) {
-			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + i, URIProviderInboundPortURI, i });
+			AbstractComponent.createComponent(
+					Node.class.getCanonicalName(),
+					new Object[] { NODE_COMPONENT_URI + i,
+						NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1, i });
 		}
-
+		
 		AbstractComponent.createComponent(
-				ClientLookingForContentWhichMatch.class.getCanonicalName(),
-				new Object[] { "Clicos",
-						NODE_MANAGEMENT_COMPONENT_URI });
+				ClientLookingForContentWhichMatch.class.getCanonicalName(), 
+				new Object[] {"Clicos",
+				NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1}
+		);
 
 		super.deploy();
 	}
