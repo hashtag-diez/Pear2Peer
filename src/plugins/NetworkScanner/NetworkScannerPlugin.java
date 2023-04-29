@@ -13,14 +13,14 @@ import interfaces.ContentDescriptorI;
 import interfaces.NodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
-import plugins.NetworkScanner.port_connector.NSPInBoundPort;
-import plugins.NetworkScanner.port_connector.NSPoutBoundPort;
+import plugins.NetworkScanner.port_connector.NetworkScannerInboundPort;
+import plugins.NetworkScanner.port_connector.NetworkScannerOutboundPort;
 import plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 
 public class NetworkScannerPlugin extends AbstractPlugin {
 
-    public NSPInBoundPort setterPort;
-    protected Map<NodeAddressI, NSPoutBoundPort> getterPorts = new HashMap<>();;
+    public NetworkScannerInboundPort setterPort;
+    protected Map<NodeAddressI, NetworkScannerOutboundPort> getterPorts = new HashMap<>();;
     private ContentManagementPlugin plugin;
 
     public NetworkScannerPlugin(ContentManagementPlugin plugin) throws Exception {
@@ -42,7 +42,7 @@ public class NetworkScannerPlugin extends AbstractPlugin {
     public void initialise() throws Exception {
         this.getterPorts = new HashMap<>();
 
-        this.setterPort = new NSPInBoundPort(this.getPluginURI(), this.getOwner());
+        this.setterPort = new NetworkScannerInboundPort(this.getPluginURI(), this.getOwner());
         this.setterPort.publishPort();
 
     }
@@ -62,7 +62,7 @@ public class NetworkScannerPlugin extends AbstractPlugin {
      * @param node the node to connect to
      */
     public void put(PeerNodeAddressI node) throws Exception {
-        NSPoutBoundPort peerOutPortCM = new NSPoutBoundPort(getOwner());
+        NetworkScannerOutboundPort peerOutPortCM = new NetworkScannerOutboundPort(getOwner());
         peerOutPortCM.publishPort();
 
         ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
@@ -89,15 +89,15 @@ public class NetworkScannerPlugin extends AbstractPlugin {
 
     public void remove(NodeAddressI node) throws Exception {
         this.getterPorts.remove(node);
-        NSPoutBoundPort outBoundPortCM = get(node);
+        NetworkScannerOutboundPort outBoundPortCM = get(node);
         if (outBoundPortCM != null) {
             getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
             outBoundPortCM.unpublishPort();
         }
     }
 
-    public NSPoutBoundPort get(NodeAddressI node) {
-        NSPoutBoundPort outBoundPortCM = this.getterPorts.get(node);
+    public NetworkScannerOutboundPort get(NodeAddressI node) {
+        NetworkScannerOutboundPort outBoundPortCM = this.getterPorts.get(node);
         return outBoundPortCM;
     }
 
@@ -121,7 +121,7 @@ public class NetworkScannerPlugin extends AbstractPlugin {
         before.put(owner, info);
         for (NodeAddressI node : this.getterPorts.keySet())
             if (!before.containsKey(node)) {
-                NSPoutBoundPort outBoundPort = getterPorts.get(node);
+                NetworkScannerOutboundPort outBoundPort = getterPorts.get(node);
                 if (outBoundPort != null)
                     before.putAll(((NetworkScannerPI) outBoundPort).mapNetwork(before));
             }

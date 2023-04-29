@@ -14,8 +14,8 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import implem.ApplicationNode;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPlugin;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
+import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 

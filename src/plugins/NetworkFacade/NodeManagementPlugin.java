@@ -19,10 +19,10 @@ import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPlugin;
-import plugins.NetworkFacade.port_connector.FacadeInboundPort;
-import plugins.NetworkFacade.port_connector.FacadeOutboundPort;
-import plugins.NetworkFacade.port_connector.FacadeServiceConnector;
+import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
+import plugins.NetworkFacade.port_connector.NodeManagementInboundPort;
+import plugins.NetworkFacade.port_connector.NodeManagementOutboundPort;
+import plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
 import plugins.NetworkNode.port_connector.NodeOutboundPort;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 
@@ -33,12 +33,12 @@ public class NodeManagementPlugin
   private static final int nbSaut = 3;
   private static final int nbRacine = 4;
 
-  protected FacadeInboundPort NMSetterPort;
+  protected NodeManagementInboundPort NMSetterPort;
   protected FacadeContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
   private ReentrantLock lock = new ReentrantLock();
   private ReentrantLock lock1 = new ReentrantLock();
-  protected HashMap<String, FacadeOutboundPort> facades = new HashMap<>();
+  protected HashMap<String, NodeManagementOutboundPort> facades = new HashMap<>();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
   protected HashMap<String, Pair<Integer, Set<PeerNodeAddressI>>> probeCollector = new HashMap<>();
 
@@ -53,7 +53,7 @@ public class NodeManagementPlugin
 
   @Override
   public void initialise() throws Exception {
-    this.NMSetterPort = new FacadeInboundPort(this.getPluginURI(), this.getOwner());
+    this.NMSetterPort = new NodeManagementInboundPort(this.getPluginURI(), this.getOwner());
     this.NMSetterPort.publishPort();
   }
 
@@ -178,7 +178,7 @@ public class NodeManagementPlugin
       lock1.lock();
       if (i != FacadeIndex && facades.get(basename + "-" + i)==null) {
         try{
-          FacadeOutboundPort facadeOutPortNM = new FacadeOutboundPort(this.getOwner());
+          NodeManagementOutboundPort facadeOutPortNM = new NodeManagementOutboundPort(this.getOwner());
           facadeOutPortNM.publishPort();
   
           ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
@@ -194,7 +194,7 @@ public class NodeManagementPlugin
             System.out.println("NOPE");
           } else {
             this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
-              FacadeServiceConnector.class.getCanonicalName());
+              NodeManagementServiceConnector.class.getCanonicalName());
             facades.put(basename + "-" + i, facadeOutPortNM);
             //System.out.println("\t\t\t\t" + (((NodeManagement) this.getOwner()).getApplicationNode()).getNodeIdentifier() + "<->"  + (basename + "-" + i));
             facadeOutPortNM.interconnect(((NodeManagement) this.getOwner()).getApplicationNode());
@@ -218,7 +218,7 @@ public class NodeManagementPlugin
       lock1.unlock();
       return;
     }
-    FacadeOutboundPort facadeOutPortNM = new FacadeOutboundPort(this.getOwner());
+    NodeManagementOutboundPort facadeOutPortNM = new NodeManagementOutboundPort(this.getOwner());
     facadeOutPortNM.publishPort();
 
     ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
@@ -233,7 +233,7 @@ public class NodeManagementPlugin
       System.out.println("NOPE");
     } else {
       this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
-          FacadeServiceConnector.class.getCanonicalName());
+          NodeManagementServiceConnector.class.getCanonicalName());
       //System.out.println("\t\t\t\t" + (((NodeManagement) this.getOwner()).getApplicationNode()).getNodeIdentifier() + "<->"+ f.getNodeIdentifier());
       facades.put((((NodeManagement) this.getOwner()).getApplicationNode()).getNodeManagementURI(), facadeOutPortNM);
     }

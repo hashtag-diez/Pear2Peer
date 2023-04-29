@@ -19,8 +19,8 @@ import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPI;
-import plugins.NetworkFacade.port_connector.FacadeOutboundPort;
-import plugins.NetworkFacade.port_connector.FacadeServiceConnector;
+import plugins.NetworkFacade.port_connector.NodeManagementOutboundPort;
+import plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
 import plugins.NetworkNode.port_connector.NodeInboundPort;
 import plugins.NetworkNode.port_connector.NodeOutboundPort;
 import plugins.NetworkNode.port_connector.NodeServiceConnector;
@@ -31,7 +31,7 @@ public class NodePlugin
     extends AbstractPlugin {
 
   // The port used to connect to the NodeManagement component.
-  protected FacadeOutboundPort NMGetterPort;
+  protected NodeManagementOutboundPort NMGetterPort;
 
   // The port used to be called by other nodes component.
   protected NodeInboundPort NSetterPort;
@@ -61,7 +61,7 @@ public class NodePlugin
         this.getPreferredExecutionServiceURI());
     this.NSetterPort.publishPort();
 
-    this.NMGetterPort = new FacadeOutboundPort(this.getOwner());
+    this.NMGetterPort = new NodeManagementOutboundPort(this.getOwner());
     this.NMGetterPort.publishPort();
 
     ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
@@ -77,7 +77,7 @@ public class NodePlugin
       System.out.println("NOPE");
     } else {
       this.getOwner().doPortConnection(NMGetterPort.getPortURI(), otherInboundPortUI[0],
-          FacadeServiceConnector.class.getCanonicalName());
+          NodeManagementServiceConnector.class.getCanonicalName());
     }
     this.getOwner().doPortDisconnection(rop.getPortURI());
     rop.unpublishPort();

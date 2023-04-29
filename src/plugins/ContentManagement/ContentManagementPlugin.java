@@ -19,18 +19,18 @@ import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
 import interfaces.ApplicationNodeAddressI;
 import interfaces.PeerNodeAddressI;
-import plugins.ContentManagement.FacadeContentManagement.port_connector.CMFacadeOutboundPort;
-import plugins.ContentManagement.FacadeContentManagement.port_connector.CMFacadeServiceConnector;
-import plugins.ContentManagement.port_connector.CMInboundPort;
-import plugins.ContentManagement.port_connector.CMOutboundPort;
+import plugins.ContentManagement.port_connector.ContentManagementInboundPort;
+import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
+import plugins.FacadeContentManagement.port_connector.FacadeContentManagementOutboundPort;
+import plugins.FacadeContentManagement.port_connector.FacadeContentManagementServiceConnector;
 
 public class ContentManagementPlugin
     extends AbstractPlugin {
 
   protected String URI;
-  protected CMInboundPort setterPort;
-  protected Map<String, CMOutboundPort> getterPorts = new HashMap<>();;
+  protected ContentManagementInboundPort setterPort;
+  protected Map<String, ContentManagementOutboundPort> getterPorts = new HashMap<>();;
   protected List<ContentDescriptorI> contentsDescriptors;
 
   public List<ContentDescriptorI> getContentsDescriptors() {
@@ -48,7 +48,7 @@ public class ContentManagementPlugin
 
   @Override
   public void initialise() throws Exception {
-    this.setterPort = new CMInboundPort(URI, this.getPluginURI(), this.getOwner(), this.getPreferredExecutionServiceURI());
+    this.setterPort = new ContentManagementInboundPort(URI, this.getPluginURI(), this.getOwner(), this.getPreferredExecutionServiceURI());
     this.setterPort.publishPort();
   }
 
@@ -67,7 +67,7 @@ public class ContentManagementPlugin
    * @param node the node to connect to
    */
   public void put(ContentNodeAddressI node) throws Exception {
-    CMOutboundPort peerOutPortCM = new CMOutboundPort(this.getOwner());
+    ContentManagementOutboundPort peerOutPortCM = new ContentManagementOutboundPort(this.getOwner());
     peerOutPortCM.publishPort();
 
     this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), node.getContentManagementURI(),
@@ -76,8 +76,8 @@ public class ContentManagementPlugin
     peerOutPortCM.acceptShared(((Node) this.getOwner()).getContentNode());
   }
 
-  public CMOutboundPort get(PeerNodeAddressI node) {
-    CMOutboundPort outBoundPortCM = this.getterPorts.get(node.getNodeURI());
+  public ContentManagementOutboundPort get(PeerNodeAddressI node) {
+    ContentManagementOutboundPort outBoundPortCM = this.getterPorts.get(node.getNodeURI());
     return outBoundPortCM;
   }
 
@@ -89,7 +89,7 @@ public class ContentManagementPlugin
    * @param node the node to remove
    */
   public void remove(PeerNodeAddressI node) throws Exception {
-    CMOutboundPort outBoundPortCM = get(node);
+    ContentManagementOutboundPort outBoundPortCM = get(node);
     if (outBoundPortCM != null) {
       getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
       outBoundPortCM.unpublishPort();
@@ -122,7 +122,7 @@ public class ContentManagementPlugin
     //System.out.println(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " : " +  hops);
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(cd)) {
-        CMFacadeOutboundPort port = makeFacadeOutboundPort(requester);
+        FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
         port.acceptFound(localCd, clientAddr);
         return;
       }
@@ -131,7 +131,7 @@ public class ContentManagementPlugin
       return;
 
     for (String peerNodeURI : this.getterPorts.keySet()) {
-      CMOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+      ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
       outBoundPort.find(cd, hops-1, requester, clientAddr);
     }
   }
@@ -159,13 +159,13 @@ public class ContentManagementPlugin
 
     if (hops-1 != 0) {
       for (String peerNodeURI : this.getterPorts.keySet()) {
-        CMOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+        ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
         if (outBoundPort != null) {
           outBoundPort.match(cd, matched, hops-1, requester, clientAddr);
         }
       }
     } else {
-      CMFacadeOutboundPort port = makeFacadeOutboundPort(requester);
+      FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
       port.acceptMatched(matched, clientAddr);
     }
   }
@@ -174,18 +174,18 @@ public class ContentManagementPlugin
     return this.getterPorts.containsKey(a.getNodeURI());
   }
 
-  private CMFacadeOutboundPort makeFacadeOutboundPort(ApplicationNodeAddressI addr) throws Exception {
+  private FacadeContentManagementOutboundPort makeFacadeOutboundPort(ApplicationNodeAddressI addr) throws Exception {
 
-    CMFacadeOutboundPort outboundPort = new CMFacadeOutboundPort(this.getOwner());
+    FacadeContentManagementOutboundPort outboundPort = new FacadeContentManagementOutboundPort(this.getOwner());
     outboundPort.publishPort();
 
     this.getOwner().doPortConnection(outboundPort.getPortURI(), addr.getContentManagementURI(),
-        CMFacadeServiceConnector.class.getCanonicalName());
+        FacadeContentManagementServiceConnector.class.getCanonicalName());
     return outboundPort;
   }
 
   public void acceptShared(ContentManagementNodeAddressI connected) throws Exception {
-    CMOutboundPort peerOutPortCM = new CMOutboundPort(this.getOwner());
+    ContentManagementOutboundPort peerOutPortCM = new ContentManagementOutboundPort(this.getOwner());
     peerOutPortCM.publishPort();
     this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), connected.getContentManagementURI(),
         ContentManagementServiceConnector.class.getCanonicalName());

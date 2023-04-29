@@ -20,12 +20,12 @@ import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
 import interfaces.NodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
-import plugins.ContentManagement.port_connector.CMOutboundPort;
+import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
+import plugins.FacadeContentManagement.FacadeContentManagementPI;
 import plugins.NetworkScanner.NetworkScannerPI;
 import plugins.NetworkScanner.NodeInformationI;
-import plugins.NetworkScanner.port_connector.NSPoutBoundPort;
+import plugins.NetworkScanner.port_connector.NetworkScannerOutboundPort;
 import plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 import ports.ClientInboundPort;
 import utiles.Displayer;
@@ -37,9 +37,9 @@ public class Client extends AbstractComponent {
 	private static final boolean DEBUG_MODE = true;
 	protected ClientInboundPort ReturnPort;
 	// The port used to call the methods of the ContentManagementPI.
-	protected CMOutboundPort CMGetterPort;
+	protected ContentManagementOutboundPort CMGetterPort;
 	// The port used to call the methods of the NetworkScannerPI.
-	protected NSPoutBoundPort NSGetterPort;
+	protected NetworkScannerOutboundPort NSGetterPort;
 	protected String NodeManagementURI;
 	protected boolean found = false;
 
@@ -47,11 +47,11 @@ public class Client extends AbstractComponent {
 	// initializes the ports.
 	protected Client(String reflectionInboundPort, String NodeManagementURI) throws Exception {
 		super(reflectionInboundPort, 1, 1);
-		this.CMGetterPort = new CMOutboundPort(this);
+		this.CMGetterPort = new ContentManagementOutboundPort(this);
 		this.CMGetterPort.publishPort();
 		this.NodeManagementURI = NodeManagementURI;
 
-		this.NSGetterPort = new NSPoutBoundPort(this);
+		this.NSGetterPort = new NetworkScannerOutboundPort(this);
 		this.NSGetterPort.publishPort();
 
 		this.ReturnPort = new ClientInboundPort(this);
