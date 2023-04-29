@@ -55,7 +55,7 @@ public class NodeInformation implements NodeInformationI {
         List<String> voisinaddr = new ArrayList<String>();
         for (NodeAddressI node : voisins) {
             try {
-                voisinaddr.add(node.getNodeURI());
+                voisinaddr.add(node.getNodeIdentifier());
             } catch (Exception e) {
                 e.printStackTrace();
             }

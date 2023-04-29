@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import interfaces.ContentTemplateI;
 
 /**
@@ -26,16 +26,16 @@ public class ContentTemplate implements ContentTemplateI {
     }
 
     public ContentTemplate(HashMap<String, Object> toLoad) {
-        this._title = (String) toLoad.get("title");
-        this._albumTitle = (String) toLoad.get("album-title");
+        this._title = (String) toLoad.get(ContentDataManager.TITLE_KEY);
+        this._albumTitle = (String) toLoad.get(ContentDataManager.ALBUM_TITLE_KEY);
         this._composers = new HashSet<String>();
         this._interpreters = new HashSet<String>();
 
-        ArrayList<?> composersBeforeCast = (ArrayList<?>) toLoad.get("composers");
+        ArrayList<?> composersBeforeCast = (ArrayList<?>) toLoad.get(ContentDataManager.COMPOSERS_KEY);
         for (Object object : composersBeforeCast)
             this._composers.add((String) object);
 
-        ArrayList<?> intepretersBeforeCast = (ArrayList<?>) toLoad.get("interpreters");
+        ArrayList<?> intepretersBeforeCast = (ArrayList<?>) toLoad.get(ContentDataManager.INTERPRETERS_KEY);
         if (intepretersBeforeCast != null) {
             for (Object object : intepretersBeforeCast)
                 this._interpreters.add((String) object);

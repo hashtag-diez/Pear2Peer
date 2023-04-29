@@ -9,10 +9,8 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import components.NodeManagement;
-import connectors.NodeManagementServiceConnector;
 import connectors.NodeServiceConnector;
 import fr.sorbonne_u.components.AbstractPlugin;
-import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
 import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
@@ -43,10 +41,11 @@ public class NodeManagementPlugin
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
   protected HashMap<String, Pair<Integer, Set<PeerNodeAddressI>>> probeCollector = new HashMap<>();
 
-  public NodeManagementPlugin(ContentManagementPlugin ContentManagementPlug, NetworkScannerPlugin NetworkScannerPlug)
+  public NodeManagementPlugin(String URI, ContentManagementPlugin ContentManagementPlug,
+      NetworkScannerPlugin NetworkScannerPlug)
       throws Exception {
     super();
-    setPluginURI(AbstractPort.generatePortURI());
+    setPluginURI(URI);
     this.ContentManagementPlug = ContentManagementPlug;
     this.NetworkScannerPlug = NetworkScannerPlug;
   }
@@ -61,18 +60,20 @@ public class NodeManagementPlugin
   public void installOn(ComponentI owner) throws Exception {
     super.installOn(owner);
     this.addOfferedInterface(NodeManagementPI.class);
+    this.addRequiredInterface(NodeManagementPI.class);
   }
 
   public void join(PeerNodeAddressI a) throws Exception {
-    // Displayer.display(a.getNodeURI() + " veut se connecter au reseau.", DEBUG_MODE);
+    // Displayer.display(a.getNodeURI() + " veut se connecter au reseau.",
+    // DEBUG_MODE);
     lock.lock();
     if (roots.size() < nbRacine) {
-      ContentManagementPlug.put(a);
-      NetworkScannerPlug.put(a);
+      // ContentManagementPlug.put(a);
+      // NetworkScannerPlug.put(a);
       roots.add(a);
     }
     lock.unlock();
-    probe(a.getNodeIdentifier(), (FacadeNodeAddressI) this.getOwner(), nbSaut, null, 0);
+    probe(a.getNodeURI(), ((NodeManagement) this.getOwner()).getApplicationNode(), nbSaut, null, 0);
   }
 
   /**
@@ -87,7 +88,8 @@ public class NodeManagementPlugin
       NetworkScannerPlug.remove(a);
     }
     lock.unlock();
-    // Displayer.display(a.getNodeURI() + " veut se déconnecter du reseau", DEBUG_MODE);
+    // Displayer.display(a.getNodeURI() + " veut se déconnecter du reseau",
+    // DEBUG_MODE);
   }
 
   public void acceptProbed(PeerNodeAddressI peer, String requestURI) throws Exception {
@@ -124,19 +126,18 @@ public class NodeManagementPlugin
       PeerNodeAddressI chosenNeighbour = ports.get(randindex);
       NodeOutboundPort port = new NodeOutboundPort(this.getOwner());
       port.publishPort();
-      this.getOwner().doPortConnection(port.getPortURI(), chosenNeighbour.getNodeIdentifier(),
+      this.getOwner().doPortConnection(port.getPortURI(), chosenNeighbour.getNodeURI(),
           NodeServiceConnector.class.getCanonicalName());
 
-      port.probe(requestURI, (FacadeNodeAddressI) this.getOwner(), nbSaut, null, 0);
-
+      port.probe(requestURI, ((NodeManagement) this.getOwner()).getApplicationNode(), nbSaut, null, 0);
       this.getOwner().doPortDisconnection(port.getPortURI());
       port.unpublishPort();
     }
   }
 
   public void connectWithFacade() throws Exception {    
-    System.out.println(((NodeManagement) this.getOwner()).getNodeManagementURI() + " : CONNEXION AUX AUTRES FACADES");
-    String[] tab = ((NodeManagement) this.getOwner()).getNodeManagementURI().split("-");
+    System.out.println(((NodeManagement) this.getOwner()).getApplicationNode().getNodeManagementURI() + " : CONNEXION AUX AUTRES FACADES");
+    String[] tab = ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier().split("-");
     String basename = tab[0]+"-"+tab[1];
     String facadeIdAstString = tab[2];
     assert false : "-----------------------------------> " + facadeIdAstString;
@@ -144,41 +145,45 @@ public class NodeManagementPlugin
     for (int i = 1; i <= 5; i++) {
       lock1.lock();
       if (i != FacadeIndex && facades.get(basename + "-" + i)==null) {
-        FacadeOutboundPort facadeOutPortNM = new FacadeOutboundPort(this.getOwner());
-        facadeOutPortNM.publishPort();
-
-        ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
-        rop.publishPort();
-
-        this.getOwner().doPortConnection(
-            rop.getPortURI(),
-            basename + "-" + i,
-            ReflectionConnector.class.getCanonicalName());
-
-        String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
-        if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-          System.out.println("NOPE");
-        } else {
-          this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
-            FacadeServiceConnector.class.getCanonicalName());
-          facades.put(basename + "-" + i, facadeOutPortNM);
-          System.out.println("\t\t\t\t" + ((FacadeNodeAddressI) this.getOwner()).getNodeManagementURI() + "<->"
-              + (basename + "-" + i));
-          facadeOutPortNM.interconnect((NodeManagement) this.getOwner());
+        try{
+          FacadeOutboundPort facadeOutPortNM = new FacadeOutboundPort(this.getOwner());
+          facadeOutPortNM.publishPort();
+  
+          ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+          rop.publishPort();
+  
+          this.getOwner().doPortConnection(
+              rop.getPortURI(),
+              basename + "-" + i,
+              ReflectionConnector.class.getCanonicalName());
+  
+          String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
+          if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+            System.out.println("NOPE");
+          } else {
+            this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
+              FacadeServiceConnector.class.getCanonicalName());
+            facades.put(basename + "-" + i, facadeOutPortNM);
+            System.out.println("\t\t\t\t" + (((NodeManagement) this.getOwner()).getApplicationNode()).getNodeIdentifier() + "<->"
+                + (basename + "-" + i));
+            facadeOutPortNM.interconnect(((NodeManagement) this.getOwner()).getApplicationNode());
+          }
+          this.getOwner().doPortDisconnection(rop.getPortURI());
+          rop.unpublishPort();
+          rop.destroyPort();
+        } catch(NullPointerException e){
+          continue;
         }
-        this.getOwner().doPortDisconnection(rop.getPortURI());
-        rop.unpublishPort();
-        rop.destroyPort();
       }
       lock1.unlock();
     }
     System.out
-        .println(((NodeManagement) this.getOwner()).getNodeIdentifier() + " : NB DE CONNEXIONS ->" + facades.size());
+        .println(((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " : NB DE CONNEXIONS ->" + facades.size());
   }
 
   public void interconnect(FacadeNodeAddressI f) throws Exception {
     lock1.lock();
-    if(facades.get(f.getNodeManagementURI())!=null){
+    if (facades.get(f.getNodeIdentifier()) != null) {
       lock1.unlock();
       return;
     }
@@ -187,10 +192,9 @@ public class NodeManagementPlugin
 
     ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
     rop.publishPort();
-
     this.getOwner().doPortConnection(
         rop.getPortURI(),
-        f.getNodeManagementURI(),
+        f.getNodeIdentifier(),
         ReflectionConnector.class.getCanonicalName());
 
     String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
@@ -198,10 +202,11 @@ public class NodeManagementPlugin
       System.out.println("NOPE");
     } else {
       this.getOwner().doPortConnection(facadeOutPortNM.getPortURI(), otherInboundPortUI[0],
-        FacadeServiceConnector.class.getCanonicalName());
-      System.out.println("\t\t\t\t" + ((FacadeNodeAddressI) this.getOwner()).getNodeManagementURI() + "<->"
-          + f.getNodeManagementURI());
-      facades.put(((FacadeNodeAddressI) this.getOwner()).getNodeManagementURI(), facadeOutPortNM);
+          FacadeServiceConnector.class.getCanonicalName());
+      System.out
+          .println("\t\t\t\t" + (((NodeManagement) this.getOwner()).getApplicationNode()).getNodeIdentifier() + "<->"
+              + f.getNodeIdentifier());
+      facades.put((((NodeManagement) this.getOwner()).getApplicationNode()).getNodeManagementURI(), facadeOutPortNM);
     }
     lock1.unlock();
     this.getOwner().doPortDisconnection(rop.getPortURI());

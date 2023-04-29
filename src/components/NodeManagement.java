@@ -6,31 +6,36 @@ import java.util.concurrent.TimeUnit;
 
 import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
+import implem.ApplicationNode;
 import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPlugin;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
-import interfaces.ContentNodeAddressI;
-import interfaces.FacadeNodeAddressI;
 
-@RequiredInterfaces(required = { NodeManagementCI.class, ClocksServerCI.class})
-@OfferedInterfaces(offered = { NodeManagementCI.class })
-public class NodeManagement extends AbstractComponent implements FacadeNodeAddressI, ContentNodeAddressI {
+@RequiredInterfaces(required = { ClocksServerCI.class })
+public class NodeManagement extends AbstractComponent {
 
 	private NodeManagementPlugin plugin;
 
 	protected ClocksServerOutboundPort csop;
 
+	private ApplicationNode app;
+
 	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId) throws Exception {
 		super(reflectionInboundPortURI, 8, 4);
 
-		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(DescriptorId, this);
+		String NodeManagementURI = AbstractPort.generatePortURI();
+		String ContentManagementURI = AbstractPort.generatePortURI();
+		app = new ApplicationNode(NodeManagementURI, ContentManagementURI, reflectionInboundPortURI);
+
+		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(NodeManagementURI, DescriptorId, app);
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
@@ -39,7 +44,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 
-		plugin = new NodeManagementPlugin(ContentManagementPlug, NetworkScannerPlug);
+		plugin = new NodeManagementPlugin(ContentManagementURI, ContentManagementPlug, NetworkScannerPlug);
 		this.installPlugin(plugin);
 	}
 
@@ -78,34 +83,7 @@ public class NodeManagement extends AbstractComponent implements FacadeNodeAddre
 			}
 		}, delayInNanosToJoin, TimeUnit.NANOSECONDS);
 	}
-
-	@Override
-	public boolean isFacade() {
-		return true;
-	}
-
-	@Override
-	public boolean isPeer() {
-		return false;
-	}
-
-	@Override
-	public String getNodeIdentifier() throws Exception {
-		return this.plugin.getPluginURI();
-	}
-
-	@Override
-	public String getNodeManagementURI() {
-		return reflectionInboundPortURI;
-	}
-
-	@Override
-	public String getContentManagementURI() {
-		return "cm-" + reflectionInboundPortURI;
-	}
-
-	@Override
-	public String getNodeURI() throws Exception {
-		throw new UnsupportedOperationException("Unimplemented method 'getNodeURI'");
+	public ApplicationNode getApplicationNode(){
+		return app;
 	}
 }

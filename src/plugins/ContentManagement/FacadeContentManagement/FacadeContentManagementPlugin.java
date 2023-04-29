@@ -2,17 +2,28 @@ package plugins.ContentManagement.FacadeContentManagement;
 
 import java.util.Set;
 
+import components.interfaces.ClientCI;
 import connectors.ClientReturnConnector;
+import fr.sorbonne_u.components.ComponentI;
+import implem.ApplicationNode;
 import interfaces.ContentDescriptorI;
-import interfaces.ContentNodeAddressI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import ports.ClientOutboundPort;
+import interfaces.ContentManagementNodeAddressI;
+
 
 public class FacadeContentManagementPlugin
     extends ContentManagementPlugin implements FacadeContentManagementPI {
 
-  public FacadeContentManagementPlugin(int DescriptorId, ContentNodeAddressI addr) throws Exception {
-    super(DescriptorId, addr);
+  public FacadeContentManagementPlugin(String URI, int DescriptorId, ApplicationNode addr) throws Exception {
+    super(URI, DescriptorId, (ContentManagementNodeAddressI) addr);
+  }
+
+  @Override
+  public void installOn(ComponentI owner) throws Exception {
+    super.installOn(owner);
+    this.addOfferedInterface(FacadeContentManagementPI.class);
+    this.addRequiredInterface(ClientCI.class);
   }
 
   private ClientOutboundPort makeClientOutboundPort(String clientUri) throws Exception {

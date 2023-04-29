@@ -186,8 +186,8 @@ public class Client extends AbstractComponent {
 	/**
 	 * It gets the network map from the NSGetterPort, and prints it
 	 */
-	public void mapNetwork() throws Exception {
-		HashMap<NodeAddressI, NodeInformationI> result = new HashMap<>();
+/* 	public void mapNetwork() throws Exception {
+		HashMap<PeerNode, NodeInformationI> result = new HashMap<>();
 		result = NSGetterPort.mapNetwork(result);
 		Displayer.display("Contain " + result.size() + " Nodes", DEBUG_MODE);
 		for (Entry<NodeAddressI, NodeInformationI> nodeInfo : result.entrySet()) {
@@ -195,5 +195,5 @@ public class Client extends AbstractComponent {
 			Displayer.display(nodeInfo.getValue().toString(), DEBUG_MODE);
 			Displayer.display("--------------------------------", DEBUG_MODE);
 		}
-	}
+	} */
 }

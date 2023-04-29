@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import components.interfaces.NodeCI;
 import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
@@ -15,6 +16,7 @@ import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
+import implem.ContentNode;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkNode.NodePlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
@@ -22,19 +24,21 @@ import interfaces.ContentNodeAddressI;
 import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.Displayer;
 
-@RequiredInterfaces(required = { NodeManagementCI.class, NodeCI.class, ClocksServerCI.class})
-@OfferedInterfaces(offered = { NodeCI.class })
-public class Node extends AbstractComponent implements ContentNodeAddressI {
+@RequiredInterfaces(required = { ClocksServerCI.class })
+public class Node extends AbstractComponent {
 
 	private static final boolean DEBUG_MODE = true;
 
 	protected ClocksServerOutboundPort csop;
 
+	private ContentNode node;
+
 	private NodePlugin plugin;
 
 	private static final int DEFAULT_NB_OF_THREADS = 4;
 
-	//private static final String NS_EXECUTION_SERVICE_URI = "networkscanner-tasks-execution-service";
+	// private static final String NS_EXECUTION_SERVICE_URI =
+	// "networkscanner-tasks-execution-service";
 	private static final String NM_EXECUTION_SERVICE_URI = "networkmanagement-tasks-execution-service";
 	private static final String CM_EXECUTION_SERVICE_URI = "content-tasks-execution-service";
 
@@ -42,15 +46,20 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
 		this.initialise(DEFAULT_NB_OF_THREADS);
 
-		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(DescriptorId, this);
+		String NodeURI = AbstractPort.generatePortURI();
+		String ContentManagementURI = AbstractPort.generatePortURI();
+		node = new ContentNode(NodeURI, ContentManagementURI, reflectionInboundPortURI);
+
+		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(ContentManagementURI, DescriptorId,
+				node);
 		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
 		NetworkScannerPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(NetworkScannerPlug);
-		
-		plugin = new NodePlugin(NMInboundURI, ContentManagementPlug, NetworkScannerPlug);
+
+		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug, NetworkScannerPlug);
 		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
 		this.installPlugin(plugin);
 
@@ -61,9 +70,10 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 	protected void initialise(int nbThreads) {
 		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
 		int nbThreadsNetwork = 2;
-		int nbThreadsContent = nbThreads-nbThreadsNetwork;
+		int nbThreadsContent = nbThreads - nbThreadsNetwork;
 
-		//this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
+		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,
+		// false);
 		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
 		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
 	}
@@ -95,7 +105,8 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		int delay = new Random().nextInt(7);
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(3 + delay));
 
-		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(3 + 7 + new Random().nextInt(3)));
+		long delayInNanosToLeave = clock
+				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(3 + 7 + new Random().nextInt(3)));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
 		// Displayer.display("[node join network] has been scheduled", DEBUG_MODE);
@@ -124,28 +135,7 @@ public class Node extends AbstractComponent implements ContentNodeAddressI {
 		}, delayInNanosToJoin, TimeUnit.NANOSECONDS);
 	}
 
-	@Override
-	public boolean isFacade() {
-		return false;
-	}
-
-	@Override
-	public boolean isPeer() {
-		return true;
-	}
-
-	@Override
-	public String getNodeIdentifier() throws Exception {
-		return plugin.getNodeInboundPort().getPortURI();
-	}
-
-	@Override
-	public String getNodeURI() {
-		return reflectionInboundPortURI;
-	}
-
-	@Override
-	public String getContentManagementURI() {
-		return "cm-" + reflectionInboundPortURI;
+	public ContentNode getContentNode() {
+		return node;
 	}
 }

@@ -3,7 +3,9 @@ package implem;
 import java.util.HashMap;
 import java.util.Set;
 
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import interfaces.ContentDescriptorI;
+import interfaces.ContentManagementNodeAddressI;
 import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
 
@@ -14,21 +16,21 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * mais plutôt l'adresse en elle-même
      */
     public ContentDescriptor(String title, String albumTitle, Set<String> interpreters, Set<String> composers,
-            Long fileSize, ContentNodeAddressI addr) {
+            Long fileSize, ContentManagementNodeAddressI addr) {
         super(title, albumTitle, interpreters, composers);
         this._size = fileSize;
         this._addr = addr;
 
     }
 
-    public ContentDescriptor(HashMap<String, Object> toLoad, ContentNodeAddressI addr) {
+    public ContentDescriptor(HashMap<String, Object> toLoad, ContentManagementNodeAddressI addr) {
         super(toLoad);
-        this._size = (Long) toLoad.get("size");
+        this._size = (Long) toLoad.get(ContentDataManager.SIZE_KEY);
         this._addr = addr;
     }
 
     protected Long _size = Long.valueOf(0);
-    protected ContentNodeAddressI _addr;
+    protected ContentManagementNodeAddressI _addr;
 
     /**
      * > This function returns the address of the content node
@@ -36,7 +38,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return The address of the content node.
      */
     @Override
-    public ContentNodeAddressI getContentNodeAdressI() {
+    public ContentManagementNodeAddressI getContentNodeAdressI() {
         return this._addr;
     }
 
@@ -71,11 +73,11 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
         return res;
     }
 
-    private boolean _isTitleEquals(ContentTemplateI request) {
+    protected boolean _isTitleEquals(ContentTemplateI request) {
         return request.getTitle().equals(getTitle());
     }
 
-    private boolean _isAlbumTitleEquals(ContentTemplateI request) {
+    protected boolean _isAlbumTitleEquals(ContentTemplateI request) {
         return request.getAlbumTitle().equals(getTitle());
     }
 
@@ -87,7 +89,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @param request The request to be checked.
      * @return A boolean value.
      */
-    private boolean _isIntrepretersContains(ContentTemplateI request) {
+    protected boolean _isIntrepretersContains(ContentTemplateI request) {
         return getInterpreters().containsAll(request.getInterpreters());
     }
 
@@ -98,7 +100,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @param request The request to be fulfilled.
      * @return A boolean value.
      */
-    private boolean _isComposersContains(ContentTemplateI request) {
+    protected boolean _isComposersContains(ContentTemplateI request) {
         // System.out.println(getComposers().containsAll(request.getComposers()));
         return getComposers().containsAll(request.getComposers());
     }

@@ -4,7 +4,7 @@ public interface ContentDescriptorI extends ContentTemplateI {
   /**
    * @return The address of the content node.
    */
-  ContentNodeAddressI getContentNodeAdressI();
+  ContentManagementNodeAddressI getContentNodeAdressI();
 
   /**
    * @return The size of the file in bytes.

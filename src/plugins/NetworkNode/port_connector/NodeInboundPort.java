@@ -15,8 +15,8 @@ public class NodeInboundPort
     extends AbstractInboundPort
     implements NodePI {
 
-  public NodeInboundPort(String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
-    super(NodePI.class, owner, pluginUri, executorServiceURI);
+  public NodeInboundPort(String uri, String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
+    super(uri, NodePI.class, owner, pluginUri, executorServiceURI);
   }
 
   @Override

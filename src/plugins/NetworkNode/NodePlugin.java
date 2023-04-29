@@ -35,6 +35,7 @@ public class NodePlugin
   // The port used to be called by other nodes component.
   protected NodeInboundPort NSetterPort;
 
+  private String URI;
   protected ContentManagementPlugin ContentManagementPlug;
   protected NetworkScannerPlugin NetworkScannerPlug;
   // A map of all the peers that this node is connected to.
@@ -42,9 +43,10 @@ public class NodePlugin
   private ReentrantLock lock = new ReentrantLock();
   private String NMReflectionInboundURI;
 
-  public NodePlugin(String NMReflectionInboundURI, ContentManagementPlugin ContentManagementPlug,
+  public NodePlugin(String NMReflectionInboundURI, String NodeURI, ContentManagementPlugin ContentManagementPlug,
       NetworkScannerPlugin NetworkScannerPlug) throws Exception {
     super();
+    this.URI = NodeURI;
     setPluginURI(AbstractPort.generatePortURI());
     this.ContentManagementPlug = ContentManagementPlug;
     this.NetworkScannerPlug = NetworkScannerPlug;
@@ -54,7 +56,7 @@ public class NodePlugin
 
   @Override
   public void initialise() throws Exception {
-    this.NSetterPort = new NodeInboundPort(this.getPluginURI(), this.getOwner(),
+    this.NSetterPort = new NodeInboundPort(URI, this.getPluginURI(), this.getOwner(),
         this.getPreferredExecutionServiceURI());
     this.NSetterPort.publishPort();
 
@@ -87,25 +89,24 @@ public class NodePlugin
     this.addOfferedInterface(NodePI.class);
     this.addRequiredInterface(NodePI.class);
     this.addRequiredInterface(NodeManagementPI.class);
-
   }
 
   public void joinNetwork() throws Exception {
     // Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ",
     // true);
-    NMGetterPort.join((PeerNodeAddressI) this.getOwner());
+    NMGetterPort.join(((Node) this.getOwner()).getContentNode());
   }
 
   public void leaveNetwork() throws Exception {
     lock.lock();
-    Displayer.display(((Node) this.getOwner()).getNodeURI() + " is leaving : " + this.peersGetterPorts.size(), true);
-    NMGetterPort.leave((PeerNodeAddressI) this.getOwner());
+    Displayer.display(((Node) this.getOwner()).getContentNode().getNodeURI() + " is leaving : " + this.peersGetterPorts.size(), true);
+    NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
     for (PeerNodeAddressI peerNodeAddressI : this.peersGetterPorts.keySet()) {
       System.out.println(
-          "\t\t\t\t" + "\t\t\t\t" + ((Node) this.getOwner()).getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
+          "\t\t\t\t" + "\t\t\t\t" + ((Node) this.getOwner()).getContentNode().getNodeURI() + "<-X->" + peerNodeAddressI.getNodeURI());
       NodeOutboundPort out = peersGetterPorts.getOrDefault(peerNodeAddressI, null);
       if (out != null) {
-        out.disconnect((PeerNodeAddressI) this.getOwner());
+        out.disconnect(((Node) this.getOwner()).getContentNode());
       }
     }
     this.peersGetterPorts.clear();
@@ -147,10 +148,10 @@ public class NodePlugin
     rop.unpublishPort();
     rop.destroyPort();
 
-    ContentManagementPlug.put(node);
-    NetworkScannerPlug.put(node);
+    // ContentManagementPlug.put(node);
+    // NetworkScannerPlug.put(node);
     this.peersGetterPorts.put(node, peerOutPortN);
-    peerOutPortN.acceptConnected((PeerNodeAddressI) this.getOwner());
+    peerOutPortN.acceptConnected(((Node) this.getOwner()).getContentNode());
     lock.unlock();
   }
 
@@ -182,8 +183,8 @@ public class NodePlugin
 
   public void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws Exception {
     for (PeerNodeAddressI peerNodeAddressI : neighbours) {
-      if (peerNodeAddressI.getNodeURI() != ((Node) (this.getOwner())).getNodeURI()) {
-        System.out.println("\t\t\t\t" + ((Node) this.getOwner()).getNodeURI() + "<->" + peerNodeAddressI.getNodeURI());
+      if (peerNodeAddressI.getNodeIdentifier() != ((Node) (this.getOwner())).getContentNode().getNodeIdentifier()) {
+        System.out.println("\t\t\t\t" + ((Node) this.getOwner()).getContentNode().getNodeIdentifier() + "<->" + peerNodeAddressI.getNodeIdentifier());
         connect(peerNodeAddressI);
       }
 
@@ -213,8 +214,8 @@ public class NodePlugin
     rop.unpublishPort();
     rop.destroyPort();
 
-    ContentManagementPlug.put(node);
-    NetworkScannerPlug.put(node);
+    // ContentManagementPlug.put(node);
+    // NetworkScannerPlug.put(node);
     this.peersGetterPorts.put(node, peerOutPortN);
   }
 
@@ -225,8 +226,8 @@ public class NodePlugin
     // peersGetterPorts.size() + ", CHOSEN NULL ? " + (chosen==null ? "True":
     // "False") );
     if (remainingHops <= 0 || this.peersGetterPorts.size() == 0) {
-      NMGetterPort.acceptProbed((chosen == null ? (Node) this.getOwner()
-          : (count > peersGetterPorts.size() ? (Node) this.getOwner() : chosen)), requestURI);
+      NMGetterPort.acceptProbed((chosen == null ? ((Node) this.getOwner()).getContentNode()
+          : (count > peersGetterPorts.size() ? ((Node) this.getOwner()).getContentNode() : chosen)), requestURI);
       lock.unlock();
       return;
     }
@@ -234,7 +235,7 @@ public class NodePlugin
     List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
     NodeOutboundPort chosenNeighbour = ports.get(randindex);
     if (chosen == null || count > peersGetterPorts.size()) {
-      chosenNeighbour.probe(requestURI, facade, remainingHops - 1, (Node) this.getOwner(), peersGetterPorts.size());
+      chosenNeighbour.probe(requestURI, facade, remainingHops - 1, ((Node) this.getOwner()).getContentNode(), peersGetterPorts.size());
     } else {
       chosenNeighbour.probe(requestURI, facade, remainingHops - 1, chosen, count);
     }
