@@ -9,16 +9,16 @@ import interfaces.ContentManagementNodeAddressI;
 import interfaces.ContentTemplateI;
 import interfaces.ApplicationNodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
+import plugins.FacadeContentManagement.FacadeContentManagementPI;
 
-public class CMOutboundPort
+public class ContentManagementOutboundPort
     extends AbstractOutboundPort
     implements ContentManagementPI {
 
-  public CMOutboundPort(ComponentI owner, Class<FacadeContentManagementPI> clasz) throws Exception {
+  public ContentManagementOutboundPort(ComponentI owner, Class<FacadeContentManagementPI> clasz) throws Exception {
     super(generatePortURI(),clasz, owner);
   }
-  public CMOutboundPort(ComponentI owner) throws Exception {
+  public ContentManagementOutboundPort(ComponentI owner) throws Exception {
     super(generatePortURI(),ContentManagementPI.class, owner);
   }
   @Override

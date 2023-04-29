@@ -1,17 +1,17 @@
-package plugins.ContentManagement.FacadeContentManagement.port_connector;
+package plugins.FacadeContentManagement.port_connector;
 
 import java.util.Set;
 
 import fr.sorbonne_u.components.ComponentI;
 import interfaces.ContentDescriptorI;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
-import plugins.ContentManagement.port_connector.CMOutboundPort;
+import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
+import plugins.FacadeContentManagement.FacadeContentManagementPI;
 
-public class CMFacadeOutboundPort
-    extends CMOutboundPort
+public class FacadeContentManagementOutboundPort
+    extends ContentManagementOutboundPort
     implements FacadeContentManagementPI {
 
-  public CMFacadeOutboundPort(ComponentI owner) throws Exception {
+  public FacadeContentManagementOutboundPort(ComponentI owner) throws Exception {
     super(owner, FacadeContentManagementPI.class);
   }
 

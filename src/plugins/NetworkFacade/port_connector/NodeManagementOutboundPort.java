@@ -9,11 +9,11 @@ import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkFacade.NodeManagementPI;
 
-public class FacadeOutboundPort
+public class NodeManagementOutboundPort
     extends AbstractOutboundPort
     implements NodeManagementPI {
 
-  public FacadeOutboundPort(ComponentI owner) throws Exception {
+  public NodeManagementOutboundPort(ComponentI owner) throws Exception {
     super(generatePortURI(), NodeManagementPI.class, owner);
   }
 

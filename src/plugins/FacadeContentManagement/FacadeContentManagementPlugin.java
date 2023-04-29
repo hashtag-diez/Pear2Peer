@@ -1,4 +1,4 @@
-package plugins.ContentManagement.FacadeContentManagement;
+package plugins.FacadeContentManagement;
 
 import java.util.Set;
 
@@ -10,9 +10,9 @@ import implem.ApplicationNode;
 import interfaces.ApplicationNodeAddressI;
 import interfaces.ContentDescriptorI;
 import plugins.ContentManagement.ContentManagementPlugin;
-import plugins.ContentManagement.FacadeContentManagement.port_connector.CMFacadeInboundPort;
-import plugins.ContentManagement.port_connector.CMOutboundPort;
+import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
+import plugins.FacadeContentManagement.port_connector.FacadeContentManagementInboundPort;
 import ports.ClientOutboundPort;
 import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
@@ -26,7 +26,7 @@ public class FacadeContentManagementPlugin
 
   @Override
   public void initialise() throws Exception {
-    this.setterPort = new CMFacadeInboundPort(URI, this.getPluginURI(), this.getOwner(),
+    this.setterPort = new FacadeContentManagementInboundPort(URI, this.getPluginURI(), this.getOwner(),
         this.getPreferredExecutionServiceURI());
     this.setterPort.publishPort();
   }
@@ -48,7 +48,7 @@ public class FacadeContentManagementPlugin
     }
 
     for (String peerNodeURI : this.getterPorts.keySet()) {
-      CMOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+      ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
       outBoundPort.find(cd, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
     }
   }
@@ -75,7 +75,7 @@ public class FacadeContentManagementPlugin
       }
     }
     for (String peerNodeURI : this.getterPorts.keySet()) {
-      CMOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+      ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
       if (outBoundPort != null) {
         outBoundPort.match(cd, matched, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
       }
@@ -117,7 +117,7 @@ public class FacadeContentManagementPlugin
    */
   @Override
   public void put(ContentNodeAddressI node) throws Exception {
-    CMOutboundPort peerOutPortCM = new CMOutboundPort(this.getOwner());
+    ContentManagementOutboundPort peerOutPortCM = new ContentManagementOutboundPort(this.getOwner());
     peerOutPortCM.publishPort();
     this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), node.getContentManagementURI(),
         ContentManagementServiceConnector.class.getCanonicalName());

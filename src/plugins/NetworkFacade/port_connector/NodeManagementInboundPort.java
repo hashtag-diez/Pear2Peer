@@ -11,11 +11,11 @@ import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 
-public class FacadeInboundPort
+public class NodeManagementInboundPort
     extends AbstractInboundPort
     implements NodeManagementPI {
 
-  public FacadeInboundPort(String pluginUri, ComponentI owner) throws Exception {
+  public NodeManagementInboundPort(String pluginUri, ComponentI owner) throws Exception {
     super(NodeManagementPI.class, owner, pluginUri, null);
   }
 

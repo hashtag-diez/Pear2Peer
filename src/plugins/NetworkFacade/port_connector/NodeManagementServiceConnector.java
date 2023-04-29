@@ -8,7 +8,7 @@ import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkFacade.NodeManagementPI;
 
-public class FacadeServiceConnector
+public class NodeManagementServiceConnector
     extends AbstractConnector
     implements NodeManagementPI {
 

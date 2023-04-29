@@ -11,19 +11,19 @@ import interfaces.ContentTemplateI;
 import interfaces.ApplicationNodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.ContentManagementPlugin;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
+import plugins.FacadeContentManagement.FacadeContentManagementPI;
 
 /**
  * InboundPortCM
  */
-public class CMInboundPort extends AbstractInboundPort
+public class ContentManagementInboundPort extends AbstractInboundPort
         implements ContentManagementPI {
 
-    public CMInboundPort(String uri, String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
+    public ContentManagementInboundPort(String uri, String pluginUri, ComponentI owner, String executorServiceURI) throws Exception {
         super(uri, ContentManagementPI.class, owner, pluginUri, executorServiceURI);
     }
 
-    public CMInboundPort(String uri, String pluginUri, ComponentI owner, Class<FacadeContentManagementPI> class1, String executorServiceURI)
+    public ContentManagementInboundPort(String uri, String pluginUri, ComponentI owner, Class<FacadeContentManagementPI> class1, String executorServiceURI)
             throws Exception {
         super(uri, class1, owner, pluginUri, executorServiceURI);
     }

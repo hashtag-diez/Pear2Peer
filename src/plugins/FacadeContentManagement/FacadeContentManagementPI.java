@@ -1,4 +1,4 @@
-package plugins.ContentManagement.FacadeContentManagement;
+package plugins.FacadeContentManagement;
 
 import java.util.Set;
 

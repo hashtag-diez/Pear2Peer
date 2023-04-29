@@ -8,11 +8,11 @@ import interfaces.NodeAddressI;
 import plugins.NetworkScanner.NetworkScannerPI;
 import plugins.NetworkScanner.NodeInformationI;
 
-public class NSPoutBoundPort
+public class NetworkScannerOutboundPort
     extends AbstractOutboundPort
     implements NetworkScannerPI {
 
-  public NSPoutBoundPort(ComponentI owner) throws Exception {
+  public NetworkScannerOutboundPort(ComponentI owner) throws Exception {
     super(generatePortURI(), NetworkScannerPI.class, owner);
   }
 

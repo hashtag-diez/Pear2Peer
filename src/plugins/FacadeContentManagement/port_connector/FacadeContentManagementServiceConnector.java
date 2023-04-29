@@ -1,12 +1,12 @@
-package plugins.ContentManagement.FacadeContentManagement.port_connector;
+package plugins.FacadeContentManagement.port_connector;
 
 import java.util.Set;
 
 import interfaces.ContentDescriptorI;
-import plugins.ContentManagement.FacadeContentManagement.FacadeContentManagementPI;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
+import plugins.FacadeContentManagement.FacadeContentManagementPI;
 
-public class CMFacadeServiceConnector extends ContentManagementServiceConnector
+public class FacadeContentManagementServiceConnector extends ContentManagementServiceConnector
         implements FacadeContentManagementPI {
 
     @Override

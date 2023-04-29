@@ -10,10 +10,10 @@ import plugins.NetworkScanner.NetworkScannerPI;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 import plugins.NetworkScanner.NodeInformationI;
 
-public class NSPInBoundPort extends AbstractInboundPort
+public class NetworkScannerInboundPort extends AbstractInboundPort
         implements NetworkScannerPI {
 
-    public NSPInBoundPort(String pluginUri, ComponentI owner) throws Exception {
+    public NetworkScannerInboundPort(String pluginUri, ComponentI owner) throws Exception {
         super(NetworkScannerPI.class, owner, pluginUri,null);
     }
 
