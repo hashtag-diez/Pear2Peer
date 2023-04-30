@@ -1,4 +1,4 @@
-package scenarios.match;
+package run.scenarios.find;
 
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
@@ -8,19 +8,18 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
-import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.DebugDisplayer;
 
-public class ClientLookingForContentWhichMatch extends Client {
+public class ClientLookingForContent extends Client {
 
 	private static final boolean DEBUG_MODE = true;
 	protected ClocksServerOutboundPort csop;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-	protected ClientLookingForContentWhichMatch(String reflectionInboundPort, String CMNodeManagementInboundURI)
+	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI)
 			throws Exception {
 		super(reflectionInboundPort, CMNodeManagementInboundURI);
-
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 	}
@@ -30,7 +29,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 		super.execute();
 
 		scheduleClientTasks();
-		debugPrinter.display("Client task [match] sheduled");
+		debugPrinter.display("Client task [find] sheduled");
 	}
 
 	private void scheduleClientTasks() throws Exception {
@@ -47,12 +46,12 @@ public class ClientLookingForContentWhichMatch extends Client {
 		clock.waitUntilStart();
 
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(5));
+				startInstant.plusSeconds(7));
 
 		this.scheduleTask(
 				o -> {
 					try {
-						((ClientLookingForContentWhichMatch) o).exampleSearchContainsWichMatch();
+						((ClientLookingForContent) o).exampleSearchFind();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -60,5 +59,4 @@ public class ClientLookingForContentWhichMatch extends Client {
 				delayInNanosToSearch,
 				TimeUnit.NANOSECONDS);
 	}
-
 }

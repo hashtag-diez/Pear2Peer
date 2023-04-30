@@ -1,4 +1,4 @@
-package scenarios.connect_disconnect;
+package run.scenarios.connect_disconnect;
 
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;

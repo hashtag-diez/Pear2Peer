@@ -77,7 +77,7 @@ public class NodeManagement extends AbstractComponent {
 				ClocksServerConnector.class.getCanonicalName());
 
 		AcceleratedClock clock = this.csop
-				.getClock(scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
+				.getClock(run.scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 

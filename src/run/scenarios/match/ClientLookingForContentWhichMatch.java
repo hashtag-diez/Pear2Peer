@@ -1,4 +1,4 @@
-package scenarios.find;
+package run.scenarios.match;
 
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
@@ -8,18 +8,19 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
-import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.DebugDisplayer;
 
-public class ClientLookingForContent extends Client {
+public class ClientLookingForContentWhichMatch extends Client {
 
 	private static final boolean DEBUG_MODE = true;
 	protected ClocksServerOutboundPort csop;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI)
+	protected ClientLookingForContentWhichMatch(String reflectionInboundPort, String CMNodeManagementInboundURI)
 			throws Exception {
 		super(reflectionInboundPort, CMNodeManagementInboundURI);
+
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 	}
@@ -29,7 +30,7 @@ public class ClientLookingForContent extends Client {
 		super.execute();
 
 		scheduleClientTasks();
-		debugPrinter.display("Client task [find] sheduled");
+		debugPrinter.display("Client task [match] sheduled");
 	}
 
 	private void scheduleClientTasks() throws Exception {
@@ -46,12 +47,12 @@ public class ClientLookingForContent extends Client {
 		clock.waitUntilStart();
 
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(7));
+				startInstant.plusSeconds(5));
 
 		this.scheduleTask(
 				o -> {
 					try {
-						((ClientLookingForContent) o).exampleSearchFind();
+						((ClientLookingForContentWhichMatch) o).exampleSearchContainsWichMatch();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -59,4 +60,5 @@ public class ClientLookingForContent extends Client {
 				delayInNanosToSearch,
 				TimeUnit.NANOSECONDS);
 	}
+
 }

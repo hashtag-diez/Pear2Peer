@@ -15,7 +15,7 @@ import implem.ContentNode;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkNode.NodePlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
-import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.DebugDisplayer;
 import utiles.Helpers;
 
