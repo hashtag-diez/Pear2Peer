@@ -114,7 +114,7 @@ public class Client extends AbstractComponent {
 	 * @return A ContentTemplate object
 	 */
 	public ContentTemplateI pickTemplate() throws ClassNotFoundException, IOException {
-		ContentDataManager.DATA_DIR_NAME = "src/data2";
+		ContentDataManager.DATA_DIR_NAME = "src/data";
 		ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(0);
 		return new ContentTemplate(Helpers.getRandomElement(result));
 	}

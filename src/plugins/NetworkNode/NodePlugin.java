@@ -103,10 +103,9 @@ public class NodePlugin
   public void leaveNetwork() throws Exception {
     lock.lock();
     NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
-    for (String peerPortURI : this.peersGetterPorts.keySet()) {
-      NodeOutboundPort out = peersGetterPorts.get(peerPortURI);
+    for (NodeOutboundPort out : this.peersGetterPorts.values())
       out.disconnect(((Node) this.getOwner()).getContentNode());
-    }
+
     this.peersGetterPorts.clear();
     lock.unlock();
   }

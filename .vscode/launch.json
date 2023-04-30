@@ -8,6 +8,20 @@
       "type": "java",
       "name": "MatchScenarioBasic",
       "request": "launch",
+      "mainClass": "run.scenarios.match.MatchScenarioBasic",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
+      "name": "FindScenarioBasic",
+      "request": "launch",
+      "mainClass": "run.scenarios.find.FindScenarioBasic",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
+      "name": "MatchScenarioBasic",
+      "request": "launch",
       "mainClass": "scenarios.match.MatchScenarioBasic",
       "projectName": "Pear2Peer"
     },
@@ -26,7 +40,7 @@
       "projectName": "Pear2Peer",
       "vmArgs": [
         "-enableassertions"
-      ],
+      ]
     },
     {
       "type": "java",
@@ -36,7 +50,7 @@
       "projectName": "Pear2Peer",
       "vmArgs": [
         "-ea"
-      ],
+      ]
     },
     {
       "type": "java",

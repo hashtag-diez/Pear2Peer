@@ -37,10 +37,12 @@ public class Helpers {
 
     // Get a random sub set from an set
     public static <T> Collection<T> getRandomCollection(Collection<T> set, int size) {
-        while (set.size() > size) {
-            set.remove(getRandomElement(set));
+      // Copy collection
+        Collection<T> subSet = new java.util.ArrayList<T>(set);
+        while (subSet.size() > size) {
+            subSet.remove(getRandomElement(subSet));
         }
-        return set;
+        return subSet;
     }
 
 }
