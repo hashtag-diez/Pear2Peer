@@ -9,12 +9,13 @@ import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
-import utiles.Displayer;
+import utiles.DebugDisplayer;
 
 public class ClientLookingForContentWhichMatch extends Client {
 
 	private static final boolean DEBUG_MODE = true;
 	protected ClocksServerOutboundPort csop;
+	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	protected ClientLookingForContentWhichMatch(String reflectionInboundPort, String CMNodeManagementInboundURI)
 			throws Exception {
@@ -29,7 +30,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 		super.execute();
 
 		scheduleClientTasks();
-		Displayer.display("Client task [match] sheduled", DEBUG_MODE);
+		debugPrinter.display("Client task [match] sheduled");
 	}
 
 	private void scheduleClientTasks() throws Exception {
@@ -44,11 +45,10 @@ public class ClientLookingForContentWhichMatch extends Client {
 		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
-	
-		long delayInNanosToSearch =
-				clock.nanoDelayUntilAcceleratedInstant(
-												startInstant.plusSeconds(5));
-		
+
+		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
+				startInstant.plusSeconds(5));
+
 		this.scheduleTask(
 				o -> {
 					try {
@@ -60,5 +60,5 @@ public class ClientLookingForContentWhichMatch extends Client {
 				delayInNanosToSearch,
 				TimeUnit.NANOSECONDS);
 	}
-	
+
 }

@@ -9,12 +9,13 @@ import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
-import utiles.Displayer;
+import utiles.DebugDisplayer;
 
 public class ClientLookingForContent extends Client {
 
 	private static final boolean DEBUG_MODE = true;
 	protected ClocksServerOutboundPort csop;
+	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI)
 			throws Exception {
@@ -26,11 +27,11 @@ public class ClientLookingForContent extends Client {
 	@Override
 	public void execute() throws Exception {
 		super.execute();
-		
+
 		scheduleClientTasks();
-		Displayer.display("Client task [find] sheduled", DEBUG_MODE);
+		debugPrinter.display("Client task [find] sheduled");
 	}
-	
+
 	private void scheduleClientTasks() throws Exception {
 		// connexion à l'horloge
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
@@ -43,11 +44,10 @@ public class ClientLookingForContent extends Client {
 		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
-	
-		long delayInNanosToSearch =
-				clock.nanoDelayUntilAcceleratedInstant(
-												startInstant.plusSeconds(7));
-		
+
+		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
+				startInstant.plusSeconds(7));
+
 		this.scheduleTask(
 				o -> {
 					try {

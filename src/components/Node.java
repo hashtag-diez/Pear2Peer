@@ -1,14 +1,10 @@
 package components;
 
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import components.interfaces.NodeCI;
-import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPort;
-import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
@@ -20,14 +16,12 @@ import implem.ContentNode;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkNode.NodePlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
-import interfaces.ContentNodeAddressI;
 import scenarios.connect_disconnect.ConnectionDisconnectionScenario;
-import utiles.Displayer;
+import utiles.DebugDisplayer;
+import utiles.Helpers;
 
 @RequiredInterfaces(required = { ClocksServerCI.class })
 public class Node extends AbstractComponent {
-
-	private static final boolean DEBUG_MODE = true;
 
 	protected ClocksServerOutboundPort csop;
 
@@ -36,6 +30,8 @@ public class Node extends AbstractComponent {
 	private NodePlugin plugin;
 
 	private static final int DEFAULT_NB_OF_THREADS = 4;
+	private static final boolean DEBUG_MODE = true;
+	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	// private static final String NS_EXECUTION_SERVICE_URI =
 	// "networkscanner-tasks-execution-service";
@@ -61,7 +57,6 @@ public class Node extends AbstractComponent {
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug, NetworkScannerPlug);
 		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
-		this.installPlugin(plugin);
 
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
@@ -81,6 +76,12 @@ public class Node extends AbstractComponent {
 	@Override
 	public void start() throws ComponentStartException {
 		super.start();
+		try {
+			this.installPlugin(plugin); // Can't reflect if not s
+		} catch (Exception e) {
+			throw new ComponentStartException(e);
+		}
+
 	}
 
 	@Override
@@ -102,16 +103,16 @@ public class Node extends AbstractComponent {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		int delay = new Random().nextInt(2);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2+delay));
+		int delay = Helpers.getRandomNumber(2);
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2 + delay));
 
 		long delayInNanosToLeave = clock
 				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(10));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
-		// Displayer.display("[node join network] has been scheduled", DEBUG_MODE);
-		// scheduleDisconnectionToNetwork(delayInNanosToLeave);
-		// Displayer.display("[node disconnection] has been scheduled", DEBUG_MODE);
+		debugPrinter.display("[node join network] has been scheduled");
+		scheduleDisconnectionToNetwork(delayInNanosToLeave);
+		debugPrinter.display("[node disconnection] has been scheduled");
 
 	}
 

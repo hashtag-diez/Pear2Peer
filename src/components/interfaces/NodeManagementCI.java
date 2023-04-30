@@ -43,5 +43,6 @@ public interface NodeManagementCI extends OfferedCI, RequiredCI, ProbingCI {
 	 */
 	void leave(PeerNodeAddressI a) throws Exception;
 
-	void acceptProbed(PeerNodeAddressI peer, String requestURI) throws RejectedExecutionException, AssertionError, Exception;
+	void acceptProbed(PeerNodeAddressI peer, String requestURI)
+			throws RejectedExecutionException, AssertionError, Exception;
 }

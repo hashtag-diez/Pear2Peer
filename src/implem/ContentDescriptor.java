@@ -6,13 +6,13 @@ import java.util.Set;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentManagementNodeAddressI;
-import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
 
 public class ContentDescriptor extends ContentTemplate implements ContentDescriptorI {
 
-    /* TODO
-     * Ne pas transmettre la référence à l'objet ContentNodeAddressI directement, 
+    /*
+     * TODO
+     * Ne pas transmettre la référence à l'objet ContentNodeAddressI directement,
      * mais plutôt l'adresse en elle-même
      */
     public ContentDescriptor(String title, String albumTitle, Set<String> interpreters, Set<String> composers,
@@ -101,7 +101,6 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return A boolean value.
      */
     protected boolean _isComposersContains(ContentTemplateI request) {
-        // System.out.println(getComposers().containsAll(request.getComposers()));
         return getComposers().containsAll(request.getComposers());
     }
 

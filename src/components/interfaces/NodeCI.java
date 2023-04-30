@@ -1,7 +1,6 @@
 package components.interfaces;
 
 import java.util.Set;
-import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
@@ -25,12 +24,9 @@ import interfaces.PeerNodeAddressI;
 public interface NodeCI extends OfferedCI, RequiredCI, ProbingCI {
 
 	/**
-	 * receives as a parameter the address of a new peer that wishes to connect to
-	 * it by as a neighbor, connects to it and returns its own address as
-	 * confirmation.
+	 * The connect function establishes a connection with a peer node address.
 	 * 
-	 * @param a : address of a the peer node to connect with.
-	 * @return the address of the current node
+	 * @param a The parameter a is the address of the peer node to connect to.
 	 * @throws Exception
 	 */
 	void connect(PeerNodeAddressI a) throws Exception;
@@ -43,7 +39,16 @@ public interface NodeCI extends OfferedCI, RequiredCI, ProbingCI {
 	 */
 	void disconnect(PeerNodeAddressI a) throws Exception;
 
-	void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws RejectedExecutionException, AssertionError, Exception;
-	void acceptConnected(PeerNodeAddressI connected) throws RejectedExecutionException, AssertionError, Exception;
-	
+	/**
+	 * This function is called after a sucessful probing. It run connect on all the
+	 * neighbours received
+	 * 
+	 * @param neighbours : set of neighbours to connect to.
+	 * @throws Exception
+	 */
+	void acceptNeighbours(Set<PeerNodeAddressI> neighbours)
+			throws Exception;
+
+	void acceptConnected(PeerNodeAddressI connected) throws Exception;
+
 }

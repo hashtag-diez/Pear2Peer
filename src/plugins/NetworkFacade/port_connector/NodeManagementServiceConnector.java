@@ -3,7 +3,6 @@ package plugins.NetworkFacade.port_connector;
 import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
-import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 import plugins.NetworkFacade.NodeManagementPI;
@@ -23,23 +22,14 @@ public class NodeManagementServiceConnector
   }
 
   @Override
-  public void join(ContentNodeAddressI a) throws Exception {
-    ((NodeManagementPI) this.offering).join(a);
-  }
-
-  @Override
-  public void leave(ContentNodeAddressI a) throws Exception {
-    ((NodeManagementPI) this.offering).leave(a);
-  }
-
-  @Override
   public void acceptProbed(PeerNodeAddressI peer, String requestURI)
       throws RejectedExecutionException, AssertionError, Exception {
     ((NodeManagementPI) this.offering).acceptProbed(peer, requestURI);
   }
 
   @Override
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int chosenNeighbourCount)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
+      int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
     ((NodeManagementPI) this.offering).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
   }

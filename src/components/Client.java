@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import components.interfaces.ClientCI;
 import fr.sorbonne_u.components.AbstractComponent;
@@ -18,23 +17,20 @@ import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentTemplate;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentTemplateI;
-import interfaces.NodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
 import plugins.FacadeContentManagement.FacadeContentManagementPI;
 import plugins.NetworkScanner.NetworkScannerPI;
-import plugins.NetworkScanner.NodeInformationI;
 import plugins.NetworkScanner.port_connector.NetworkScannerOutboundPort;
 import plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 import ports.ClientInboundPort;
-import utiles.Displayer;
+import utiles.DebugDisplayer;
 
 @OfferedInterfaces(offered = { ClientCI.class })
 @RequiredInterfaces(required = { ContentManagementPI.class, NetworkScannerPI.class })
 public class Client extends AbstractComponent {
 
-	private static final boolean DEBUG_MODE = true;
 	protected ClientInboundPort ReturnPort;
 	// The port used to call the methods of the ContentManagementPI.
 	protected ContentManagementOutboundPort CMGetterPort;
@@ -42,6 +38,8 @@ public class Client extends AbstractComponent {
 	protected NetworkScannerOutboundPort NSGetterPort;
 	protected String NodeManagementURI;
 	protected boolean found = false;
+	private static final boolean DEBUG_MODE = true;
+	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	// The constructor of the Client class. It creates the Client object and
 	// initializes the ports.
@@ -88,7 +86,7 @@ public class Client extends AbstractComponent {
 		
 		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(FacadeContentManagementPI.class);
 		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-			Displayer.display("NOPE", DEBUG_MODE);
+			debugPrinter.display("NOPE");
 		} else {
 			this.doPortConnection(CMGetterPort.getPortURI(), otherInboundPortUI[0],
 					ContentManagementServiceConnector.class.getCanonicalName());
@@ -101,7 +99,7 @@ public class Client extends AbstractComponent {
 
 		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
 		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-			Displayer.display("NOPE", DEBUG_MODE);
+			debugPrinter.display("NOPE");
 		} else {
 			this.doPortConnection(NSGetterPort.getPortURI(), otherInboundPortUI[0],
 					NetworkScannerServiceConnector.class.getCanonicalName());
@@ -125,23 +123,23 @@ public class Client extends AbstractComponent {
 	 * It picks a template, prints it, and then asks the Network for matches
 	 */
 	public void exampleSearchContainsWichMatch() throws Exception {
-		Displayer.display("Client start searching [match]", DEBUG_MODE);
+		debugPrinter.display("Client start searching [match]");
 		ContentTemplateI temp = pickTemplate();
-		Displayer.display("Template recherche :\\n" + temp, DEBUG_MODE);
+		debugPrinter.display("Template recherche :\\n" + temp);
 		Set<ContentDescriptorI> matched = new HashSet<>();
 
 		ReturnPort.publishPort();
 		CMGetterPort.match(temp, matched, 5, null, ReturnPort.getPortURI());
-		Displayer.display("Matched count: " + matched.size(), DEBUG_MODE);
+		debugPrinter.display("Matched count: " + matched.size());
 	}
 
 	/**
 	 * It picks a template, prints it, and then asks the Network to find it
 	 */
 	public void exampleSearchFind() throws Exception {
-		Displayer.display("Client start searching [find]", DEBUG_MODE);
+		debugPrinter.display("Client start searching [find]");
 		ContentTemplateI temp = pickTemplate();
-		Displayer.display("Template recherche :\n" + temp.toString(), DEBUG_MODE);
+		debugPrinter.display("Template recherche :\n" + temp.toString());
 		found = false;
 		ReturnPort.publishPort();
 		System.out.println("\t\t\t\t\t\t " + ReturnPort.getPortURI());
@@ -160,7 +158,7 @@ public class Client extends AbstractComponent {
 		if (ReturnPort.isPublished()) {
 			if (found == false) {
 				ReturnPort.unpublishPort();
-				Displayer.display("Found : " + matched.toString(), DEBUG_MODE);
+				debugPrinter.display("Found : " + matched.toString());
 			} else
 				found = true;
 		}
@@ -177,25 +175,12 @@ public class Client extends AbstractComponent {
 		if (ReturnPort.isPublished()) {
 			if (!matched.isEmpty()) {
 				ReturnPort.unpublishPort();
-				Displayer.display("Matched : ", DEBUG_MODE);
+				debugPrinter.display("Matched : ");
 				for (ContentDescriptorI contentDescriptor : matched) {
-					Displayer.display(contentDescriptor.toString(), DEBUG_MODE);
+					debugPrinter.display(contentDescriptor.toString());
 				}
 			}
 		}
 	}
 
-	/**
-	 * It gets the network map from the NSGetterPort, and prints it
-	 */
-/* 	public void mapNetwork() throws Exception {
-		HashMap<PeerNode, NodeInformationI> result = new HashMap<>();
-		result = NSGetterPort.mapNetwork(result);
-		Displayer.display("Contain " + result.size() + " Nodes", DEBUG_MODE);
-		for (Entry<NodeAddressI, NodeInformationI> nodeInfo : result.entrySet()) {
-			Displayer.display("Node " + nodeInfo.getKey().getNodeURI() + " : ", DEBUG_MODE);
-			Displayer.display(nodeInfo.getValue().toString(), DEBUG_MODE);
-			Displayer.display("--------------------------------", DEBUG_MODE);
-		}
-	} */
 }

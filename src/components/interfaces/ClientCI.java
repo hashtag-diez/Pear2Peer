@@ -9,14 +9,15 @@ import interfaces.ContentDescriptorI;
 public interface ClientCI extends OfferedCI, RequiredCI {
 
     /**
-     * > This function is called when the search is complete
+     * > This function is called when the find is complete by a node
+     * > Due to a boolean flag, this function can only be called once
      * 
-     * @param result The result of the search.
+     * @param result The set of ContentDescriptorI objects that match the query.
      */
     void findResult(ContentDescriptorI result) throws Exception;
 
     /**
-     * > This function is called when the search is complete by a node
+     * > This function is called when the match is complete by a node
      * > (Can occur multiple times)
      * 
      * @param result The set of ContentDescriptorI objects that match the query.

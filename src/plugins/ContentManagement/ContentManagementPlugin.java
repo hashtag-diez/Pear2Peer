@@ -12,7 +12,6 @@ import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentDescriptor;
-import implem.ContentNode;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentManagementNodeAddressI;
 import interfaces.ContentNodeAddressI;
@@ -48,7 +47,8 @@ public class ContentManagementPlugin
 
   @Override
   public void initialise() throws Exception {
-    this.setterPort = new ContentManagementInboundPort(URI, this.getPluginURI(), this.getOwner(), this.getPreferredExecutionServiceURI());
+    this.setterPort = new ContentManagementInboundPort(URI, this.getPluginURI(), this.getOwner(),
+        this.getPreferredExecutionServiceURI());
     this.setterPort.publishPort();
   }
 
@@ -76,11 +76,6 @@ public class ContentManagementPlugin
     peerOutPortCM.acceptShared(((Node) this.getOwner()).getContentNode());
   }
 
-  public ContentManagementOutboundPort get(PeerNodeAddressI node) {
-    ContentManagementOutboundPort outBoundPortCM = this.getterPorts.get(node.getNodeURI());
-    return outBoundPortCM;
-  }
-
   /**
    * It removes the node from the list of nodes that the owner of the
    * `GetterPorts` object can get data
@@ -89,16 +84,15 @@ public class ContentManagementPlugin
    * @param node the node to remove
    */
   public void remove(PeerNodeAddressI node) throws Exception {
-    ContentManagementOutboundPort outBoundPortCM = get(node);
-    if (outBoundPortCM != null) {
-      getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
-      outBoundPortCM.unpublishPort();
-      this.getterPorts.remove(node.getNodeURI());
-    }
+    ContentManagementOutboundPort outBoundPortCM = this.getterPorts.remove(node.getNodeURI());
+    if (outBoundPortCM == null) /* Si il leave en même temps  */
+      return;
+    getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
+    outBoundPortCM.unpublishPort();
   }
 
   public void loadDescriptors(int number, ContentManagementNodeAddressI addr) throws Exception {
-    ContentDataManager.DATA_DIR_NAME = "src/data2";
+    ContentDataManager.DATA_DIR_NAME = "src/data";
     ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
     for (HashMap<String, Object> obj : result) {
       ContentDescriptorI readDescriptor = new ContentDescriptor(obj, addr);
@@ -117,9 +111,9 @@ public class ContentManagementPlugin
    * @param hops       the number of hops to go through
    * @param returnAddr the address of the client that made the request
    */
-  public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr) throws Exception {
-    
-    //System.out.println(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " : " +  hops);
+  public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr)
+      throws Exception {
+
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(cd)) {
         FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
@@ -127,12 +121,12 @@ public class ContentManagementPlugin
         return;
       }
     }
-    if (hops-1 == 0)
+    if (hops - 1 == 0)
       return;
 
     for (String peerNodeURI : this.getterPorts.keySet()) {
       ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
-      outBoundPort.find(cd, hops-1, requester, clientAddr);
+      outBoundPort.find(cd, hops - 1, requester, clientAddr);
     }
   }
 
@@ -157,11 +151,11 @@ public class ContentManagementPlugin
       }
     }
 
-    if (hops-1 != 0) {
+    if (hops - 1 != 0) {
       for (String peerNodeURI : this.getterPorts.keySet()) {
         ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
         if (outBoundPort != null) {
-          outBoundPort.match(cd, matched, hops-1, requester, clientAddr);
+          outBoundPort.match(cd, matched, hops - 1, requester, clientAddr);
         }
       }
     } else {

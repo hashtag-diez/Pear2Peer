@@ -3,8 +3,8 @@ package plugins.NetworkFacade;
 import java.util.concurrent.RejectedExecutionException;
 
 import components.interfaces.NodeManagementCI;
-import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
+import interfaces.PeerNodeAddressI;
 
 /**
  * The interface <code>NodeManagementCI</code> represents an interface which is
@@ -20,8 +20,8 @@ import interfaces.FacadeNodeAddressI;
  * @author ABSSI (Team)
  *
  */
-public interface NodeManagementPI extends NodeManagementCI{
-  /**
+public interface NodeManagementPI extends NodeManagementCI {
+	/**
 	 * Takes as a parameter the address of the peer node to be inserted into the
 	 * network and returns a set of peer node addresses to which it can connect as
 	 * new neighbor
@@ -30,7 +30,7 @@ public interface NodeManagementPI extends NodeManagementCI{
 	 * @return
 	 * @throws Exception
 	 */
-	void join(ContentNodeAddressI a) throws Exception;
+	void join(PeerNodeAddressI a) throws Exception;
 
 	/**
 	 * Takes as a parameter the address of the peer node leaving the network.
@@ -40,6 +40,7 @@ public interface NodeManagementPI extends NodeManagementCI{
 	 * @param a : address of the peer node which want to join the network.
 	 * @throws Exception
 	 */
-	void leave(ContentNodeAddressI a) throws Exception;
-  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception;
+	void leave(PeerNodeAddressI a) throws Exception;
+
+	public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception;
 }

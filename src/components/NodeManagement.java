@@ -1,13 +1,10 @@
 package components;
 
 import java.time.Instant;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import components.interfaces.NodeManagementCI;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPort;
-import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
@@ -18,6 +15,7 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
+import utiles.Helpers;
 
 @RequiredInterfaces(required = { ClocksServerCI.class })
 public class NodeManagement extends AbstractComponent {
@@ -40,7 +38,8 @@ public class NodeManagement extends AbstractComponent {
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		app = new ApplicationNode(NodeManagementURI, ContentManagementURI, reflectionInboundPortURI);
 
-		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(ContentManagementURI, DescriptorId, app);
+		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(ContentManagementURI,
+				DescriptorId, app);
 		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(ContentManagementPlug);
 
@@ -86,7 +85,7 @@ public class NodeManagement extends AbstractComponent {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		int delay = new Random().nextInt(1);
+		int delay = Helpers.getRandomNumber(1);
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay));
 
 		scheduleConnectionWithFacades(delayInNanosToJoin);
@@ -101,7 +100,8 @@ public class NodeManagement extends AbstractComponent {
 			}
 		}, delayInNanosToJoin, TimeUnit.NANOSECONDS);
 	}
-	public ApplicationNode getApplicationNode(){
+
+	public ApplicationNode getApplicationNode() {
 		return app;
 	}
 }

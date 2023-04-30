@@ -41,7 +41,7 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;
-	protected final int NB_FACADE = 5;
+	protected final int NB_FACADE = 1;
 	/**
 	 * Reference to the provider component to share between deploy and shutdown.
 	 */
@@ -78,7 +78,7 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 			// Create an instance of the defined component virtual machine.
 			ConnectionDisconnectionScenario a = new ConnectionDisconnectionScenario();
 			// Execute the application.
-			a.startStandardLifeCycle(15000L);
+			a.startStandardLifeCycle(30000L);
 			// Give some time to see the traces (convenience).
 			// Thread.sleep(500L);
 			// Simplifies the termination (termination has yet to be treated

@@ -7,7 +7,6 @@ import plugins.NetworkFacade.NodeManagementPlugin;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
-import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
 
@@ -22,49 +21,20 @@ public class NodeManagementInboundPort
   @Override
   public void join(PeerNodeAddressI a) throws Exception {
     this.getOwner().runTask(
-      new AbstractComponent.AbstractTask(this.getPluginURI()) {
-        @Override
-        public void run() {
-          try {
-            ((NodeManagementPlugin) this.getTaskProviderReference()).join(a);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-      });
-  }
-
-  @Override
-  public void leave(PeerNodeAddressI a) throws Exception {
-    this.getOwner().runTask(
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
           @Override
           public void run() {
             try {
-              ((NodeManagementPlugin) this.getTaskProviderReference()).leave(a);
+              ((NodeManagementPlugin) this.getTaskProviderReference()).join(a);
             } catch (Exception e) {
               e.printStackTrace();
             }
           }
         });
   }
-  @Override
-  public void join(ContentNodeAddressI a) throws Exception {
-    this.getOwner().runTask(
-      new AbstractComponent.AbstractTask(this.getPluginURI()) {
-        @Override
-        public void run() {
-          try {
-            ((NodeManagementPlugin) this.getTaskProviderReference()).join(a);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-      });
-  }
 
   @Override
-  public void leave(ContentNodeAddressI a) throws Exception {
+  public void leave(PeerNodeAddressI a) throws Exception {
     this.getOwner().runTask(
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
           @Override
@@ -95,7 +65,8 @@ public class NodeManagementInboundPort
   }
 
   @Override
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops,PeerNodeAddressI chosen, int chosenNeighbourCount)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
+      int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
     this.getOwner().runTask(
         new AbstractComponent.AbstractTask(this.getPluginURI()) {
@@ -114,15 +85,15 @@ public class NodeManagementInboundPort
   @Override
   public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception {
     this.getOwner().runTask(
-      new AbstractComponent.AbstractTask(this.getPluginURI()) {
-        @Override
-        public void run() {
-          try {
-            ((NodeManagementPlugin) this.getTaskProviderReference()).interconnect(f);
-          } catch (Exception e) {
-            e.printStackTrace();
+        new AbstractComponent.AbstractTask(this.getPluginURI()) {
+          @Override
+          public void run() {
+            try {
+              ((NodeManagementPlugin) this.getTaskProviderReference()).interconnect(f);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
           }
-        }
-      });
+        });
   }
 }

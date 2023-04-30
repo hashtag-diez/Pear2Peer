@@ -8,7 +8,6 @@ import interfaces.ApplicationNodeAddressI;
 import interfaces.ContentDescriptorI;
 import interfaces.ContentManagementNodeAddressI;
 import interfaces.ContentTemplateI;
-import interfaces.FacadeNodeAddressI;
 
 /**
  * The interface <code>ContentManagementCI</code> is offered and required by
