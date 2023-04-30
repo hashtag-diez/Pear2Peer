@@ -35,6 +35,7 @@
       "mainClass": "scenarios.connect_disconnect.ConnectionDisconnectionScenario",
       "projectName": "Pear2Peer",
       "vmArgs": [
+        "-ea"
       ],
     },
     {

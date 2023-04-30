@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
-import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
@@ -57,6 +56,7 @@ public class Node extends AbstractComponent {
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug, NetworkScannerPlug);
 		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
+		this.installPlugin(plugin); // ! Can't reflect if not started
 
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
@@ -71,17 +71,6 @@ public class Node extends AbstractComponent {
 		// false);
 		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
 		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
-	}
-
-	@Override
-	public void start() throws ComponentStartException {
-		super.start();
-		try {
-			this.installPlugin(plugin); // Can't reflect if not s
-		} catch (Exception e) {
-			throw new ComponentStartException(e);
-		}
-
 	}
 
 	@Override
