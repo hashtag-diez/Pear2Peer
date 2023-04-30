@@ -1,6 +1,7 @@
 package plugins.ContentManagement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
 import plugins.FacadeContentManagement.port_connector.FacadeContentManagementOutboundPort;
 import plugins.FacadeContentManagement.port_connector.FacadeContentManagementServiceConnector;
+import utiles.Helpers;
 
 public class ContentManagementPlugin
     extends AbstractPlugin {
@@ -31,6 +33,7 @@ public class ContentManagementPlugin
   protected ContentManagementInboundPort setterPort;
   protected Map<String, ContentManagementOutboundPort> getterPorts = new HashMap<>();;
   protected List<ContentDescriptorI> contentsDescriptors;
+  protected int PINGED = 4;
 
   public List<ContentDescriptorI> getContentsDescriptors() {
     return contentsDescriptors;
@@ -85,7 +88,7 @@ public class ContentManagementPlugin
    */
   public void remove(PeerNodeAddressI node) throws Exception {
     ContentManagementOutboundPort outBoundPortCM = this.getterPorts.remove(node.getNodeURI());
-    if (outBoundPortCM == null) /* Si il leave en même temps  */
+    if (outBoundPortCM == null) /* Si il leave en même temps */
       return;
     getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
     outBoundPortCM.unpublishPort();
@@ -121,13 +124,13 @@ public class ContentManagementPlugin
         return;
       }
     }
-    if (hops - 1 == 0)
+    if (--hops == 0)
       return;
 
-    for (String peerNodeURI : this.getterPorts.keySet()) {
-      ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
-      outBoundPort.find(cd, hops - 1, requester, clientAddr);
-    }
+    Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
+    for (ContentManagementOutboundPort outBoundPort : ports)
+      outBoundPort.find(cd, hops, requester, clientAddr);
+
   }
 
   /**
@@ -151,17 +154,15 @@ public class ContentManagementPlugin
       }
     }
 
-    if (hops - 1 != 0) {
-      for (String peerNodeURI : this.getterPorts.keySet()) {
-        ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
-        if (outBoundPort != null) {
-          outBoundPort.match(cd, matched, hops - 1, requester, clientAddr);
-        }
-      }
-    } else {
+    if (--hops == 0) {
       FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
       port.acceptMatched(matched, clientAddr);
+      return;
     }
+    Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
+    for (ContentManagementOutboundPort outBoundPort : ports)
+      outBoundPort.match(cd, matched, hops, requester, clientAddr);
+
   }
 
   public boolean containsKey(PeerNodeAddressI a) {

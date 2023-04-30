@@ -1,7 +1,5 @@
 package plugins.NetworkNode;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
@@ -146,10 +144,9 @@ public class NodePlugin
    */
   public void disconnect(PeerNodeAddressI node) throws Exception {
     lock.lock();
-    NodeOutboundPort outBoundPort = this.peersGetterPorts.get(node.getNodeURI());
+    NodeOutboundPort outBoundPort = this.peersGetterPorts.remove(node.getNodeURI());
     this.getOwner().doPortDisconnection(outBoundPort.getPortURI());
     outBoundPort.unpublishPort();
-    this.peersGetterPorts.remove(node.getNodeURI());
     ContentManagementPlug.remove(node);
     NetworkScannerPlug.remove(node);
     debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeURI() + " is disconnected from : "
@@ -196,9 +193,7 @@ public class NodePlugin
       lock.unlock();
       return;
     }
-    int randindex = Helpers.getRandomNumber(peersGetterPorts.size());
-    List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
-    NodeOutboundPort chosenNeighbour = ports.get(randindex);
+    NodeOutboundPort chosenNeighbour = Helpers.getRandomElement(this.peersGetterPorts.values());
     if (chosen == null || count > peersGetterPorts.size()) {
       chosenNeighbour.probe(requestURI, facade, remainingHops - 1, ((Node) this.getOwner()).getContentNode(),
           peersGetterPorts.size());

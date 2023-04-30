@@ -1,9 +1,7 @@
 package plugins.NetworkFacade;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -13,7 +11,6 @@ import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
 import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
-import fr.sorbonne_u.utils.Pair;
 import interfaces.ContentNodeAddressI;
 import interfaces.FacadeNodeAddressI;
 import interfaces.PeerNodeAddressI;
@@ -23,6 +20,7 @@ import plugins.NetworkFacade.port_connector.NodeManagementOutboundPort;
 import plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
 import plugins.NetworkNode.port_connector.NodeOutboundPort;
 import plugins.NetworkScanner.NetworkScannerPlugin;
+import utiles.AsyncProbe;
 import utiles.DebugDisplayer;
 import utiles.Helpers;
 
@@ -39,7 +37,7 @@ public class NodeManagementPlugin
   private ReentrantLock lock1 = new ReentrantLock();
   protected HashMap<String, NodeManagementOutboundPort> facades = new HashMap<>();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
-  protected HashMap<String, Pair<Integer, Set<PeerNodeAddressI>>> probeCollector = new HashMap<>();
+  protected HashMap<String, AsyncProbe> probeCollector = new HashMap<>();
   private static final boolean DEBUG_MODE = true;
   private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
@@ -95,49 +93,36 @@ public class NodeManagementPlugin
   }
 
   public void acceptProbed(PeerNodeAddressI peer, String requestURI) throws Exception {
-    Pair<Integer, Set<PeerNodeAddressI>> value = probeCollector.get(requestURI);
-    Set<PeerNodeAddressI> set = value.getSecond();
-    set.add(peer);
-    if (value.getFirst() - 1 == 0) {
-      NodeOutboundPort nop = new NodeOutboundPort(this.getOwner());
-      nop.publishPort();
-
-      this.getOwner().doPortConnection(nop.getPortURI(), requestURI, NodeServiceConnector.class.getCanonicalName());
-      nop.acceptNeighbours(set);
-
-      this.getOwner().doPortDisconnection(nop.getPortURI());
-
-      nop.unpublishPort();
-    } else {
-      probeCollector.put(requestURI, new Pair<>(value.getFirst() - 1, set));
+    AsyncProbe request = probeCollector.get(requestURI);
+    request.retrieve(peer);
+    if (!request.isComplete()) {
+      probeCollector.put(requestURI, request);
+      return;
     }
+    NodeOutboundPort nop = new NodeOutboundPort(this.getOwner());
+    nop.publishPort();
+    this.getOwner().doPortConnection(nop.getPortURI(), requestURI, NodeServiceConnector.class.getCanonicalName());
+    nop.acceptNeighbours(request.getResult());
+    this.getOwner().doPortDisconnection(nop.getPortURI());
+    nop.unpublishPort();
   }
 
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
       int chosenNeighbourCount)
       throws Exception {
-    Pair<Integer, Set<PeerNodeAddressI>> value = new Pair<Integer, Set<PeerNodeAddressI>>(ndSendProbe,
-        new HashSet<PeerNodeAddressI>());
 
-    if (roots.size() == 0)
-      return;
-
-    probeCollector.put(requestURI, value);
-    lock.lock();
-    List<PeerNodeAddressI> ports = new ArrayList<>(this.roots);
-    lock.unlock();
+    probeCollector.put(requestURI, new AsyncProbe(ndSendProbe));
     for (int i = 0; i < ndSendProbe; i++) {
-      int randindex = Helpers.getRandomNumber(ports.size());
-      PeerNodeAddressI chosenNeighbour = ports.get(randindex);
+      PeerNodeAddressI chosenNeighbour = Helpers.getRandomElement(roots);
+      if (chosenNeighbour == null)
+        return; // no neighbour to probe
+
       NodeOutboundPort port = new NodeOutboundPort(this.getOwner());
       port.publishPort();
-
       this.getOwner().doPortConnection(port.getPortURI(), chosenNeighbour.getNodeURI(),
           NodeServiceConnector.class.getCanonicalName());
-
       port.probe(requestURI, ((NodeManagement) this.getOwner()).getApplicationNode(), nbSaut, null, 0);
       this.getOwner().doPortDisconnection(port.getPortURI());
-
       port.unpublishPort();
     }
   }
@@ -217,4 +202,5 @@ public class NodeManagementPlugin
     rop.unpublishPort();
     rop.destroyPort();
   }
+
 }

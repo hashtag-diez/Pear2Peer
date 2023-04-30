@@ -1,5 +1,6 @@
 package utiles;
 
+import java.util.Collection;
 import java.util.Random;
 
 public class Helpers {
@@ -19,6 +20,27 @@ public class Helpers {
 
     public static int getRandomNumber(int max) {
         return getRandomNumber(0, max);
+    }
+
+    // Get a random element from an set
+    public static <T> T getRandomElement(Collection<T> set) {
+        int size = set.size();
+        int item = getRandomNumber(size);
+        int i = 0;
+        for (T obj : set) {
+            if (i == item)
+                return obj;
+            i++;
+        }
+        return null;
+    }
+
+    // Get a random sub set from an set
+    public static <T> Collection<T> getRandomCollection(Collection<T> set, int size) {
+        while (set.size() > size) {
+            set.remove(getRandomElement(set));
+        }
+        return set;
     }
 
 }

@@ -26,6 +26,7 @@ import plugins.NetworkScanner.port_connector.NetworkScannerOutboundPort;
 import plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 import ports.ClientInboundPort;
 import utiles.DebugDisplayer;
+import utiles.Helpers;
 
 @OfferedInterfaces(offered = { ClientCI.class })
 @RequiredInterfaces(required = { ContentManagementPI.class, NetworkScannerPI.class })
@@ -83,7 +84,7 @@ public class Client extends AbstractComponent {
 	private void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {
 
 		this.doPortConnection(rop.getPortURI(), NodeManagementURI, ReflectionConnector.class.getCanonicalName());
-		
+
 		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(FacadeContentManagementPI.class);
 		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
 			debugPrinter.display("NOPE");
@@ -115,8 +116,7 @@ public class Client extends AbstractComponent {
 	public ContentTemplateI pickTemplate() throws ClassNotFoundException, IOException {
 		ContentDataManager.DATA_DIR_NAME = "src/data2";
 		ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(0);
-		HashMap<String, Object> random = result.get(0);
-		return new ContentTemplate(random);
+		return new ContentTemplate(Helpers.getRandomElement(result));
 	}
 
 	/**

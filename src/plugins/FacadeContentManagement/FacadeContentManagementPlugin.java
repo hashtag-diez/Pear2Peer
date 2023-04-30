@@ -1,5 +1,6 @@
 package plugins.FacadeContentManagement;
 
+import java.util.Collection;
 import java.util.Set;
 
 import components.NodeManagement;
@@ -14,6 +15,7 @@ import plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
 import plugins.FacadeContentManagement.port_connector.FacadeContentManagementInboundPort;
 import ports.ClientOutboundPort;
+import utiles.Helpers;
 import interfaces.ContentNodeAddressI;
 import interfaces.ContentTemplateI;
 
@@ -47,10 +49,9 @@ public class FacadeContentManagementPlugin
       }
     }
 
-    for (String peerNodeURI : this.getterPorts.keySet()) {
-      ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
+    Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
+    for (ContentManagementOutboundPort outBoundPort : ports)
       outBoundPort.find(cd, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
-    }
   }
 
   /**
@@ -74,12 +75,10 @@ public class FacadeContentManagementPlugin
         matched.add(localCd);
       }
     }
-    for (String peerNodeURI : this.getterPorts.keySet()) {
-      ContentManagementOutboundPort outBoundPort = getterPorts.get(peerNodeURI);
-      if (outBoundPort != null) {
-        outBoundPort.match(cd, matched, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
-      }
-    }
+
+    Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
+    for (ContentManagementOutboundPort outBoundPort : ports)
+      outBoundPort.match(cd, matched, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
   }
 
   private ClientOutboundPort makeClientOutboundPort(String clientUri) throws Exception {
