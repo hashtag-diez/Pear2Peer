@@ -15,7 +15,7 @@ import implem.ContentNode;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkNode.NodePlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
-import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import run.scenarios.SearchScenario;
 import run.scenarios.find.FindScenarioBasic;
 import utiles.DebugDisplayer;
 import utiles.Helpers;
@@ -85,7 +85,7 @@ public class Node extends AbstractComponent {
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
 
-		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(SearchScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 

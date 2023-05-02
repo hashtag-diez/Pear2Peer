@@ -8,7 +8,7 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
-import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import run.scenarios.SearchScenario;
 import utiles.DebugDisplayer;
 
 public class ClientLookingForContent extends Client {
@@ -39,7 +39,7 @@ public class ClientLookingForContent extends Client {
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
 
-		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(SearchScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 

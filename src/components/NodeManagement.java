@@ -15,6 +15,7 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
+import run.scenarios.SearchScenario;
 import run.scenarios.find.FindScenarioBasic;
 import utiles.Helpers;
 
@@ -79,7 +80,7 @@ public class NodeManagement extends AbstractComponent {
 				ClocksServerConnector.class.getCanonicalName());
 
 		AcceleratedClock clock = this.csop
-				.getClock(run.scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
+				.getClock(SearchScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 
