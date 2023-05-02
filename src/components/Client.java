@@ -87,7 +87,7 @@ public class Client extends AbstractComponent {
 
 		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(FacadeContentManagementPI.class);
 		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-			debugPrinter.display("NOPE");
+			debugPrinter.trace("NOPE", this);
 		} else {
 			this.doPortConnection(CMGetterPort.getPortURI(), otherInboundPortUI[0],
 					ContentManagementServiceConnector.class.getCanonicalName());
@@ -100,7 +100,7 @@ public class Client extends AbstractComponent {
 
 		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
 		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-			debugPrinter.display("NOPE");
+			debugPrinter.trace("NOPE", this);
 		} else {
 			this.doPortConnection(NSGetterPort.getPortURI(), otherInboundPortUI[0],
 					NetworkScannerServiceConnector.class.getCanonicalName());
@@ -123,23 +123,23 @@ public class Client extends AbstractComponent {
 	 * It picks a template, prints it, and then asks the Network for matches
 	 */
 	public void exampleSearchContainsWichMatch() throws Exception {
-		debugPrinter.display("Client start searching [match]");
+		debugPrinter.trace("Client start searching [match]", this);
 		ContentTemplateI temp = pickTemplate();
-		debugPrinter.display("Template recherche :\\n" + temp);
+		debugPrinter.trace("Template recherche :\\n" + temp, this);
 		Set<ContentDescriptorI> matched = new HashSet<>();
 
 		ReturnPort.publishPort();
 		CMGetterPort.match(temp, matched, 5, null, ReturnPort.getPortURI());
-		debugPrinter.display("Matched count: " + matched.size());
+		debugPrinter.trace("Matched count: " + matched.size(), this);
 	}
 
 	/**
 	 * It picks a template, prints it, and then asks the Network to find it
 	 */
 	public void exampleSearchFind() throws Exception {
-		debugPrinter.display("Client start searching [find]");
+		debugPrinter.trace("Client start searching [find]", this);
 		ContentTemplateI temp = pickTemplate();
-		debugPrinter.display("Template recherche :\n" + temp.toString());
+		debugPrinter.trace("Template recherche :\n" + temp.toString(), this);
 		found = false;
 		ReturnPort.publishPort();
 		System.out.println("\t\t\t\t\t\t " + ReturnPort.getPortURI());
@@ -155,10 +155,11 @@ public class Client extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
+		debugPrinter.trace("Searched content is found somewhere", this);
 		if (ReturnPort.isPublished()) {
 			if (found == false) {
 				ReturnPort.unpublishPort();
-				debugPrinter.display("Found : " + matched.toString());
+				debugPrinter.trace("Found : " + matched.toString(), this);
 			} else
 				found = true;
 		}
@@ -175,9 +176,9 @@ public class Client extends AbstractComponent {
 		if (ReturnPort.isPublished()) {
 			if (!matched.isEmpty()) {
 				ReturnPort.unpublishPort();
-				debugPrinter.display("Matched : ");
+				debugPrinter.trace("Matched : ", this);
 				for (ContentDescriptorI contentDescriptor : matched) {
-					debugPrinter.display(contentDescriptor.toString());
+					debugPrinter.trace(contentDescriptor.toString(), this);
 				}
 			}
 		}

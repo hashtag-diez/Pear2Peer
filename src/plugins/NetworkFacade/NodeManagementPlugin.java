@@ -84,8 +84,7 @@ public class NodeManagementPlugin
    */
   public void leave(PeerNodeAddressI a) throws Exception {
     lock.lock();
-    debugPrinter.display(
-        (a.getNodeURI() + " is leaving : network"));
+    debugPrinter.display((a.getNodeURI() + " is leaving : network"));
     if (roots.remove(a)) {
       ContentManagementPlug.remove(a);
     }

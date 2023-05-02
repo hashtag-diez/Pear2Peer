@@ -116,9 +116,10 @@ public class ContentManagementPlugin
    */
   public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr)
       throws Exception {
-
+	  System.out.println("finding content ....");
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(cd)) {
+    	  System.out.println("/!\\ content found somewhere");
         FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
         port.acceptFound(localCd, clientAddr);
         return;

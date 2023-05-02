@@ -15,6 +15,7 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
+import run.scenarios.find.FindScenarioBasic;
 import utiles.Helpers;
 
 @RequiredInterfaces(required = { ClocksServerCI.class })
@@ -30,8 +31,9 @@ public class NodeManagement extends AbstractComponent {
 	private static final String NM_EXECUTION_SERVICE_URI = "app-networkmanagement-tasks-execution-service";
 	private static final String CM_EXECUTION_SERVICE_URI = "app-content-tasks-execution-service";
 
-	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId) throws Exception {
+	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId, int posX, int posY) throws Exception {
 		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
+		this.getTracer().setRelativePosition(posX, posY);
 		this.initialise(DEFAULT_NB_OF_THREADS);
 
 		String NodeManagementURI = AbstractPort.generatePortURI();
@@ -86,7 +88,7 @@ public class NodeManagement extends AbstractComponent {
 		clock.waitUntilStart();
 
 		int delay = Helpers.getRandomNumber(1);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay));
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay + FindScenarioBasic.MOMENT_FOR_FACADE_TO_JOIN));
 
 		scheduleConnectionWithFacades(delayInNanosToJoin);
 	}

@@ -17,9 +17,10 @@ public class ClientLookingForContent extends Client {
 	protected ClocksServerOutboundPort csop;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI)
+	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI, int relativeX, int relativeY)
 			throws Exception {
 		super(reflectionInboundPort, CMNodeManagementInboundURI);
+		this.getTracer().setRelativePosition(relativeX, relativeY);
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 	}
@@ -29,7 +30,8 @@ public class ClientLookingForContent extends Client {
 		super.execute();
 
 		scheduleClientTasks();
-		debugPrinter.display("Client task [find] sheduled");
+		traceMessage("Client task [find] sheduled");
+		
 	}
 
 	private void scheduleClientTasks() throws Exception {
@@ -46,7 +48,7 @@ public class ClientLookingForContent extends Client {
 		clock.waitUntilStart();
 
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(7));
+				startInstant.plusSeconds(FindScenarioBasic.MOMENT_FOR_CLIENT_TO_SEARCH));
 
 		this.scheduleTask(
 				o -> {

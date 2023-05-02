@@ -16,6 +16,7 @@ import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.NetworkNode.NodePlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import run.scenarios.find.FindScenarioBasic;
 import utiles.DebugDisplayer;
 import utiles.Helpers;
 
@@ -37,10 +38,10 @@ public class Node extends AbstractComponent {
 	private static final String NM_EXECUTION_SERVICE_URI = "networkmanagement-tasks-execution-service";
 	private static final String CM_EXECUTION_SERVICE_URI = "content-tasks-execution-service";
 
-	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId) throws Exception {
+	protected Node(String reflectionInboundPortURI, String NMInboundURI, int DescriptorId, int relativeX, int relativeY) throws Exception {
 		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
 		this.initialise(DEFAULT_NB_OF_THREADS);
-
+		this.getTracer().setRelativePosition(relativeX, relativeY);
 		String NodeURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		node = new ContentNode(NodeURI, ContentManagementURI, reflectionInboundPortURI);
@@ -93,15 +94,15 @@ public class Node extends AbstractComponent {
 		clock.waitUntilStart();
 
 		int delay = Helpers.getRandomNumber(2);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2 + delay));
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay+FindScenarioBasic.MOMENT_FOR_PEER_TO_JOIN));
 
 		long delayInNanosToLeave = clock
-				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(10));
+				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(FindScenarioBasic.MOMENT_FOR_PEER_TO_LEAVE));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
-		debugPrinter.display("[node join network] has been scheduled");
+		debugPrinter.trace("[node join network] has been scheduled (delay)" + delayInNanosToJoin, this);
 		scheduleDisconnectionToNetwork(delayInNanosToLeave);
-		debugPrinter.display("[node disconnection] has been scheduled");
+		debugPrinter.trace("[node disconnection] has been scheduled (delay)" + delayInNanosToLeave, this);
 
 	}
 
