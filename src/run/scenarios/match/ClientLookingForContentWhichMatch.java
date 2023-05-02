@@ -17,10 +17,12 @@ public class ClientLookingForContentWhichMatch extends Client {
 	protected ClocksServerOutboundPort csop;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-	protected ClientLookingForContentWhichMatch(String reflectionInboundPort, String CMNodeManagementInboundURI)
+	protected ClientLookingForContentWhichMatch(String reflectionInboundPort, String CMNodeManagementInboundURI,
+			int relativeX, int relativeY)
 			throws Exception {
 		super(reflectionInboundPort, CMNodeManagementInboundURI);
 
+		this.getTracer().setRelativePosition(relativeX, relativeY);
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 	}

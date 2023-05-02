@@ -17,7 +17,8 @@ public class ClientLookingForContent extends Client {
 	protected ClocksServerOutboundPort csop;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI, int relativeX, int relativeY)
+	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI, int relativeX,
+			int relativeY)
 			throws Exception {
 		super(reflectionInboundPort, CMNodeManagementInboundURI);
 		this.getTracer().setRelativePosition(relativeX, relativeY);
@@ -31,7 +32,7 @@ public class ClientLookingForContent extends Client {
 
 		scheduleClientTasks();
 		traceMessage("Client task [find] sheduled");
-		
+
 	}
 
 	private void scheduleClientTasks() throws Exception {
