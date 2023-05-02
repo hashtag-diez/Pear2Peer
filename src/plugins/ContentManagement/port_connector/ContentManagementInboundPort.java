@@ -2,6 +2,8 @@ package plugins.ContentManagement.port_connector;
 
 import java.util.Set;
 
+import org.apache.commons.math3.ml.neuralnet.twod.util.HitHistogram;
+
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractInboundPort;
@@ -12,6 +14,7 @@ import interfaces.ApplicationNodeAddressI;
 import plugins.ContentManagement.ContentManagementPI;
 import plugins.ContentManagement.ContentManagementPlugin;
 import plugins.FacadeContentManagement.FacadeContentManagementPI;
+import utiles.DebugDisplayer;
 
 /**
  * InboundPortCM

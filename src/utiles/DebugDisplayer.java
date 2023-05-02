@@ -15,7 +15,7 @@ public class DebugDisplayer {
 
 	public void trace(String msg, AbstractComponent component) {
 		if (debuging) {
-			component.traceMessage(msg);
+			component.traceMessage(msg + "\n\n");
 		}
 	}
 

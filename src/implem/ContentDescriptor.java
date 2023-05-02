@@ -55,29 +55,28 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
          * getNodeURI());
          * boolean size = this.getSize() == cd.getSize();
          */
-        return _isTitleEquals(cd) && _isAlbumTitleEquals(cd) && _isIntrepretersContains(cd)
-                && _isComposersContains(cd) /* && size && addrEqual */;
+        return matchTitles(cd) && matchAlbums(cd) && matchInterpreters(cd)
+                && matchComposers(cd) /* && size && addrEqual */;
     }
 
     @Override
     public boolean match(ContentTemplateI request) {
-        boolean res = false;
-        if (request.getTitle() != null)
-            res = _isTitleEquals(request);
-        if (request.getAlbumTitle() != null)
-            res = _isAlbumTitleEquals(request);
-        if (request.getComposers().size() != 0)
-            res = _isComposersContains(request);
-        if (request.getInterpreters().size() != 0)
-            res = _isIntrepretersContains(request);
-        return res;
+    	boolean res = 
+    			matchTitles(request) 
+    			||  matchAlbums(request)
+    			|| matchComposers(request)
+    			|| matchInterpreters(request);
+    	
+    	return res;
     }
 
-    protected boolean _isTitleEquals(ContentTemplateI request) {
+    protected boolean matchTitles(ContentTemplateI request) {
+    	if (request.getTitle() == null) return false;
         return request.getTitle().equals(getTitle());
     }
 
-    protected boolean _isAlbumTitleEquals(ContentTemplateI request) {
+    protected boolean matchAlbums(ContentTemplateI request) {
+    	if (request.getAlbumTitle() == null) return false;
         return request.getAlbumTitle().equals(getTitle());
     }
 
@@ -89,8 +88,10 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @param request The request to be checked.
      * @return A boolean value.
      */
-    protected boolean _isIntrepretersContains(ContentTemplateI request) {
-        return getInterpreters().containsAll(request.getInterpreters());
+    protected boolean matchInterpreters(ContentTemplateI request) {
+    	if (request.getInterpreters()== null || request.getInterpreters().isEmpty()) 
+    		return false;
+    	return this._interpreters.containsAll(request.getInterpreters());
     }
 
     /**
@@ -100,8 +101,10 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @param request The request to be fulfilled.
      * @return A boolean value.
      */
-    protected boolean _isComposersContains(ContentTemplateI request) {
-        return getComposers().containsAll(request.getComposers());
+    protected boolean matchComposers(ContentTemplateI request) {
+    	if (request.getComposers() == null || request.getComposers().isEmpty()) 
+    		return false;
+    	return this._composers.containsAll(request.getComposers());
     }
 
     @Override

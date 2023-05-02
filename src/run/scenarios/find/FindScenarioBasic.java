@@ -32,7 +32,7 @@ public class FindScenarioBasic extends AbstractCVM {
 	public static int MOMENT_FOR_CLIENT_TO_SEARCH = 20;
 	public static int MOMENT_FOR_PEER_TO_LEAVE=1000;
 	public static int MOMENT_FOR_FACADE_TO_LEAVE = 1500;
-	public static int X = 0, Y=0;
+	public static int X = -1, Y=0;
 
 	public FindScenarioBasic() throws Exception {
 		super();
@@ -80,11 +80,11 @@ public class FindScenarioBasic extends AbstractCVM {
 	}
 	
 	private int getX() {
-		if (X == 4) {
+		if (X == 3) {
 			X = 0;
 			Y++;
 		} else {
-			return X++;
+			return ++X;
 		}
 		return X;
 	}
@@ -99,7 +99,7 @@ public class FindScenarioBasic extends AbstractCVM {
 			// Execute the application.
 			a.startStandardLifeCycle(20000L);
 			// Give some time to see the traces (convenience).
-			Thread.sleep(50000L);
+			Thread.sleep(100000L);
 			// Simplifies the termination (termination has yet to be treated
 			// properly in BCM).
 			System.exit(0);
