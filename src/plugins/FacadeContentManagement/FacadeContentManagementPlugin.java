@@ -40,6 +40,12 @@ public class FacadeContentManagementPlugin
     this.addRequiredInterface(ClientCI.class);
   }
 
+
+  @Override
+  public void finalise() throws Exception {
+    super.finalise();
+  }
+
   @Override
   public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr)
       throws Exception {
@@ -92,7 +98,10 @@ public class FacadeContentManagementPlugin
   @Override
   public void acceptFound(ContentDescriptorI found, String requestOwner) throws Exception {
     try {
-      makeClientOutboundPort(requestOwner).findResult(found);
+      ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
+      cli.findResult(found);
+      this.getOwner().doPortDisconnection(cli.getPortURI());
+      cli.unpublishPort();
     } catch (NullPointerException e) {
 
     }
@@ -101,7 +110,10 @@ public class FacadeContentManagementPlugin
   @Override
   public void acceptMatched(Set<ContentDescriptorI> found, String requestOwner) throws Exception {
     try {
-      makeClientOutboundPort(requestOwner).matchResult(found);
+      ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
+      cli.matchResult(found);
+      this.getOwner().doPortDisconnection(cli.getPortURI());
+      cli.unpublishPort();
     } catch (NullPointerException e) {
 
     }

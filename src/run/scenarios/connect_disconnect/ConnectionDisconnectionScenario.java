@@ -37,7 +37,7 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 	/** URI of the consumer inbound port (simplifies the connection). */
 	protected static final String URIProviderInboundPortURI = "iport";
 
-	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(5);
+	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;
@@ -61,10 +61,12 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 				ClocksServer.class.getCanonicalName(),
 				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
 						startInstant, accelerationFactor });
+
 		for (int i = 1; i <= NB_FACADE; i++) {
 			AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
 			new Object[] { NODE_MANAGEMENT_COMPONENT_URI+"-"+i, (i-1)*10 });
 		}
+
 		for (int i = 1; i <= NB_FACADE*NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
 					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI+"-"+((i%NB_FACADE)+1), i });

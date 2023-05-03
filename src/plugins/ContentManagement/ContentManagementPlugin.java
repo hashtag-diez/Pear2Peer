@@ -62,6 +62,17 @@ public class ContentManagementPlugin
     this.addRequiredInterface(ContentManagementPI.class);
   }
 
+  @Override
+  public void finalise() throws Exception {
+    super.finalise();
+    setterPort.unpublishPort();
+    for(String port : getterPorts.keySet()){
+      ContentManagementOutboundPort out = getterPorts.get(port);
+      this.getOwner().doPortDisconnection(out.getPortURI());
+      out.unpublishPort();
+    }
+  }
+
   /**
    * It connects to the peer node via its reflectionOutboundPort,
    * gets its ContentManagementPlugin Port, connects to it, and
@@ -88,6 +99,21 @@ public class ContentManagementPlugin
    */
   public void remove(PeerNodeAddressI node) throws Exception {
     ContentManagementOutboundPort outBoundPortCM = this.getterPorts.remove(node.getNodeURI());
+    if (outBoundPortCM == null) /* Si il leave en même temps */
+      return;
+    getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
+    outBoundPortCM.unpublishPort();
+  }
+
+  /**
+   * It removes the node from the list of nodes that the owner of the
+   * `GetterPorts` object can get data
+   * from
+   * 
+   * @param node the node to remove
+   */
+  public void remove(String nodeUri) throws Exception {
+    ContentManagementOutboundPort outBoundPortCM = this.getterPorts.remove(nodeUri);
     if (outBoundPortCM == null) /* Si il leave en même temps */
       return;
     getOwner().doPortDisconnection(outBoundPortCM.getPortURI());
@@ -121,6 +147,8 @@ public class ContentManagementPlugin
       if (localCd.match(cd)) {
         FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
         port.acceptFound(localCd, clientAddr);
+        this.getOwner().doPortDisconnection(port.getPortURI());
+        port.unpublishPort();
         return;
       }
     }
@@ -157,6 +185,8 @@ public class ContentManagementPlugin
     if (--hops == 0) {
       FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
       port.acceptMatched(matched, clientAddr);
+      this.getOwner().doPortDisconnection(port.getPortURI());
+      port.unpublishPort();
       return;
     }
     Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);

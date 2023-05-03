@@ -15,6 +15,8 @@ import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.NodeManagementPlugin;
 import plugins.NetworkScanner.NetworkScannerPlugin;
+import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
+import utiles.DebugDisplayer;
 import utiles.Helpers;
 
 @RequiredInterfaces(required = { ClocksServerCI.class })
@@ -23,7 +25,9 @@ public class NodeManagement extends AbstractComponent {
 	private NodeManagementPlugin plugin;
 
 	protected ClocksServerOutboundPort csop;
-
+	private static final boolean DEBUG_MODE = true;
+	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
+	
 	private ApplicationNode app;
 	private static final int DEFAULT_NB_OF_THREADS = 8;
 
@@ -69,26 +73,30 @@ public class NodeManagement extends AbstractComponent {
 	public void execute() throws Exception {
 		scheduleTasks();
 	}
-
+	@Override
+	public void finalise() throws Exception {
+		super.finalise();
+		this.doPortDisconnection(csop.getPortURI());
+		csop.unpublishPort();
+	}
 	private void scheduleTasks() throws Exception {
-
 		// connexion à l'horloge
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
-
-		AcceleratedClock clock = this.csop
-				.getClock(run.scenarios.connect_disconnect.ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 
+		
 		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
+		
 
-		int delay = Helpers.getRandomNumber(1);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(delay));
-
+		int delay = Helpers.getRandomNumber(2);
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(1 + delay));
 		scheduleConnectionWithFacades(delayInNanosToJoin);
+		debugPrinter.display("[nodemanagament interconnect network] has been scheduled");
 	}
 
 	private void scheduleConnectionWithFacades(long delayInNanosToJoin) throws AssertionError {

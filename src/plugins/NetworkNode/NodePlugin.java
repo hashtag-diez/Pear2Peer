@@ -63,25 +63,6 @@ public class NodePlugin
 
     this.NMGetterPort = new NodeManagementOutboundPort(this.getOwner());
     this.NMGetterPort.publishPort();
-
-    ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
-    rop.publishPort();
-
-    this.getOwner().doPortConnection(
-        rop.getPortURI(),
-        NMReflectionInboundURI,
-        ReflectionConnector.class.getCanonicalName());
-
-    String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
-    if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-      System.out.println("NOPE");
-    } else {
-      this.getOwner().doPortConnection(NMGetterPort.getPortURI(), otherInboundPortUI[0],
-          NodeManagementServiceConnector.class.getCanonicalName());
-    }
-    this.getOwner().doPortDisconnection(rop.getPortURI());
-    rop.unpublishPort();
-    rop.destroyPort();
   }
 
   @Override
@@ -91,22 +72,47 @@ public class NodePlugin
     this.addRequiredInterface(NodePI.class);
     this.addRequiredInterface(NodeManagementPI.class);
     this.addRequiredInterface(ReflectionCI.class);
-
   }
-
   public void joinNetwork() throws Exception {
     // Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ",
     // true);
+    if(!NMGetterPort.connected()){
+      ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+      rop.publishPort();
+  
+      this.getOwner().doPortConnection(
+          rop.getPortURI(),
+          NMReflectionInboundURI,
+          ReflectionConnector.class.getCanonicalName());
+  
+      String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
+      if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+        System.out.println("NOPE");
+      } else {
+        this.getOwner().doPortConnection(NMGetterPort.getPortURI(), otherInboundPortUI[0],
+            NodeManagementServiceConnector.class.getCanonicalName());
+      }
+      this.getOwner().doPortDisconnection(rop.getPortURI());
+      rop.unpublishPort();
+      rop.destroyPort();
+      this.removeRequiredInterface(ReflectionCI.class);
+    }
     NMGetterPort.join(((Node) this.getOwner()).getContentNode());
   }
 
   public void leaveNetwork() throws Exception {
     lock.lock();
     NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
-    for (NodeOutboundPort out : this.peersGetterPorts.values())
-      out.disconnect(((Node) this.getOwner()).getContentNode());
-
+    for (String port : this.peersGetterPorts.keySet()){
+        peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
+        this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());
+        peersGetterPorts.get(port).unpublishPort();
+        ContentManagementPlug.remove(port);
+    }
     this.peersGetterPorts.clear();
+    this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
+    NMGetterPort.unpublishPort();
+    debugPrinter.display(((Node)this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving : network");
     lock.unlock();
   }
 
@@ -147,7 +153,7 @@ public class NodePlugin
     this.getOwner().doPortDisconnection(outBoundPort.getPortURI());
     outBoundPort.unpublishPort();
     ContentManagementPlug.remove(node);
-    NetworkScannerPlug.remove(node);
+    // NetworkScannerPlug.remove(node);
     debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeURI() + " is disconnected from : "
         + node.getNodeURI() + " : " + this.peersGetterPorts.size());
     lock.unlock();
@@ -156,7 +162,11 @@ public class NodePlugin
   @Override
   public void finalise() throws Exception {
     super.finalise();
-    this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
+    if(NMGetterPort.connected()){
+      this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
+      NMGetterPort.unpublishPort();
+    }
+    NSetterPort.unpublishPort();
   }
 
   public NodeInboundPort getNodeInboundPort() {
@@ -204,6 +214,6 @@ public class NodePlugin
 
   public void share(ContentNodeAddressI a) throws Exception {
     ContentManagementPlug.put(a);
-    NetworkScannerPlug.put(a);
+    // NetworkScannerPlug.put(a);
   }
 }

@@ -54,6 +54,16 @@ public class NetworkScannerPlugin extends AbstractPlugin {
         this.addRequiredInterface(NetworkScannerPI.class);
     }
 
+    @Override
+    public void finalise() throws Exception {
+        super.finalise();
+        for(NodeAddressI port : getterPorts.keySet()){
+            NetworkScannerOutboundPort out = getterPorts.get(port);
+            this.getOwner().doPortDisconnection(out.getPortURI());
+            out.unpublishPort();
+          }
+        setterPort.unpublishPort();
+    }
     /**
      * It creates a new outbound port, connects it to the inbound port of the node
      * we want to connect

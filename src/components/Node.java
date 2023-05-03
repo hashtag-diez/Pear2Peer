@@ -78,6 +78,13 @@ public class Node extends AbstractComponent {
 		scheduleTasks();
 	}
 
+	@Override
+	public void finalise() throws Exception {
+		super.finalise();
+		this.doPortDisconnection(csop.getPortURI());
+		csop.unpublishPort();
+	}
+
 	private void scheduleTasks() throws Exception {
 
 		// connexion à l'horloge
@@ -93,7 +100,7 @@ public class Node extends AbstractComponent {
 		clock.waitUntilStart();
 
 		int delay = Helpers.getRandomNumber(2);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(2 + delay));
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(5 + delay));
 
 		long delayInNanosToLeave = clock
 				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(10));
