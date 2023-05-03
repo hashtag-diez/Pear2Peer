@@ -40,7 +40,6 @@ public class FacadeContentManagementPlugin
     this.addRequiredInterface(ClientCI.class);
   }
 
-
   @Override
   public void finalise() throws Exception {
     super.finalise();
@@ -90,32 +89,34 @@ public class FacadeContentManagementPlugin
   private ClientOutboundPort makeClientOutboundPort(String clientUri) throws Exception {
     ClientOutboundPort clientOutboundPort = new ClientOutboundPort(this.getOwner());
     clientOutboundPort.publishPort();
-    this.getOwner().doPortConnection(clientOutboundPort.getPortURI(), clientUri,
-        ClientReturnConnector.class.getCanonicalName());
     return clientOutboundPort;
   }
 
   @Override
   public void acceptFound(ContentDescriptorI found, String requestOwner) throws Exception {
+    ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
     try {
-      ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
+      this.getOwner().doPortConnection(cli.getPortURI(), requestOwner, ClientReturnConnector.class.getCanonicalName());
       cli.findResult(found);
-      this.getOwner().doPortDisconnection(cli.getPortURI());
-      cli.unpublishPort();
     } catch (NullPointerException e) {
 
+    } finally {
+      this.getOwner().doPortDisconnection(cli.getPortURI());
+      cli.unpublishPort();
     }
   }
 
   @Override
   public void acceptMatched(Set<ContentDescriptorI> found, String requestOwner) throws Exception {
+    ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
     try {
-      ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
+      this.getOwner().doPortConnection(cli.getPortURI(), requestOwner, ClientReturnConnector.class.getCanonicalName());
       cli.matchResult(found);
-      this.getOwner().doPortDisconnection(cli.getPortURI());
-      cli.unpublishPort();
     } catch (NullPointerException e) {
 
+    } finally {
+      this.getOwner().doPortDisconnection(cli.getPortURI());
+      cli.unpublishPort();
     }
   }
 

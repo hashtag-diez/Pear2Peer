@@ -4,13 +4,20 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import components.Client;
+import components.interfaces.ClientCI;
+import fr.sorbonne_u.components.annotations.OfferedInterfaces;
+import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
+import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
 import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
+import plugins.FacadeContentManagement.FacadeContentManagementPI;
 import run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import utiles.DebugDisplayer;
 
+@OfferedInterfaces(offered = { ClientCI.class })
+@RequiredInterfaces(required = { FacadeContentManagementPI.class, ClocksServerCI.class })
 public class ClientLookingForContentWhichMatch extends Client {
 
 	private static final boolean DEBUG_MODE = true;
@@ -47,7 +54,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 		clock.waitUntilStart();
 
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(5));
+				startInstant.plusSeconds(7));
 
 		this.scheduleTask(
 				o -> {
@@ -59,6 +66,12 @@ public class ClientLookingForContentWhichMatch extends Client {
 				},
 				delayInNanosToSearch,
 				TimeUnit.NANOSECONDS);
+	}
+	@Override
+	public void finalise() throws Exception {
+		super.finalise();
+		this.doPortDisconnection(csop.getPortURI());
+		csop.unpublishPort();
 	}
 
 }

@@ -32,13 +32,17 @@ public class ContentTemplate implements ContentTemplateI {
         this._interpreters = new HashSet<String>();
 
         ArrayList<?> composersBeforeCast = (ArrayList<?>) toLoad.get(ContentDataManager.COMPOSERS_KEY);
-        for (Object object : composersBeforeCast)
+        if(composersBeforeCast!=null){
+            for (Object object : composersBeforeCast)
             this._composers.add((String) object);
-
+        }
+        
         ArrayList<?> intepretersBeforeCast = (ArrayList<?>) toLoad.get(ContentDataManager.INTERPRETERS_KEY);
-        if (intepretersBeforeCast != null) {
-            for (Object object : intepretersBeforeCast)
-                this._interpreters.add((String) object);
+        if(intepretersBeforeCast!=null){
+            if (intepretersBeforeCast != null) {
+                for (Object object : intepretersBeforeCast)
+                    this._interpreters.add((String) object);
+            }
         }
     }
 

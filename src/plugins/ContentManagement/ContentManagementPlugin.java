@@ -121,7 +121,6 @@ public class ContentManagementPlugin
   }
 
   public void loadDescriptors(int number, ContentManagementNodeAddressI addr) throws Exception {
-    ContentDataManager.DATA_DIR_NAME = "src/data";
     ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
     for (HashMap<String, Object> obj : result) {
       ContentDescriptorI readDescriptor = new ContentDescriptor(obj, addr);

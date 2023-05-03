@@ -7,6 +7,7 @@ import components.Node;
 import components.NodeManagement;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 
 public class MatchScenarioBasic extends AbstractCVM {
@@ -36,6 +37,8 @@ public class MatchScenarioBasic extends AbstractCVM {
 		// time to plan all the actions of the test scenario
 		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 10.0;
+
+		ContentDataManager.DATA_DIR_NAME = "src/data2";
 
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
@@ -67,7 +70,7 @@ public class MatchScenarioBasic extends AbstractCVM {
 			// Create an instance of the defined component virtual machine.
 			MatchScenarioBasic a = new MatchScenarioBasic();
 			// Execute the application.
-			a.startStandardLifeCycle(25000L);
+			a.startStandardLifeCycle(10000L);
 			// Give some time to see the traces (convenience).
 			Thread.sleep(500L);
 			// Simplifies the termination (termination has yet to be treated

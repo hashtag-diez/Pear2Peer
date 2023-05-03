@@ -12,6 +12,7 @@ import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
 import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
+import fr.sorbonne_u.components.reflection.interfaces.ReflectionCI;
 import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import implem.ContentTemplate;
@@ -50,8 +51,8 @@ public class Client extends AbstractComponent {
 		this.CMGetterPort.publishPort();
 		this.NodeManagementURI = NodeManagementURI;
 
-		this.NSGetterPort = new NetworkScannerOutboundPort(this);
-		this.NSGetterPort.publishPort();
+		/* this.NSGetterPort = new NetworkScannerOutboundPort(this);
+		this.NSGetterPort.publishPort(); */
 
 		this.ReturnPort = new ClientInboundPort(this);
 	}
@@ -64,13 +65,15 @@ public class Client extends AbstractComponent {
 	public void start() throws ComponentStartException {
 		try {
 			super.start();
+			this.addRequiredInterface(ReflectionCI.class);
 			ReflectionOutboundPort rop = new ReflectionOutboundPort(this);
 			rop.publishPort();
 			connectToFacadeViaCM(rop);
-			connectToFacadeViaNS(rop);
+			// connectToFacadeViaNS(rop);
 			this.doPortDisconnection(rop.getPortURI());
 			rop.unpublishPort();
 			rop.destroyPort();
+			this.removeRequiredInterface(ReflectionCI.class);
 		} catch (Exception e) {
 			throw new ComponentStartException(e);
 		}
@@ -79,6 +82,15 @@ public class Client extends AbstractComponent {
 	@Override
 	public void execute() throws Exception {
 		super.execute();
+	}
+	@Override
+	public void finalise() throws Exception {
+		super.finalise();
+		if(ReturnPort.isPublished()){
+			ReturnPort.unpublishPort();
+		}
+		this.doPortDisconnection(CMGetterPort.getPortURI());
+		CMGetterPort.unpublishPort();
 	}
 
 	private void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {
@@ -114,7 +126,6 @@ public class Client extends AbstractComponent {
 	 * @return A ContentTemplate object
 	 */
 	public ContentTemplateI pickTemplate() throws ClassNotFoundException, IOException {
-		ContentDataManager.DATA_DIR_NAME = "src/data";
 		ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(0);
 		return new ContentTemplate(Helpers.getRandomElement(result));
 	}

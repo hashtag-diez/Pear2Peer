@@ -7,6 +7,7 @@ import components.Node;
 import components.NodeManagement;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 
 public class FindScenarioBasic extends AbstractCVM {
@@ -15,7 +16,7 @@ public class FindScenarioBasic extends AbstractCVM {
 	/** URI of the consumer component (convenience). */
 	protected static final String NODE_COMPONENT_URI = "my-NODE";
 
-	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(5);
+	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;
@@ -38,6 +39,8 @@ public class FindScenarioBasic extends AbstractCVM {
 		Instant	startInstant = Instant.parse("2023-04-17T15:37:00Z");
 		double accelerationFactor = 10.0;
 		
+		ContentDataManager.DATA_DIR_NAME = "src/data2";
+		
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
 				new Object[]{CLOCK_URI, unixEpochStartTimeInNanos,
@@ -59,7 +62,7 @@ public class FindScenarioBasic extends AbstractCVM {
 				new Object[] {"Clicos",
 				NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1}
 		);
-		
+		super.deploy();
 	}
 
 	public static void main(String[] args) {
@@ -67,7 +70,7 @@ public class FindScenarioBasic extends AbstractCVM {
 			// Create an instance of the defined component virtual machine.
 			FindScenarioBasic a = new FindScenarioBasic();
 			// Execute the application.
-			a.startStandardLifeCycle(20000L);
+			a.startStandardLifeCycle(10000L);
 			// Give some time to see the traces (convenience).
 			Thread.sleep(500L);
 			// Simplifies the termination (termination has yet to be treated

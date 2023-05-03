@@ -153,12 +153,12 @@ public class NodeManagementPlugin
     for (int i = 1; i <= 5; i++) {
       lock1.lock();
       if (i != FacadeIndex && facades.get(basename + "-" + i) == null) {
-        try {
-          NodeManagementOutboundPort facadeOutPortNM = new NodeManagementOutboundPort(this.getOwner());
-          facadeOutPortNM.publishPort();
+        NodeManagementOutboundPort facadeOutPortNM = new NodeManagementOutboundPort(this.getOwner());
+        facadeOutPortNM.publishPort();
 
-          ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
-          rop.publishPort();
+        ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
+        rop.publishPort();
+        try {
           this.getOwner().doPortConnection(
               rop.getPortURI(),
               basename + "-" + i,
@@ -177,7 +177,10 @@ public class NodeManagementPlugin
           rop.unpublishPort();
           rop.destroyPort();
         } catch (NullPointerException e) {
-          continue;
+
+        } finally{
+          rop.unpublishPort();
+          rop.destroyPort();
         }
       }
       this.removeRequiredInterface(ReflectionCI.class);
