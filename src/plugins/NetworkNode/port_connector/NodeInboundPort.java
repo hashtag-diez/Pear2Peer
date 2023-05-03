@@ -96,8 +96,7 @@ public class NodeInboundPort
           @Override
           public void run() {
             try {
-              ((NodePlugin) this.getTaskProviderReference()).probe(requestURI, facade, remainingHops, chosen,
-                  chosenNeighbourCount);
+              ((NodePlugin) this.getTaskProviderReference()).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
             } catch (Exception e) {
               throw new RuntimeException(e);
             }

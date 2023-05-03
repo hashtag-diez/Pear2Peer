@@ -1,8 +1,12 @@
 package plugins.NetworkNode;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import components.Node;
@@ -73,18 +77,19 @@ public class NodePlugin
     this.addRequiredInterface(NodeManagementPI.class);
     this.addRequiredInterface(ReflectionCI.class);
   }
+
   public void joinNetwork() throws Exception {
     // Displayer.display(((Node) this.getOwner()).getNodeURI() + " is joining : ",
     // true);
-    if(!NMGetterPort.connected()){
+    if (!NMGetterPort.connected()) {
       ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
       rop.publishPort();
-  
+
       this.getOwner().doPortConnection(
           rop.getPortURI(),
           NMReflectionInboundURI,
           ReflectionConnector.class.getCanonicalName());
-  
+
       String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
       if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
         System.out.println("NOPE");
@@ -103,16 +108,16 @@ public class NodePlugin
   public void leaveNetwork() throws Exception {
     lock.lock();
     NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
-    for (String port : this.peersGetterPorts.keySet()){
-        peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
-        this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());
-        peersGetterPorts.get(port).unpublishPort();
-        ContentManagementPlug.remove(port);
+    for (String port : this.peersGetterPorts.keySet()) {
+      peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
+      this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());
+      peersGetterPorts.get(port).unpublishPort();
+      ContentManagementPlug.remove(port);
     }
     this.peersGetterPorts.clear();
     this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
     NMGetterPort.unpublishPort();
-    debugPrinter.display(((Node)this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving : network");
+    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving : network");
     lock.unlock();
   }
 
@@ -134,7 +139,6 @@ public class NodePlugin
 
     this.getOwner().doPortConnection(peerOutPortN.getPortURI(), node.getNodeURI(),
         NodeServiceConnector.class.getCanonicalName());
-
     peerOutPortN.share(((Node) this.getOwner()).getContentNode());
     this.peersGetterPorts.put(node.getNodeURI(), peerOutPortN);
     peerOutPortN.acceptConnected(((Node) this.getOwner()).getContentNode());
@@ -154,31 +158,24 @@ public class NodePlugin
     outBoundPort.unpublishPort();
     ContentManagementPlug.remove(node);
     // NetworkScannerPlug.remove(node);
-    debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeURI() + " is disconnected from : "
-        + node.getNodeURI() + " : " + this.peersGetterPorts.size());
     lock.unlock();
   }
 
   @Override
   public void finalise() throws Exception {
     super.finalise();
-    if(NMGetterPort.connected()){
+    if (NMGetterPort.connected()) {
       this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
       NMGetterPort.unpublishPort();
     }
     NSetterPort.unpublishPort();
   }
 
-  public NodeInboundPort getNodeInboundPort() {
-    return this.NSetterPort;
-  };
-
   public void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws Exception {
     for (PeerNodeAddressI peerNodeAddressI : neighbours) {
       if (peerNodeAddressI.getNodeIdentifier() != ((Node) (this.getOwner())).getContentNode().getNodeIdentifier()) {
         connect(peerNodeAddressI);
       }
-
     }
   }
 
@@ -188,8 +185,7 @@ public class NodePlugin
 
     this.getOwner().doPortConnection(peerOutPortN.getPortURI(), node.getNodeURI(),
         NodeServiceConnector.class.getCanonicalName());
-    debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeURI() + " is connected to : "
-        + node.getNodeURI() + " : " + this.peersGetterPorts.size());
+
     this.peersGetterPorts.put(node.getNodeURI(), peerOutPortN);
   }
 
@@ -202,7 +198,10 @@ public class NodePlugin
       lock.unlock();
       return;
     }
-    NodeOutboundPort chosenNeighbour = Helpers.getRandomElement(this.peersGetterPorts.values());
+
+    int randindex = new Random().nextInt(peersGetterPorts.size());
+    List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
+    NodeOutboundPort chosenNeighbour = ports.get(randindex);
     if (chosen == null || count > peersGetterPorts.size()) {
       chosenNeighbour.probe(requestURI, facade, remainingHops - 1, ((Node) this.getOwner()).getContentNode(),
           peersGetterPorts.size());

@@ -28,8 +28,9 @@ public class Helpers {
         int item = getRandomNumber(size);
         int i = 0;
         for (T obj : set) {
-            if (i == item)
+            if (i == item) {
                 return obj;
+            }
             i++;
         }
         return null;

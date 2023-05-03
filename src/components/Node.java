@@ -28,7 +28,7 @@ public class Node extends AbstractComponent {
 
 	private NodePlugin plugin;
 
-	private static final int DEFAULT_NB_OF_THREADS = 4;
+	private static final int DEFAULT_NB_OF_THREADS = 6;
 	private static final boolean DEBUG_MODE = true;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
@@ -64,7 +64,7 @@ public class Node extends AbstractComponent {
 
 	protected void initialise(int nbThreads) {
 		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
-		int nbThreadsNetwork = 2;
+		int nbThreadsNetwork = 3;
 		int nbThreadsContent = nbThreads - nbThreadsNetwork;
 
 		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,
@@ -99,8 +99,8 @@ public class Node extends AbstractComponent {
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
-		int delay = Helpers.getRandomNumber(2);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(5 + delay));
+		int delay = Helpers.getRandomNumber(4);
+		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(4 + delay));
 
 		long delayInNanosToLeave = clock
 				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(12));

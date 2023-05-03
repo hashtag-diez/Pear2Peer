@@ -1,7 +1,9 @@
 package plugins.NetworkFacade;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -19,11 +21,11 @@ import plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import plugins.NetworkFacade.port_connector.NodeManagementInboundPort;
 import plugins.NetworkFacade.port_connector.NodeManagementOutboundPort;
 import plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
+import plugins.NetworkNode.NodePI;
 import plugins.NetworkNode.port_connector.NodeOutboundPort;
 import plugins.NetworkScanner.NetworkScannerPlugin;
 import utiles.AsyncProbe;
 import utiles.DebugDisplayer;
-import utiles.Helpers;
 
 public class NodeManagementPlugin
     extends AbstractPlugin {
@@ -81,8 +83,8 @@ public class NodeManagementPlugin
 		}
 
   public void join(PeerNodeAddressI a) throws Exception {
-    debugPrinter.display(
-      (a.getNodeIdentifier() + " is joining : network"));
+    /* debugPrinter.display(
+      (a.getNodeIdentifier() + " is joining : network")); */
     lock.lock();
     if (roots.size() < nbRacine) {
       ContentManagementPlug.put((ContentNodeAddressI) a);
@@ -125,29 +127,27 @@ public class NodeManagementPlugin
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
       int chosenNeighbourCount)
       throws Exception {
-
     probeCollector.put(requestURI, new AsyncProbe(ndSendProbe));
+    this.addRequiredInterface(NodePI.class);
     for (int i = 0; i < ndSendProbe; i++) {
-      PeerNodeAddressI chosenNeighbour = Helpers.getRandomElement(roots);
-      if (chosenNeighbour == null)
+      PeerNodeAddressI chosenNeighbour = getRandomElement(roots);
+      if (chosenNeighbour == null) {
         return; // no neighbour to probe
-
+      }
       NodeOutboundPort port = new NodeOutboundPort(this.getOwner());
       port.publishPort();
-      this.getOwner().doPortConnection(port.getPortURI(), chosenNeighbour.getNodeURI(),
-          NodeServiceConnector.class.getCanonicalName());
+      this.getOwner().doPortConnection(port.getPortURI(), chosenNeighbour.getNodeURI(), NodeServiceConnector.class.getCanonicalName());
       port.probe(requestURI, ((NodeManagement) this.getOwner()).getApplicationNode(), nbSaut, null, 0);
       this.getOwner().doPortDisconnection(port.getPortURI());
       port.unpublishPort();
     }
+    this.removeRequiredInterface(NodePI.class);
   }
 
   public void connectWithFacade() throws Exception {
-    debugPrinter.display(((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " : connect to others facades");
     String[] tab = ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier().split("-");
     String basename = tab[0] + "-" + tab[1];
     String facadeIdAstString = tab[2];
-    assert false : "-----------------------------------> " + facadeIdAstString;
     int FacadeIndex = Integer.parseInt(facadeIdAstString);
     this.addRequiredInterface(ReflectionCI.class);
     for (int i = 1; i <= 5; i++) {
@@ -158,6 +158,7 @@ public class NodeManagementPlugin
 
         ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
         rop.publishPort();
+        debugPrinter.display("\t\t\t\t\t\t CREE");
         try {
           this.getOwner().doPortConnection(
               rop.getPortURI(),
@@ -175,18 +176,17 @@ public class NodeManagementPlugin
           }
           this.getOwner().doPortDisconnection(rop.getPortURI());
           rop.unpublishPort();
+          debugPrinter.display("\t\t\t\t\t\t DETRUIT");
           rop.destroyPort();
         } catch (NullPointerException e) {
-
-        } finally{
           rop.unpublishPort();
+          debugPrinter.display("\t\t\t\t\t\t DETRUIT");
           rop.destroyPort();
-        }
+        } 
       }
-      this.removeRequiredInterface(ReflectionCI.class);
       lock1.unlock();
     }
-   
+    debugPrinter.display(((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " : connect to others facades");
   }
 
   public void interconnect(FacadeNodeAddressI f) throws Exception {
@@ -198,6 +198,7 @@ public class NodeManagementPlugin
 
     ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
     rop.publishPort();
+    debugPrinter.display("\t\t\t\t\t\t CREE");
     this.getOwner().doPortConnection(
         rop.getPortURI(),
         f.getNodeIdentifier(),
@@ -216,7 +217,22 @@ public class NodeManagementPlugin
     lock1.unlock();
     this.getOwner().doPortDisconnection(rop.getPortURI());
     rop.unpublishPort();
+    debugPrinter.display("\t\t\t\t\t\t DETRUIT");
     rop.destroyPort();
   }
 
+    // Get a random element from an set
+    public <T> T getRandomElement(Collection<T> set) {
+      int size = set.size();
+      Random r = new Random();
+      int item = r.nextInt(size - 0) + 0;
+      int i = 0;
+      for (T obj : set) {
+        if (i == item) {
+          return obj;
+        }
+        i++;
+      }
+      return null;
+    }
 }

@@ -78,7 +78,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     }
 
     protected boolean _isAlbumTitleEquals(ContentTemplateI request) {
-        return request.getAlbumTitle().equals(getTitle());
+        return request.getAlbumTitle().equals(getAlbumTitle());
     }
 
     /**

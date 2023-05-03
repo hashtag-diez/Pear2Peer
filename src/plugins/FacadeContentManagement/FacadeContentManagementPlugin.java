@@ -103,6 +103,7 @@ public class FacadeContentManagementPlugin
     } finally {
       this.getOwner().doPortDisconnection(cli.getPortURI());
       cli.unpublishPort();
+      cli.destroyPort();
     }
   }
 
@@ -117,6 +118,7 @@ public class FacadeContentManagementPlugin
     } finally {
       this.getOwner().doPortDisconnection(cli.getPortURI());
       cli.unpublishPort();
+      cli.destroyPort();
     }
   }
 

@@ -44,8 +44,8 @@ public class ContentManagementPlugin
     super();
     contentsDescriptors = new ArrayList<>();
     this.URI = URI;
-    this.loadDescriptors(DescriptorId, addr);
     setPluginURI(AbstractPort.generatePortURI());
+    this.loadDescriptors(DescriptorId, addr);
   }
 
   @Override
@@ -124,6 +124,9 @@ public class ContentManagementPlugin
     ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
     for (HashMap<String, Object> obj : result) {
       ContentDescriptorI readDescriptor = new ContentDescriptor(obj, addr);
+      if(readDescriptor.getAlbumTitle()!=null && readDescriptor.getAlbumTitle().equals("Brandebourg Concertos")){
+        System.out.println(this.getPluginURI() + " possède l'album !");
+      }
       contentsDescriptors.add(readDescriptor);
     }
   }
@@ -141,7 +144,6 @@ public class ContentManagementPlugin
    */
   public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr)
       throws Exception {
-
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(cd)) {
         FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);

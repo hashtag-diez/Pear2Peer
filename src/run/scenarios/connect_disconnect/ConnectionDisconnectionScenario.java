@@ -7,6 +7,7 @@ import components.Node;
 import components.NodeManagement;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractCVM;
+import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 
 /**
@@ -56,6 +57,7 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 		// time to plan all the actions of the test scenario
 		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 1.0;
+		ContentDataManager.DATA_DIR_NAME = "src/data";
 
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
