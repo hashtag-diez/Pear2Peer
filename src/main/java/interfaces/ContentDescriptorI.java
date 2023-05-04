@@ -18,7 +18,7 @@ public interface ContentDescriptorI extends ContentTemplateI {
    * @param cd The ContentDescriptorI object to compare to.
    * @return A boolean value.
    */
-  boolean equals(ContentDescriptorI cd) throws Exception;
+  boolean equals(ContentDescriptorI cd);
 
   /**
    * > Returns true if the given template matches the current template

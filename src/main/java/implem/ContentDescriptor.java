@@ -48,7 +48,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     }
 
     @Override
-    public boolean equals(ContentDescriptorI cd) throws Exception {
+    public boolean equals(ContentDescriptorI cd) {
         /*
          * boolean addrEqual =
          * this._addr.getNodeURI().equals(cd.getContentNodeAdressI().

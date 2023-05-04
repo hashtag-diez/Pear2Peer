@@ -1,6 +1,7 @@
 package test.java.content;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,6 +50,17 @@ public class ContentDescriptorTest {
 		assertFalse(contentDescriptor1.match(template2));
 		assertTrue(contentDescriptor2.match(template2));
 		assertFalse(contentDescriptor2.match(template1));
+	}
+	
+	@Test
+	public void testEquals()  {
+		ContentDescriptorI contentDescriptor1a = buildContenDescriptorById(1);
+		ContentDescriptorI contentDescriptor1b = buildContenDescriptorById(1);
+		ContentDescriptorI contentDescriptor2 = buildContenDescriptorById(2);		
+		
+		assertTrue(contentDescriptor1a.equals(contentDescriptor1b));
+		assertFalse(contentDescriptor1a.equals(contentDescriptor2));
+		assertFalse(contentDescriptor1b.equals(contentDescriptor2));
 	}
 
 }
