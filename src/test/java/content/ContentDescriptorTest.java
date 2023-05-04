@@ -149,7 +149,7 @@ public class ContentDescriptorTest {
 				.setAdress(null)
 				.build();
 		
-		assertTrue(contentDescriptor1.match(contentDescriptor2));
+		assertTrue(contentDescriptor2.match(contentDescriptor1));
 	}
 
 }

@@ -1,6 +1,7 @@
 package main.java.implem;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
@@ -55,53 +56,49 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
          * getNodeURI());
          * boolean size = this.getSize() == cd.getSize();
          */
-        return _isTitleEquals(cd) && _isAlbumTitleEquals(cd) && _isIntrepretersContains(cd)
-                && _isComposersContains(cd) /* && size && addrEqual */;
+        return matchTitles(cd) && matchAlbums(cd) && matchComposers(cd)
+                && matchInterpreters(cd) ;
     }
 
     @Override
     public boolean match(ContentTemplateI request) {
-        boolean res = false;
-        if (request.getTitle() != null)
-            res = _isTitleEquals(request);
-        if (request.getAlbumTitle() != null)
-            res = _isAlbumTitleEquals(request);
-        if (request.getComposers().size() != 0)
-            res = _isComposersContains(request);
-        if (request.getInterpreters().size() != 0)
-            res = _isIntrepretersContains(request);
-        return res;
+    	boolean res = 
+    			matchTitles(request) 
+    			||  matchAlbums(request)
+    			|| matchComposers(request)
+    			|| matchInterpreters(request);
+
+    	return res;
     }
 
-    protected boolean _isTitleEquals(ContentTemplateI request) {
+    protected boolean matchTitles(ContentTemplateI request) {
         return request.getTitle().equals(getTitle());
     }
 
-    protected boolean _isAlbumTitleEquals(ContentTemplateI request) {
+    protected boolean matchAlbums(ContentTemplateI request) {
         return request.getAlbumTitle().equals(getAlbumTitle());
     }
 
     /**
-     * > If the interpreters of the request are contained in the interpreters of the
-     * content template, then
-     * return true
-     * 
+     * If the two interpreters have at least one common interpreter,
+     * they match
      * @param request The request to be checked.
      * @return A boolean value.
      */
-    protected boolean _isIntrepretersContains(ContentTemplateI request) {
-        return getInterpreters().containsAll(request.getInterpreters());
+    protected boolean matchInterpreters(ContentTemplateI request) {
+    	return this._interpreters
+    			.stream().anyMatch(ele -> request.getInterpreters().contains(ele));
     }
 
     /**
-     * If the composers of this template contain all the composers of the request,
-     * then return true.
-     * 
+     * If the two composers have at least one common composer
+     * they match
      * @param request The request to be fulfilled.
      * @return A boolean value.
      */
-    protected boolean _isComposersContains(ContentTemplateI request) {
-        return getComposers().containsAll(request.getComposers());
+    protected boolean matchComposers(ContentTemplateI request) {
+    	return this._composers
+    			.stream().anyMatch(ele -> request.getComposers().contains(ele));
     }
 
     @Override
