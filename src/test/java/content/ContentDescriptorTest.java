@@ -15,48 +15,80 @@ import main.java.interfaces.ContentTemplateI;
 
 public class ContentDescriptorTest {
 
-	protected ContentTemplateI buildContentTemplateById(int id) {
-		// content fields
-		String titre = "titre" + id;
-		String album = "album" + id;
-		Set<String> interpreters = new HashSet<>();
-		interpreters.add("interpreter" + id);
-		Set<String> composers = new HashSet<>();
-		composers.add("composer" + id);
-
-		return new ContentTemplate(titre, album, interpreters, composers);
-	}
-	
-	protected ContentDescriptorI buildContenDescriptorById(int id) {
-		// content fields
-		String titre = "titre" + id;
-		String album = "album" + id;
-		Set<String> interpreters = new HashSet<>();
-		interpreters.add("interpreter" + id);
-		Set<String> composers = new HashSet<>();
-		composers.add("composer" + id);
-		return new ContentDescriptor(titre, album, interpreters, composers, (long) id, null);
-	}
-
-
 	@Test
 	public void testMatch() {
-		ContentTemplateI template1 = buildContentTemplateById(1);
-		ContentTemplateI template2  = buildContentTemplateById(2);
-		ContentDescriptorI contentDescriptor1 = buildContenDescriptorById(1);
-		ContentDescriptorI contentDescriptor2 = buildContenDescriptorById(2);
+		ContentTemplateI contentTemplate1 = 
+				new ContentTemplateBuilder()
+				.setTitle("Titre1")
+				.setAlbum("Album1")
+				.addInterpreter("I1")
+				.addcomposer("C1")
+				.build();
 		
-		assertTrue(contentDescriptor1.match(template1));
-		assertFalse(contentDescriptor1.match(template2));
-		assertTrue(contentDescriptor2.match(template2));
-		assertFalse(contentDescriptor2.match(template1));
+		ContentTemplateI contentTemplate2 = 
+				new ContentTemplateBuilder()
+				.setTitle("Titre2")
+				.setAlbum("Album2")
+				.addInterpreter("I2")
+				.addcomposer("C2")
+				.build();
+		
+		ContentDescriptorI contentDescriptor1 = 
+				new ContentDescriptorBuilder()
+				.setTitle("Titre1")
+				.setAlbum("Album1")
+				.addInterpreter("I1")
+				.addcomposer("C1")
+				.setFileSize((long) 10)
+				.setAdress(null)
+				.build();
+		
+		ContentDescriptorI contentDescriptor2 = 
+				new ContentDescriptorBuilder()
+				.setTitle("Titre2")
+				.setAlbum("Album2")
+				.addInterpreter("I2")
+				.addcomposer("C2")
+				.setFileSize((long) 10)
+				.setAdress(null)
+				.build();
+		
+		assertTrue(contentDescriptor1.match(contentTemplate1));
+		assertFalse(contentDescriptor1.match(contentTemplate2));
+		assertTrue(contentDescriptor2.match(contentTemplate2));
+		assertFalse(contentDescriptor2.match(contentTemplate1));
+		 
 	}
 	
 	@Test
 	public void testEquals()  {
-		ContentDescriptorI contentDescriptor1a = buildContenDescriptorById(1);
-		ContentDescriptorI contentDescriptor1b = buildContenDescriptorById(1);
-		ContentDescriptorI contentDescriptor2 = buildContenDescriptorById(2);		
+		ContentDescriptorI contentDescriptor1a = 
+				new ContentDescriptorBuilder()
+				.setTitle("Titre1")
+				.setAlbum("Album1")
+				.addInterpreter("I1")
+				.addcomposer("C1")
+				.setFileSize((long) 10)
+				.setAdress(null)
+				.build();
+		ContentDescriptorI contentDescriptor1b =
+				new ContentDescriptorBuilder()
+				.setTitle("Titre1")
+				.setAlbum("Album1")
+				.addInterpreter("I1")
+				.addcomposer("C1")
+				.setFileSize((long) 10)
+				.setAdress(null)
+				.build();
+		ContentDescriptorI contentDescriptor2 = 
+				new ContentDescriptorBuilder()
+				.setTitle("Titre2")
+				.setAlbum("Album2")
+				.addInterpreter("I2")
+				.addcomposer("C2")
+				.setFileSize((long) 10)
+				.setAdress(null)
+				.build();
 		
 		assertTrue(contentDescriptor1a.equals(contentDescriptor1b));
 		assertFalse(contentDescriptor1a.equals(contentDescriptor2));

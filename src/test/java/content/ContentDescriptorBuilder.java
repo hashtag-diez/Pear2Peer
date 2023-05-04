@@ -23,7 +23,7 @@ public class ContentDescriptorBuilder {
 	protected Set<String> composers = new HashSet<>();
 	private Long size;
 	private ContentManagementNodeAddressI adresse;
-	
+
 	public ContentDescriptorBuilder setTitle(String title) {
 		this.title = title;
 		return this;
@@ -33,24 +33,22 @@ public class ContentDescriptorBuilder {
 		this.album = album;
 		return this;
 	}
-	
+
 	public ContentDescriptorBuilder setFileSize(Long fileSize) {
 		this.size = fileSize;
 		return this;
 	}
-	
-	public ContentDescriptorBuilder setAdresse(ContentManagementNodeAddressI adress) {
+
+	public ContentDescriptorBuilder setAdress(ContentManagementNodeAddressI adress) {
 		this.adresse = adress;
 		return this;
 	}
-	
+
 	public ContentDescriptorBuilder addInterpreter(String interpreter) {
 		this.interpreters.add(interpreter);
 		return this;
 	}
-	
-	
-	
+
 	public ContentDescriptorBuilder addcomposer(String composer) {
 		this.composers.add(composer);
 		return this;
@@ -58,5 +56,5 @@ public class ContentDescriptorBuilder {
 
 	public ContentDescriptor build() {
 		return new ContentDescriptor(title, album, interpreters, composers, size, adresse);
-    }
+	}
 }
