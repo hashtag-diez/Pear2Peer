@@ -9,12 +9,13 @@ import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import main.java.components.Node;
 import main.java.components.NodeManagement;
+import main.java.utiles.Helpers;
 
 public class FindScenarioBasic extends AbstractCVM {
 	/** URI of the provider component (convenience). */
 	protected static final String NODE_MANAGEMENT_COMPONENT_URI = "my-NODE_MANAGEMENT";
 	/** URI of the consumer component (convenience). */
-	protected static final String NODE_COMPONENT_URI = "my-NODE";
+	protected static final String NODE_COMPONENT_URI = "my_NODE";
 
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 	public static final String CLOCK_URI = "my-clock-uri";
@@ -59,7 +60,7 @@ public class FindScenarioBasic extends AbstractCVM {
 		AbstractComponent.createComponent(
 				ClientLookingForContent.class.getCanonicalName(),
 				new Object[] { "Clicos",
-						NODE_MANAGEMENT_COMPONENT_URI + "-" + 1 });
+						NODE_MANAGEMENT_COMPONENT_URI + "-" + Helpers.getRandomNumber(1, 5) });
 		super.deploy();
 	}
 

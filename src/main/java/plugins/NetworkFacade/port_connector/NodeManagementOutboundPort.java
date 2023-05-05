@@ -4,6 +4,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.ports.AbstractOutboundPort;
+import main.java.implem.ApplicationNode;
 import main.java.interfaces.FacadeNodeAddressI;
 import main.java.interfaces.PeerNodeAddressI;
 import main.java.plugins.NetworkFacade.NodeManagementPI;
@@ -41,7 +42,7 @@ public class NodeManagementOutboundPort
   }
 
   @Override
-  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception {
+  public void interconnect(ApplicationNode f) throws RejectedExecutionException, AssertionError, Exception {
     ((NodeManagementPI) this.getConnector()).interconnect(f);
 
   }

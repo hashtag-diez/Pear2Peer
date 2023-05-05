@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import fr.sorbonne_u.components.AbstractPlugin;
 import fr.sorbonne_u.components.AbstractPort;
@@ -31,6 +32,7 @@ public class ContentManagementPlugin
 
   protected String URI;
   protected ContentManagementInboundPort setterPort;
+  private ReentrantLock lock = new ReentrantLock();
   protected Map<String, ContentManagementOutboundPort> getterPorts = new HashMap<>();;
   protected List<ContentDescriptorI> contentsDescriptors;
   protected int PINGED = 4;
@@ -81,12 +83,18 @@ public class ContentManagementPlugin
    * @param node the node to connect to
    */
   public void put(ContentNodeAddressI node) throws Exception {
+    lock.lock();
+    if(this.getterPorts.get(node.getContentManagementURI())!=null){
+      lock.unlock();
+      return;
+    }
     ContentManagementOutboundPort peerOutPortCM = new ContentManagementOutboundPort(this.getOwner());
     peerOutPortCM.publishPort();
 
     this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), node.getContentManagementURI(),
         ContentManagementServiceConnector.class.getCanonicalName());
     this.getterPorts.put(node.getContentManagementURI(), peerOutPortCM);
+    lock.unlock();
     peerOutPortCM.acceptShared(((Node) this.getOwner()).getContentNode());
   }
 
@@ -124,9 +132,6 @@ public class ContentManagementPlugin
     ArrayList<HashMap<String, Object>> result = ContentDataManager.readDescriptors(number);
     for (HashMap<String, Object> obj : result) {
       ContentDescriptorI readDescriptor = new ContentDescriptor(obj, addr);
-      if(readDescriptor.getAlbumTitle()!=null && readDescriptor.getAlbumTitle().equals("Brandebourg Concertos")){
-        System.out.println(this.getPluginURI() + " possède l'album !");
-      }
       contentsDescriptors.add(readDescriptor);
     }
   }
@@ -157,8 +162,9 @@ public class ContentManagementPlugin
       return;
 
     Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
-    for (ContentManagementOutboundPort outBoundPort : ports)
+    for (ContentManagementOutboundPort outBoundPort : ports){
       outBoundPort.find(cd, hops, requester, clientAddr);
+    }
 
   }
 
@@ -211,11 +217,16 @@ public class ContentManagementPlugin
   }
 
   public void acceptShared(ContentManagementNodeAddressI connected) throws Exception {
+    lock.lock();
+    if(this.getterPorts.get(connected.getContentManagementURI())!=null){
+      lock.unlock();
+      return;
+    }
     ContentManagementOutboundPort peerOutPortCM = new ContentManagementOutboundPort(this.getOwner());
     peerOutPortCM.publishPort();
     this.getOwner().doPortConnection(peerOutPortCM.getPortURI(), connected.getContentManagementURI(),
         ContentManagementServiceConnector.class.getCanonicalName());
-
     this.getterPorts.put(connected.getContentManagementURI(), peerOutPortCM);
+    lock.unlock();
   }
 }

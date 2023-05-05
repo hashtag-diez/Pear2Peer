@@ -54,7 +54,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 		clock.waitUntilStart();
 
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(7));
+				startInstant.plusSeconds(12));
 
 		this.scheduleTask(
 				o -> {

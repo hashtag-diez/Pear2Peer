@@ -103,7 +103,7 @@ public class Node extends AbstractComponent {
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(4 + delay));
 
 		long delayInNanosToLeave = clock
-				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(12));
+				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(15));
 
 		scheduleConnectionToNetwork(delayInNanosToJoin);
 		debugPrinter.display("[node join network] has been scheduled");

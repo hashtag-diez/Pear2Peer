@@ -2,6 +2,7 @@ package main.java.plugins.FacadeContentManagement;
 
 import java.util.Set;
 
+import main.java.implem.ApplicationNode;
 import main.java.interfaces.ContentDescriptorI;
 import main.java.plugins.ContentManagement.ContentManagementPI;
 
@@ -16,4 +17,6 @@ public interface FacadeContentManagementPI extends ContentManagementPI {
     void acceptFound(ContentDescriptorI found, String requestOwner) throws Exception;
 
     void acceptMatched(Set<ContentDescriptorI> found, String requestOwner) throws Exception;
+
+    void acceptShared(ApplicationNode connected) throws Exception;
 }

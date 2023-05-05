@@ -9,6 +9,7 @@ import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import main.java.components.Node;
 import main.java.components.NodeManagement;
+import main.java.utiles.Helpers;
 
 public class MatchScenarioBasic extends AbstractCVM {
 
@@ -24,6 +25,7 @@ public class MatchScenarioBasic extends AbstractCVM {
 	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;
+	protected final int NB_FACADE = 5;
 	/**
 	 * Reference to the provider component to share between deploy and shutdown.
 	 */
@@ -38,29 +40,27 @@ public class MatchScenarioBasic extends AbstractCVM {
 		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 10.0;
 
-		ContentDataManager.DATA_DIR_NAME = "src/data2";
+		ContentDataManager.DATA_DIR_NAME = "src/data";
 
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
-				new Object[]{CLOCK_URI, unixEpochStartTimeInNanos,
-							 startInstant, accelerationFactor});
-		
-		AbstractComponent.createComponent(
-				NodeManagement.class.getCanonicalName(),
-				new Object[] { NODE_MANAGEMENT_COMPONENT_URI + "-" + 1, 0 });
+				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
+						startInstant, accelerationFactor });
 
-		for (int i = 1; i <= NB_PEER; i++) {
-			AbstractComponent.createComponent(
-					Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + i,
-						NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1, i });
+		for (int i = 1; i <= NB_FACADE; i++) {
+			AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
+					new Object[] { NODE_MANAGEMENT_COMPONENT_URI + "-" + i, (i - 1) * 10 });
 		}
-		
+
+		for (int i = 1; i <= NB_FACADE * NB_PEER; i++) {
+			AbstractComponent.createComponent(Node.class.getCanonicalName(),
+					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI + "-" + ((i % NB_FACADE) + 1), i });
+		}
+
 		AbstractComponent.createComponent(
-				ClientLookingForContentWhichMatch.class.getCanonicalName(), 
-				new Object[] {"Clicos",
-				NODE_MANAGEMENT_COMPONENT_URI+ "-" + 1}
-		);
+				ClientLookingForContentWhichMatch.class.getCanonicalName(),
+				new Object[] { "Clicos",
+						NODE_MANAGEMENT_COMPONENT_URI + "-" + Helpers.getRandomNumber(1, 5) });
 
 		super.deploy();
 	}

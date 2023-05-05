@@ -3,7 +3,7 @@ package main.java.plugins.NetworkFacade;
 import java.util.concurrent.RejectedExecutionException;
 
 import main.java.components.interfaces.NodeManagementCI;
-import main.java.interfaces.FacadeNodeAddressI;
+import main.java.implem.ApplicationNode;
 import main.java.interfaces.PeerNodeAddressI;
 
 /**
@@ -42,5 +42,5 @@ public interface NodeManagementPI extends NodeManagementCI {
 	 */
 	void leave(PeerNodeAddressI a) throws Exception;
 
-	public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception;
+	public void interconnect(ApplicationNode f) throws RejectedExecutionException, AssertionError, Exception;
 }

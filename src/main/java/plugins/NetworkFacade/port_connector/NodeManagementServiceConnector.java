@@ -3,6 +3,7 @@ package main.java.plugins.NetworkFacade.port_connector;
 import java.util.concurrent.RejectedExecutionException;
 
 import fr.sorbonne_u.components.connectors.AbstractConnector;
+import main.java.implem.ApplicationNode;
 import main.java.interfaces.FacadeNodeAddressI;
 import main.java.interfaces.PeerNodeAddressI;
 import main.java.plugins.NetworkFacade.NodeManagementPI;
@@ -35,7 +36,7 @@ public class NodeManagementServiceConnector
   }
 
   @Override
-  public void interconnect(FacadeNodeAddressI f) throws RejectedExecutionException, AssertionError, Exception {
+  public void interconnect(ApplicationNode f) throws RejectedExecutionException, AssertionError, Exception {
     ((NodeManagementPI) this.offering).interconnect(f);
   }
 }

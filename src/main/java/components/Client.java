@@ -24,7 +24,7 @@ import main.java.plugins.ContentManagement.port_connector.ContentManagementServi
 import main.java.plugins.FacadeContentManagement.FacadeContentManagementPI;
 import main.java.plugins.NetworkScanner.NetworkScannerPI;
 import main.java.plugins.NetworkScanner.port_connector.NetworkScannerOutboundPort;
-import main.java.plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
+// import main.java.plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 import main.java.ports.ClientInboundPort;
 import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
@@ -41,6 +41,9 @@ public class Client extends AbstractComponent {
 	protected String NodeManagementURI;
 	protected boolean found = false;
 	private static final boolean DEBUG_MODE = true;
+
+	private static final int HOPS = 6;
+	
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	// The constructor of the Client class. It creates the Client object and
@@ -106,7 +109,7 @@ public class Client extends AbstractComponent {
 		}
 	}
 
-	private void connectToFacadeViaNS(ReflectionOutboundPort rop) throws Exception {
+	/* private void connectToFacadeViaNS(ReflectionOutboundPort rop) throws Exception {
 
 		this.doPortConnection(rop.getPortURI(), NodeManagementURI, ReflectionConnector.class.getCanonicalName());
 
@@ -117,7 +120,7 @@ public class Client extends AbstractComponent {
 			this.doPortConnection(NSGetterPort.getPortURI(), otherInboundPortUI[0],
 					NetworkScannerServiceConnector.class.getCanonicalName());
 		}
-	}
+	} */
 
 	/**
 	 * It reads the templates from the data directory, picks a random one, and
@@ -140,7 +143,7 @@ public class Client extends AbstractComponent {
 		Set<ContentDescriptorI> matched = new HashSet<>();
 
 		ReturnPort.publishPort();
-		CMGetterPort.match(temp, matched, 5, null, ReturnPort.getPortURI());
+		CMGetterPort.match(temp, matched, HOPS, null, ReturnPort.getPortURI());
 		debugPrinter.display("Matched count: " + matched.size());
 	}
 
@@ -153,8 +156,8 @@ public class Client extends AbstractComponent {
 		debugPrinter.display("Template recherche :\n" + temp.toString());
 		found = false;
 		ReturnPort.publishPort();
-		System.out.println("\t\t\t\t\t\t " + ReturnPort.getPortURI());
-		CMGetterPort.find(temp, 4, null, ReturnPort.getPortURI());
+		// System.out.println("\t\t\t\t\t\t " + ReturnPort.getPortURI());
+		CMGetterPort.find(temp, HOPS, null, ReturnPort.getPortURI());
 	}
 
 	/**

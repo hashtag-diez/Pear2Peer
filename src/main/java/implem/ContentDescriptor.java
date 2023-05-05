@@ -1,7 +1,6 @@
 package main.java.implem;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
@@ -64,7 +63,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     public boolean match(ContentTemplateI request) {
     	boolean res = 
     			matchTitles(request) 
-    			||  matchAlbums(request)
+    			|| matchAlbums(request)
     			|| matchComposers(request)
     			|| matchInterpreters(request);
 
@@ -72,10 +71,12 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
     }
 
     protected boolean matchTitles(ContentTemplateI request) {
+        if(getTitle()==null || request.getTitle()==null) return false;
         return request.getTitle().equals(getTitle());
     }
 
     protected boolean matchAlbums(ContentTemplateI request) {
+        if(getAlbumTitle()==null || request.getAlbumTitle()==null) return false;
         return request.getAlbumTitle().equals(getAlbumTitle());
     }
 
@@ -86,6 +87,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return A boolean value.
      */
     protected boolean matchInterpreters(ContentTemplateI request) {
+        if(request.getInterpreters().size()==0 || _interpreters.size()==0) return false;
     	return this._interpreters
     			.stream().anyMatch(ele -> request.getInterpreters().contains(ele));
     }
@@ -97,6 +99,7 @@ public class ContentDescriptor extends ContentTemplate implements ContentDescrip
      * @return A boolean value.
      */
     protected boolean matchComposers(ContentTemplateI request) {
+        if(request.getComposers().size()==0 || _composers.size()==0) return false;
     	return this._composers
     			.stream().anyMatch(ele -> request.getComposers().contains(ele));
     }
