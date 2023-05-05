@@ -1,0 +1,31 @@
+<deployment>
+   <hosts>
+    <host name="localhost"
+          dir="/Users/diez/Documents/Fac/M1/CPS/Pear2Peer/"/>
+  </hosts>
+  <cyclicBarrier   hostname="localhost" port="55253"/>
+  <globalRegistry  hostname="localhost" port="55252"/>
+  <rmiRegistryPort no="55999"/>
+  <jvms2hostnames>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-1"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-2"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-3"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+            <jvm2hostname jvmuri="my-NODE_MANAGEMENT-4"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-5"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+  </jvms2hostnames>
+</deployment>

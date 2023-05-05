@@ -26,7 +26,7 @@ import main.java.plugins.NetworkNode.port_connector.NodeInboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeServiceConnector;
 import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
-import main.java.utiles.DebugDisplayer;
+// import main.java.utiles.DebugDisplayer;
 
 public class NodePlugin
     extends AbstractPlugin implements NodePI {

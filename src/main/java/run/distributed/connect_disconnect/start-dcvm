@@ -1,0 +1,8 @@
+#!/bin/bash
+if [ -z "$1" ]; then 
+  echo usage: $0 jvmName
+  exit
+ fi
+java -cp '/Users/diez/Documents/Fac/M1/CPS/Pear2Peer/src/' -Djava.security.manager -Djava.security.policy=dcvm.policy main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario $1 config.xml
+
+cd /Users/diez/Documents/Fac/M1/CPS/Pear2Peer ; /usr/bin/env /Library/Java/JavaVirtualMachines/jdk1.8.0_301.jdk/Contents/Home/bin/java -cp 'lib/*' -Djava.security.manager -Djava.security.policy=src/main/java/run/distributed/connect_disconnect/dcvm.policy main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario my-NODE_MANAGEMENT-1 src/main/java/run/distributed/connect_disconnect/config.xml
