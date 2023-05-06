@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractDistributedCVM;
+import fr.sorbonne_u.components.helpers.TracerWindow;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import main.java.components.Node;
@@ -12,17 +13,19 @@ import main.java.components.NodeManagement;
 
 /**
  * 
- * TUTO : Lancer la JVM avec Run sur Visual Studio Code
+ * TUTO : 
+ *  - Au préalable, avoir lancé start_cyclebarrier.sh et start_gregistry.sh
+ *  - Lancer la JVM avec Run sur Visual Studio Code
  *  - Aller sur le main 
  *  - Taper Run
  *  - Cancel la runtime lancée
  * 	- Supprimer tout ce qu'il y'a après le .jar généré par VSCode
  *  - Mettre à la suite : 
  * 		-Djava.security.manager 
- * 		-Djava.security.policy=src/main/java/run/distributed/connect_disconnect/dcvm.policy 
+ * 		-Djava.security.policy=dcvm.policy 
  * 		main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario 
  * 		my-NODE_MANAGEMENT-1 
- * 		src/main/java/run/distributed/connect_disconnect/config.xml
+			config.xml
  * 	- Relancer
  * 
  * Dans ce scenario, chacun des noeuds:
@@ -63,7 +66,6 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 
 	@Override
 	public void instantiateAndPublish() throws Exception {
-
 		long unixEpochStartTimeInNanos = TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis())
 				+ DELAY_TO_START_IN_NANOS;
 		// decide for a start time as an Instant that will be used as the base
@@ -71,7 +73,9 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 1.0;
 		ContentDataManager.DATA_DIR_NAME = "src/data";
-
+		TracerWindow tracer = new TracerWindow(this.thisJVMURI, 0, 1);
+		tracer.toggleTracing();
+		tracer.traceMessage("HIII");
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
 				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
@@ -84,9 +88,8 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 
 		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + (FacadeIndex*i), NODE_MANAGEMENT_COMPONENT_URI+"-"+((i%FacadeIndex)+1), i });
+					new Object[] { NODE_COMPONENT_URI + (FacadeIndex*i), thisJVMURI, i });
 		}
-
 		super.instantiateAndPublish();
 	}
 
@@ -94,12 +97,8 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 		try {
 			// Create an instance of the defined component virtual machine.
 			ConnectionDisconnectionScenario a = new ConnectionDisconnectionScenario(args);
-			// Execute the application.
 			a.startStandardLifeCycle(20000L);
-			// Give some time to see the traces (convenience).
-			// Thread.sleep(500L);
-			// Simplifies the termination (termination has yet to be treated
-			// properly in BCM).
+			Thread.sleep(5000L);
 			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();

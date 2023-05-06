@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
+import fr.sorbonne_u.components.helpers.TracerWindow;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
 import fr.sorbonne_u.utils.aclocks.ClocksServerConnector;
@@ -25,8 +26,8 @@ public class NodeManagement extends AbstractComponent {
 	private NodeManagementPlugin plugin;
 
 	protected ClocksServerOutboundPort csop;
-	private static final boolean DEBUG_MODE = true;
-	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
+	// private static final boolean DEBUG_MODE = true;
+	private TracerWindow debugPrinter = new TracerWindow();
 	
 	private ApplicationNode app;
 	private static final int DEFAULT_NB_OF_THREADS = 8;
@@ -37,7 +38,7 @@ public class NodeManagement extends AbstractComponent {
 	protected NodeManagement(String reflectionInboundPortURI, int DescriptorId) throws Exception {
 		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
 		this.initialise(DEFAULT_NB_OF_THREADS);
-
+		this.debugPrinter.toggleTracing();
 		String NodeManagementURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		app = new ApplicationNode(NodeManagementURI, ContentManagementURI, reflectionInboundPortURI);
@@ -96,7 +97,7 @@ public class NodeManagement extends AbstractComponent {
 		int delay = Helpers.getRandomNumber(2);
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(1 + delay));
 		scheduleConnectionWithFacades(delayInNanosToJoin);
-		debugPrinter.display("[nodemanagament interconnect network] has been scheduled");
+		debugPrinter.traceMessage("[nodemanagament interconnect network] has been scheduled");
 	}
 
 	private void scheduleConnectionWithFacades(long delayInNanosToJoin) throws AssertionError {

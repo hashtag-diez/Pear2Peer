@@ -1,31 +1,31 @@
 <deployment>
    <hosts>
-    <host name="localhost"
+    <host name="127.0.0.1"
           dir="/Users/diez/Documents/Fac/M1/CPS/Pear2Peer/"/>
   </hosts>
-  <cyclicBarrier   hostname="localhost" port="55253"/>
-  <globalRegistry  hostname="localhost" port="55252"/>
+  <cyclicBarrier   hostname="127.0.0.1" port="1111"/>
+  <globalRegistry  hostname="127.0.0.1" port="1112"/>
   <rmiRegistryPort no="55999"/>
   <jvms2hostnames>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-1"
         rmiRegistryCreator="true"
-        hostname="localhost"
+        hostname="127.0.0.1"
         mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-2"
-        rmiRegistryCreator="true"
-        hostname="localhost"
+        rmiRegistryCreator="false"
+        hostname="127.0.0.1"
         mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-3"
-        rmiRegistryCreator="true"
-        hostname="localhost"
+        rmiRegistryCreator="false"
+        hostname="127.0.0.1"
         mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
             <jvm2hostname jvmuri="my-NODE_MANAGEMENT-4"
-        rmiRegistryCreator="true"
-        hostname="localhost"
+        rmiRegistryCreator="false"
+        hostname="127.0.0.1"
         mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-5"
-        rmiRegistryCreator="true"
-        hostname="localhost"
+        rmiRegistryCreator="false"
+        hostname="127.0.0.1"
         mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
   </jvms2hostnames>
 </deployment>
