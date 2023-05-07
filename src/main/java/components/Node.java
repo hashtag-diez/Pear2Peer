@@ -24,13 +24,13 @@ public class Node extends AbstractComponent {
 
 	protected ClocksServerOutboundPort csop;
 
-	private ContentNode node;
+	protected ContentNode node;
 
 	private NodePlugin plugin;
 
 	private static final int DEFAULT_NB_OF_THREADS = 6;
 	private static final boolean DEBUG_MODE = true;
-	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
+	protected DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	// private static final String NS_EXECUTION_SERVICE_URI =
 	// "networkscanner-tasks-execution-service";
@@ -62,6 +62,13 @@ public class Node extends AbstractComponent {
 		this.csop.publishPort();
 	}
 
+	/**
+	 * This function initializes and creates executor services for network and
+	 * content threads based on the
+	 * given number of threads.
+	 * 
+	 * @param nbThreads The total number of threads to be used for execution.
+	 */
 	protected void initialise(int nbThreads) {
 		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
 		int nbThreadsNetwork = 3;
@@ -85,6 +92,11 @@ public class Node extends AbstractComponent {
 		csop.unpublishPort();
 	}
 
+	/**
+	 * This function schedules the connection and disconnection of a node to a
+	 * network based on a given
+	 * start instant and delay.
+	 */
 	private void scheduleTasks() throws Exception {
 
 		// connexion à l'horloge

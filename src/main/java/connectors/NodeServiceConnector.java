@@ -23,7 +23,8 @@ public class NodeServiceConnector
   }
 
   @Override
-  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen, int chosenNeighbourCount)
+  public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
+      int chosenNeighbourCount)
       throws RejectedExecutionException, AssertionError, Exception {
     ((NodePI) this.offering).probe(requestURI, facade, remainingHops, chosen, chosenNeighbourCount);
   }

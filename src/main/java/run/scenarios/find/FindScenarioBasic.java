@@ -54,7 +54,8 @@ public class FindScenarioBasic extends AbstractCVM {
 
 		for (int i = 1; i <= NB_FACADE * NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI + "-" + ((i % NB_FACADE) + 1), i });
+					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI + "-" + ((i % NB_FACADE) + 1),
+							i });
 		}
 
 		AbstractComponent.createComponent(

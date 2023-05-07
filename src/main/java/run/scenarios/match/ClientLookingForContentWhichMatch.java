@@ -67,6 +67,7 @@ public class ClientLookingForContentWhichMatch extends Client {
 				delayInNanosToSearch,
 				TimeUnit.NANOSECONDS);
 	}
+
 	@Override
 	public void finalise() throws Exception {
 		super.finalise();

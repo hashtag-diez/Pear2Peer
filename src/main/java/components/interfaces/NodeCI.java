@@ -49,6 +49,14 @@ public interface NodeCI extends OfferedCI, RequiredCI, ProbingCI {
 	void acceptNeighbours(Set<PeerNodeAddressI> neighbours)
 			throws Exception;
 
+	/**
+	 * This function is called from the other node in order to accept the
+	 * connection. It adds the node to the list of neighbours.
+	 * 
+	 * 
+	 * @param connected : address of the node that tries to connect.
+	 * @throws Exception
+	 */
 	void acceptConnected(PeerNodeAddressI connected) throws Exception;
 
 }

@@ -1,8 +1,7 @@
 package main.java.interfaces;
 
-public interface ContentManagementNodeAddressI{
+public interface ContentManagementNodeAddressI {
   /**
-   * Returns the URI of the content management system
    * 
    * @return The URI of the content management system.
    */

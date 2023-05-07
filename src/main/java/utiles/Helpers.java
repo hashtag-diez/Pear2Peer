@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Random;
 
 public class Helpers {
+    protected static Random r = new Random();
+
     /**
      * The function returns a random integer between a minimum and maximum value.
      * 
@@ -14,7 +16,6 @@ public class Helpers {
      *         provided.
      */
     public static int getRandomNumber(int min, int max) {
-        Random r = new Random();
         return r.nextInt(max - min) + min;
     }
 
@@ -24,21 +25,25 @@ public class Helpers {
 
     // Get a random element from an set
     public static <T> T getRandomElement(Collection<T> set) {
-        int size = set.size();
-        int item = getRandomNumber(size);
-        int i = 0;
-        for (T obj : set) {
-            if (i == item) {
-                return obj;
+        try {
+            int size = set.size();
+            int item = getRandomNumber(size);
+            int i = 0;
+            for (T obj : set) {
+                if (i == item)
+                    return obj;
+
+                i++;
             }
-            i++;
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 
     // Get a random sub set from an set
     public static <T> Collection<T> getRandomCollection(Collection<T> set, int size) {
-      // Copy collection
+        // Copy collection
         Collection<T> subSet = new java.util.ArrayList<T>(set);
         while (subSet.size() > size) {
             subSet.remove(getRandomElement(subSet));

@@ -3,10 +3,7 @@ package test.java.content;
 import java.util.HashSet;
 import java.util.Set;
 
-import main.java.implem.ContentDescriptor;
 import main.java.implem.ContentTemplate;
-import main.java.interfaces.ContentDescriptorI;
-import main.java.interfaces.ContentTemplateI;
 
 /**
  * Cette classe permet de creer des contents de diverses manières. Cela nous
@@ -20,7 +17,7 @@ public class ContentTemplateBuilder {
 	protected String album = null;
 	protected Set<String> interpreters = new HashSet<>();
 	protected Set<String> composers = new HashSet<>();
-	
+
 	public ContentTemplateBuilder setTitle(String title) {
 		this.title = title;
 		return this;
@@ -30,11 +27,12 @@ public class ContentTemplateBuilder {
 		this.album = album;
 		return this;
 	}
+
 	public ContentTemplateBuilder addInterpreter(String interpreter) {
 		this.interpreters.add(interpreter);
 		return this;
 	}
-	
+
 	public ContentTemplateBuilder addcomposer(String composer) {
 		this.composers.add(composer);
 		return this;
@@ -42,5 +40,5 @@ public class ContentTemplateBuilder {
 
 	public ContentTemplate build() {
 		return new ContentTemplate(title, album, interpreters, composers);
-    }
+	}
 }

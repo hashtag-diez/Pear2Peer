@@ -68,7 +68,7 @@ public class ContentManagementPlugin
   public void finalise() throws Exception {
     super.finalise();
     setterPort.unpublishPort();
-    for(String port : getterPorts.keySet()){
+    for (String port : getterPorts.keySet()) {
       ContentManagementOutboundPort out = getterPorts.get(port);
       this.getOwner().doPortDisconnection(out.getPortURI());
       out.unpublishPort();
@@ -84,7 +84,7 @@ public class ContentManagementPlugin
    */
   public void put(ContentNodeAddressI node) throws Exception {
     lock.lock();
-    if(this.getterPorts.get(node.getContentManagementURI())!=null){
+    if (this.getterPorts.get(node.getContentManagementURI()) != null) {
       lock.unlock();
       return;
     }
@@ -162,9 +162,8 @@ public class ContentManagementPlugin
       return;
 
     Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
-    for (ContentManagementOutboundPort outBoundPort : ports){
+    for (ContentManagementOutboundPort outBoundPort : ports)
       outBoundPort.find(cd, hops, requester, clientAddr);
-    }
 
   }
 
@@ -183,11 +182,9 @@ public class ContentManagementPlugin
   public void match(ContentTemplateI cd, Set<ContentDescriptorI> matched, int hops, ApplicationNodeAddressI requester,
       String clientAddr)
       throws Exception {
-    for (ContentDescriptorI localCd : this.contentsDescriptors) {
-      if (localCd.match(cd)) {
+    for (ContentDescriptorI localCd : this.contentsDescriptors)
+      if (localCd.match(cd))
         matched.add(localCd);
-      }
-    }
 
     if (--hops == 0) {
       FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
@@ -218,7 +215,7 @@ public class ContentManagementPlugin
 
   public void acceptShared(ContentManagementNodeAddressI connected) throws Exception {
     lock.lock();
-    if(this.getterPorts.get(connected.getContentManagementURI())!=null){
+    if (this.getterPorts.get(connected.getContentManagementURI()) != null) {
       lock.unlock();
       return;
     }

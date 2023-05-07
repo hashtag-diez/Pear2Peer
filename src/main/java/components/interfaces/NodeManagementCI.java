@@ -1,7 +1,5 @@
 package main.java.components.interfaces;
 
-import java.util.concurrent.RejectedExecutionException;
-
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 import main.java.interfaces.PeerNodeAddressI;
@@ -24,8 +22,7 @@ public interface NodeManagementCI extends OfferedCI, RequiredCI, ProbingCI {
 
 	/**
 	 * Takes as a parameter the address of the peer node to be inserted into the
-	 * network and returns a set of peer node addresses to which it can connect as
-	 * new neighbor
+	 * network and start a probing
 	 * 
 	 * @param a : address of the peer node which want to join the network.
 	 * @return
@@ -35,14 +32,21 @@ public interface NodeManagementCI extends OfferedCI, RequiredCI, ProbingCI {
 
 	/**
 	 * Takes as a parameter the address of the peer node leaving the network.
-	 * Components playing the role of peer nodes provide the NodeCI interface with
-	 * the declared services next
+	 * If its a root node, it will destroy the connection between the two.
 	 * 
-	 * @param a : address of the peer node which want to join the network.
+	 * @param a : address of the peer node which want to leave the network.
 	 * @throws Exception
 	 */
 	void leave(PeerNodeAddressI a) throws Exception;
 
+	/**
+	 * Collect one the probing request and process it.
+	 *
+	 * @param peer       : address of the peer node which accept the probing
+	 *                   request.
+	 * @param requestURI : URI of the requesting node.
+	 * @throws Exception
+	 */
 	void acceptProbed(PeerNodeAddressI peer, String requestURI)
-			throws RejectedExecutionException, AssertionError, Exception;
+			throws Exception;
 }

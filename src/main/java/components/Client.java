@@ -40,11 +40,11 @@ public class Client extends AbstractComponent {
 	protected NetworkScannerOutboundPort NSGetterPort;
 	protected String NodeManagementURI;
 	protected boolean found = false;
-	private static final boolean DEBUG_MODE = true;
+	protected static final boolean DEBUG_MODE = true;
 
-	private static final int HOPS = 6;
-	
-	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
+	protected static final int HOPS = 6;
+
+	protected DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	// The constructor of the Client class. It creates the Client object and
 	// initializes the ports.
@@ -54,8 +54,10 @@ public class Client extends AbstractComponent {
 		this.CMGetterPort.publishPort();
 		this.NodeManagementURI = NodeManagementURI;
 
-		/* this.NSGetterPort = new NetworkScannerOutboundPort(this);
-		this.NSGetterPort.publishPort(); */
+		/*
+		 * this.NSGetterPort = new NetworkScannerOutboundPort(this);
+		 * this.NSGetterPort.publishPort();
+		 */
 
 		this.ReturnPort = new ClientInboundPort(this);
 	}
@@ -86,41 +88,37 @@ public class Client extends AbstractComponent {
 	public void execute() throws Exception {
 		super.execute();
 	}
+
 	@Override
 	public void finalise() throws Exception {
 		super.finalise();
-		if(ReturnPort.isPublished()){
+		if (ReturnPort.isPublished())
 			ReturnPort.unpublishPort();
-		}
+
 		this.doPortDisconnection(CMGetterPort.getPortURI());
 		CMGetterPort.unpublishPort();
 	}
 
-	private void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {
+	/**
+	 * This function connects to a facade via a reflection outbound port and
+	 * establishes a connection to a
+	 * content management service.
+	 * 
+	 * @param rop The ReflectionOutboundPort used to connect to the facade
+	 *            component.
+	 */
+	protected void connectToFacadeViaCM(ReflectionOutboundPort rop) throws Exception {
 
 		this.doPortConnection(rop.getPortURI(), NodeManagementURI, ReflectionConnector.class.getCanonicalName());
 
 		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(FacadeContentManagementPI.class);
-		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
+		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null)
 			debugPrinter.display("NOPE");
-		} else {
+		else
 			this.doPortConnection(CMGetterPort.getPortURI(), otherInboundPortUI[0],
 					ContentManagementServiceConnector.class.getCanonicalName());
-		}
+
 	}
-
-	/* private void connectToFacadeViaNS(ReflectionOutboundPort rop) throws Exception {
-
-		this.doPortConnection(rop.getPortURI(), NodeManagementURI, ReflectionConnector.class.getCanonicalName());
-
-		String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NetworkScannerPI.class);
-		if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-			debugPrinter.display("NOPE");
-		} else {
-			this.doPortConnection(NSGetterPort.getPortURI(), otherInboundPortUI[0],
-					NetworkScannerServiceConnector.class.getCanonicalName());
-		}
-	} */
 
 	/**
 	 * It reads the templates from the data directory, picks a random one, and
@@ -169,13 +167,12 @@ public class Client extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
-		if (ReturnPort.isPublished()) {
+		if (ReturnPort.isPublished())
 			if (found == false) {
 				ReturnPort.unpublishPort();
 				debugPrinter.display("Found : " + matched.toString());
 			} else
 				found = true;
-		}
 
 	}
 
@@ -186,15 +183,13 @@ public class Client extends AbstractComponent {
 	 * @param matched A set of ContentDescriptorI objects that matched the query.
 	 */
 	public synchronized void matchResult(Set<ContentDescriptorI> matched) throws Exception {
-		if (ReturnPort.isPublished()) {
+		if (ReturnPort.isPublished())
 			if (!matched.isEmpty()) {
 				ReturnPort.unpublishPort();
 				debugPrinter.display("Matched : ");
-				for (ContentDescriptorI contentDescriptor : matched) {
+				for (ContentDescriptorI contentDescriptor : matched)
 					debugPrinter.display(contentDescriptor.toString());
-				}
-			}
-		}
-	}
 
+			}
+	}
 }

@@ -6,6 +6,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "ConnectionDisconnectionScenario",
+      "request": "launch",
+      "mainClass": "main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
+      "name": "FindScenarioBasic",
+      "request": "launch",
+      "mainClass": "main.java.run.scenarios.find.FindScenarioBasic",
+      "projectName": "Pear2Peer"
+    },
+    {
+      "type": "java",
       "name": "MatchScenarioBasic",
       "request": "launch",
       "mainClass": "run.scenarios.match.MatchScenarioBasic",

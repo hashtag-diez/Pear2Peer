@@ -16,7 +16,6 @@ import main.java.plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import main.java.plugins.NetworkFacade.NodeManagementPlugin;
 import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 import main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
-import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 
@@ -26,9 +25,8 @@ public class NodeManagement extends AbstractComponent {
 	private NodeManagementPlugin plugin;
 
 	protected ClocksServerOutboundPort csop;
-	// private static final boolean DEBUG_MODE = true;
 	private TracerWindow debugPrinter = new TracerWindow();
-	
+
 	private ApplicationNode app;
 	private static final int DEFAULT_NB_OF_THREADS = 8;
 
@@ -74,12 +72,14 @@ public class NodeManagement extends AbstractComponent {
 	public void execute() throws Exception {
 		scheduleTasks();
 	}
+
 	@Override
 	public void finalise() throws Exception {
 		super.finalise();
 		this.doPortDisconnection(csop.getPortURI());
 		csop.unpublishPort();
 	}
+
 	private void scheduleTasks() throws Exception {
 		// connexion à l'horloge
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
@@ -88,11 +88,9 @@ public class NodeManagement extends AbstractComponent {
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 
-		
 		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
-		
 
 		int delay = Helpers.getRandomNumber(2);
 		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(1 + delay));

@@ -1,11 +1,8 @@
 package main.java.plugins.NetworkNode;
 
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import fr.sorbonne_u.components.AbstractPlugin;
@@ -27,6 +24,7 @@ import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeServiceConnector;
 import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 // import main.java.utiles.DebugDisplayer;
+import main.java.utiles.Helpers;
 
 public class NodePlugin
     extends AbstractPlugin implements NodePI {
@@ -89,12 +87,11 @@ public class NodePlugin
           ReflectionConnector.class.getCanonicalName());
 
       String[] otherInboundPortUI = rop.findInboundPortURIsFromInterface(NodeManagementPI.class);
-      if (otherInboundPortUI.length == 0 || otherInboundPortUI == null) {
-        System.out.println("NOPE");
-      } else {
+      if (otherInboundPortUI.length != 0 && otherInboundPortUI != null)
         this.getOwner().doPortConnection(NMGetterPort.getPortURI(), otherInboundPortUI[0],
             NodeManagementServiceConnector.class.getCanonicalName());
-      }
+      else
+        throw new Exception("No inbound port found for the NodeManagementPI interface.");
       this.getOwner().doPortDisconnection(rop.getPortURI());
       rop.unpublishPort();
       rop.destroyPort();
@@ -115,7 +112,9 @@ public class NodePlugin
     this.peersGetterPorts.clear();
     this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
     NMGetterPort.unpublishPort();
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving : network");
+    // debugPrinter.display(((Node)
+    // this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving :
+    // network");
     lock.unlock();
   }
 
@@ -128,7 +127,7 @@ public class NodePlugin
    */
   public void connect(PeerNodeAddressI node) throws Exception {
     lock.lock();
-    if(this.peersGetterPorts.get(node.getNodeURI())!=null){
+    if (this.peersGetterPorts.get(node.getNodeURI()) != null) {
       lock.unlock();
       return;
     }
@@ -139,7 +138,9 @@ public class NodePlugin
         NodeServiceConnector.class.getCanonicalName());
     peerOutPortN.share(((Node) this.getOwner()).getContentNode());
     this.peersGetterPorts.put(node.getNodeURI(), peerOutPortN);
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " -> " + node.getNodeIdentifier()+";");
+    // debugPrinter.display(((Node)
+    // this.getOwner()).getContentNode().getNodeIdentifier() + " -> " +
+    // node.getNodeIdentifier()+";");
     peerOutPortN.acceptConnected(((Node) this.getOwner()).getContentNode());
 
     lock.unlock();
@@ -178,22 +179,22 @@ public class NodePlugin
   }
 
   public void acceptNeighbours(Set<PeerNodeAddressI> neighbours) throws Exception {
-    for (PeerNodeAddressI peerNodeAddressI : neighbours) {
-      if (peerNodeAddressI.getNodeIdentifier() != ((Node) (this.getOwner())).getContentNode().getNodeIdentifier()) {
+    for (PeerNodeAddressI peerNodeAddressI : neighbours)
+      if (peerNodeAddressI.getNodeIdentifier() != ((Node) (this.getOwner())).getContentNode().getNodeIdentifier())
         connect(peerNodeAddressI);
-      }
-    }
   }
 
   public void acceptConnected(PeerNodeAddressI node) throws Exception {
     lock.lock();
-    if(this.peersGetterPorts.get(node.getNodeURI())!=null){
+    if (this.peersGetterPorts.get(node.getNodeURI()) != null) {
       lock.unlock();
       return;
     }
     NodeOutboundPort peerOutPortN = new NodeOutboundPort(this.getOwner());
     peerOutPortN.publishPort();
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " -> " + node.getNodeIdentifier()+";");
+    // debugPrinter.display(((Node)
+    // this.getOwner()).getContentNode().getNodeIdentifier() + " -> " +
+    // node.getNodeIdentifier()+";");
     this.getOwner().doPortConnection(peerOutPortN.getPortURI(), node.getNodeURI(),
         NodeServiceConnector.class.getCanonicalName());
 
@@ -211,15 +212,13 @@ public class NodePlugin
       return;
     }
 
-    int randindex = new Random().nextInt(peersGetterPorts.size());
-    List<NodeOutboundPort> ports = new ArrayList<>(this.peersGetterPorts.values());
-    NodeOutboundPort chosenNeighbour = ports.get(randindex);
-    if (chosen == null || count > peersGetterPorts.size()) {
+    NodeOutboundPort chosenNeighbour = Helpers.getRandomElement(this.peersGetterPorts.values());
+    if (chosen == null || count > peersGetterPorts.size())
       chosenNeighbour.probe(requestURI, facade, remainingHops - 1, ((Node) this.getOwner()).getContentNode(),
           peersGetterPorts.size());
-    } else {
+    else
       chosenNeighbour.probe(requestURI, facade, remainingHops - 1, chosen, count);
-    }
+
     lock.unlock();
   }
 

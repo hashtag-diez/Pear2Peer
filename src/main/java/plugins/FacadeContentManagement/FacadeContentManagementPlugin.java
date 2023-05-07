@@ -51,7 +51,7 @@ public class FacadeContentManagementPlugin
   @Override
   public void finalise() throws Exception {
     super.finalise();
-    for(String port : facadeGetterPorts.keySet()){
+    for (String port : facadeGetterPorts.keySet()) {
       FacadeContentManagementOutboundPort out = facadeGetterPorts.get(port);
       this.getOwner().doPortDisconnection(out.getPortURI());
       out.unpublishPort();
@@ -63,18 +63,17 @@ public class FacadeContentManagementPlugin
   @Override
   public void find(ContentTemplateI cd, int hops, ApplicationNodeAddressI requester, String clientAddr)
       throws Exception {
-    for (ContentDescriptorI localCd : this.contentsDescriptors) {
-      if (localCd.match(cd)) {
+    for (ContentDescriptorI localCd : this.contentsDescriptors)
+      if (localCd.match(cd))
         acceptFound(localCd, clientAddr);
-      }
-    }
+
     if (requester == null) {
       // System.out.println("On envoie aux autres façades");
       Collection<FacadeContentManagementOutboundPort> ports = Helpers
           .getRandomCollection(this.facadeGetterPorts.values(), 2);
       for (FacadeContentManagementOutboundPort outBoundPort : ports)
-        outBoundPort.find(cd, hops-1, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
-    } else{
+        outBoundPort.find(cd, hops - 1, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
+    } else {
       // System.out.println("On a reçu une requête d'une autre façade !");
     }
     Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
@@ -92,7 +91,7 @@ public class FacadeContentManagementPlugin
    */
   public void put(ApplicationNode node) throws Exception {
     lock.lock();
-    if(this.facadeGetterPorts.get(node.getContentManagementURI())!=null){
+    if (this.facadeGetterPorts.get(node.getContentManagementURI()) != null) {
       lock.unlock();
       return;
     }
@@ -116,7 +115,7 @@ public class FacadeContentManagementPlugin
   @Override
   public void put(ContentNodeAddressI node) throws Exception {
     lock.lock();
-    if(this.getterPorts.get(node.getContentManagementURI())!=null){
+    if (this.getterPorts.get(node.getContentManagementURI()) != null) {
       lock.unlock();
       return;
     }
@@ -128,6 +127,7 @@ public class FacadeContentManagementPlugin
     this.getterPorts.put(node.getContentManagementURI(), peerOutPortCM);
     lock.unlock();
   }
+
   /**
    * It checks if the local content descriptors match the given content
    * descriptor, if they do, it adds
@@ -145,19 +145,18 @@ public class FacadeContentManagementPlugin
       String clientAddr)
       throws Exception {
     // System.out.println("RECU -> "+ this.facadeGetterPorts.size());
-    for (ContentDescriptorI localCd : this.contentsDescriptors) {
-      if (localCd.match(cd)) {
+    for (ContentDescriptorI localCd : this.contentsDescriptors)
+      if (localCd.match(cd))
         matched.add(localCd);
-      }
-    }
+
     if (requester == null) {
       // System.out.println("On envoie aux autres façades");
       Collection<FacadeContentManagementOutboundPort> ports = Helpers
           .getRandomCollection(this.facadeGetterPorts.values(), 2);
-      for (FacadeContentManagementOutboundPort outBoundPort : ports){
-        outBoundPort.match(cd, matched, hops-1, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
-      }
-    } else{
+      for (FacadeContentManagementOutboundPort outBoundPort : ports)
+        outBoundPort.match(cd, matched, hops - 1, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
+
+    } else {
       // System.out.println("On a reçu une requête d'une autre façade !");
     }
     Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
@@ -204,7 +203,7 @@ public class FacadeContentManagementPlugin
   @Override
   public void acceptShared(ApplicationNode node) throws Exception {
     lock.lock();
-    if(this.facadeGetterPorts.get(node.getContentManagementURI())!=null){
+    if (this.facadeGetterPorts.get(node.getContentManagementURI()) != null) {
       lock.unlock();
       return;
     }

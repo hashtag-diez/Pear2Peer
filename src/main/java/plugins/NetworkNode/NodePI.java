@@ -18,6 +18,6 @@ import main.java.interfaces.ContentNodeAddressI;
  * @author ABSSI (Team)
  *
  */
-public interface NodePI extends NodeCI{
+public interface NodePI extends NodeCI {
   void share(ContentNodeAddressI a) throws Exception;
 }

@@ -7,9 +7,6 @@ import java.util.Set;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import main.java.interfaces.ContentTemplateI;
 
-/**
- * ContentDescriptor
- */
 public class ContentTemplate implements ContentTemplateI {
     String _title, _albumTitle;
     Set<String> _interpreters, _composers;
@@ -32,18 +29,16 @@ public class ContentTemplate implements ContentTemplateI {
         this._interpreters = new HashSet<String>();
 
         ArrayList<?> composersBeforeCast = (ArrayList<?>) toLoad.get(ContentDataManager.COMPOSERS_KEY);
-        if(composersBeforeCast!=null){
+        if (composersBeforeCast != null)
             for (Object object : composersBeforeCast)
-            this._composers.add((String) object);
-        }
-        
+                this._composers.add((String) object);
+
         ArrayList<?> intepretersBeforeCast = (ArrayList<?>) toLoad.get(ContentDataManager.INTERPRETERS_KEY);
-        if(intepretersBeforeCast!=null){
-            if (intepretersBeforeCast != null) {
+        if (intepretersBeforeCast != null)
+            if (intepretersBeforeCast != null)
                 for (Object object : intepretersBeforeCast)
                     this._interpreters.add((String) object);
-            }
-        }
+
     }
 
     @Override

@@ -66,12 +66,13 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 
 		for (int i = 1; i <= NB_FACADE; i++) {
 			AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
-			new Object[] { NODE_MANAGEMENT_COMPONENT_URI+"-"+i, (i-1)*10 });
+					new Object[] { NODE_MANAGEMENT_COMPONENT_URI + "-" + i, (i - 1) * 10 });
 		}
 
-		for (int i = 1; i <= NB_FACADE*NB_PEER; i++) {
+		for (int i = 1; i <= NB_FACADE * NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI+"-"+((i%NB_FACADE)+1), i });
+					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI + "-" + ((i % NB_FACADE) + 1),
+							i });
 		}
 
 		super.deploy();

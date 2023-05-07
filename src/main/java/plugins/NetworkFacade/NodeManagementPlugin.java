@@ -1,9 +1,7 @@
 package main.java.plugins.NetworkFacade;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,6 +25,7 @@ import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
 import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 import main.java.utiles.AsyncProbe;
 import main.java.utiles.DebugDisplayer;
+import main.java.utiles.Helpers;
 
 public class NodeManagementPlugin
     extends AbstractPlugin {
@@ -78,9 +77,9 @@ public class NodeManagementPlugin
       out.unpublishPort();
       out.destroyPort();
     }
-    for (PeerNodeAddressI racine : roots) {
+    for (PeerNodeAddressI racine : roots)
       ContentManagementPlug.remove(racine);
-    }
+
     super.finalise();
   }
 
@@ -109,9 +108,9 @@ public class NodeManagementPlugin
      * debugPrinter.display(
      * (a.getNodeIdentifier() + " is leaving : network"));
      */
-    if (roots.remove(a)) {
+    if (roots.remove(a))
       ContentManagementPlug.remove(a);
-    }
+
     lock.unlock();
   }
 
@@ -139,7 +138,7 @@ public class NodeManagementPlugin
     probeCollector.put(requestURI, new AsyncProbe(ndSendProbe));
     this.addRequiredInterface(NodePI.class);
     for (int i = 0; i < ndSendProbe; i++) {
-      PeerNodeAddressI chosenNeighbour = getRandomElement(roots);
+      PeerNodeAddressI chosenNeighbour = Helpers.getRandomElement(roots);
       if (chosenNeighbour == null) {
         this.removeRequiredInterface(NodePI.class);
         return; // no neighbour to probe
@@ -168,7 +167,7 @@ public class NodeManagementPlugin
       if (i != FacadeIndex) {
         NodeManagementOutboundPort facadeOutPortNM = new NodeManagementOutboundPort(this.getOwner());
         facadeOutPortNM.publishPort();
-        //System.out.println("CONN : PORT NM CREE : " + facadeOutPortNM.getPortURI());
+        // System.out.println("CONN : PORT NM CREE : " + facadeOutPortNM.getPortURI());
 
         ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
         rop.publishPort();
@@ -193,17 +192,21 @@ public class NodeManagementPlugin
             facadeOutPortNM.interconnect(((NodeManagement) this.getOwner()).getApplicationNode());
           }
           this.getOwner().doPortDisconnection(rop.getPortURI());
-          /* debugPrinter.display(
-            ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " -> " + basename + "-" + i); */
-          
+          /*
+           * debugPrinter.display(
+           * ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() +
+           * " -> " + basename + "-" + i);
+           */
+
         } catch (Exception e) {
-          if(facadeOutPortNM.connected()){
+          if (facadeOutPortNM.connected()) {
             this.getOwner().doPortDisconnection(facadeOutPortNM.getPortURI());
           }
           facadeOutPortNM.unpublishPort();
-          // System.out.println("CONN : PORT NM DELETE : " + facadeOutPortNM.getPortURI());
+          // System.out.println("CONN : PORT NM DELETE : " +
+          // facadeOutPortNM.getPortURI());
           facadeOutPortNM.destroyPort();
-        } finally{
+        } finally {
           rop.unpublishPort();
           rop.destroyPort();
           lock1.unlock();
@@ -216,7 +219,8 @@ public class NodeManagementPlugin
     NodeManagementOutboundPort facadeOutPortNM = new NodeManagementOutboundPort(this.getOwner());
     facadeOutPortNM.publishPort();
     lock1.lock();
-    //System.out.println("INTER : PORT NM CREE : " + facadeOutPortNM.getPortURI() + ", " + (facades.get(f.getNodeIdentifier()) != null ? "true" : "false") );
+    // System.out.println("INTER : PORT NM CREE : " + facadeOutPortNM.getPortURI() +
+    // ", " + (facades.get(f.getNodeIdentifier()) != null ? "true" : "false") );
     try {
       if (facades.get(f.getNodeIdentifier()) != null) {
         throw new NullPointerException("Nope");
@@ -225,38 +229,23 @@ public class NodeManagementPlugin
           NodeManagementServiceConnector.class.getCanonicalName());
       facades.put(f.getNodeIdentifier(), facadeOutPortNM);
       // System.out.println("PORT NM AJOUTE : " + facadeOutPortNM.getPortURI());
-      /* debugPrinter.display(
-        ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " -> " + f.getNodeIdentifier()); */
+      /*
+       * debugPrinter.display(
+       * ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() +
+       * " -> " + f.getNodeIdentifier());
+       */
     } catch (Exception e) {
-      if(facadeOutPortNM.connected()){
+      if (facadeOutPortNM.connected()) {
         this.getOwner().doPortDisconnection(facadeOutPortNM.getPortURI());
       }
       facadeOutPortNM.unpublishPort();
-      // System.out.println("INTER : PORT NM DELETE : " + facadeOutPortNM.getPortURI());
+      // System.out.println("INTER : PORT NM DELETE : " +
+      // facadeOutPortNM.getPortURI());
       facadeOutPortNM.destroyPort();
-    } finally{
+    } finally {
       ContentManagementPlug.put(f);
       lock1.unlock();
     }
   }
 
-  // Get a random element from an set
-  public <T> T getRandomElement(Collection<T> set) {
-    try{
-      int size = set.size();
-      Random r = new Random();
-      int item = r.nextInt(size - 0) + 0;
-      int i = 0;
-      for (T obj : set) {
-        if (i == item) {
-          return obj;
-        }
-        i++;
-      }
-      return null;
-    } catch(Exception e){
-      return null;
-    }
-    
-  }
 }
