@@ -22,22 +22,18 @@ import main.java.plugins.ContentManagement.ContentManagementPI;
 import main.java.plugins.ContentManagement.port_connector.ContentManagementOutboundPort;
 import main.java.plugins.ContentManagement.port_connector.ContentManagementServiceConnector;
 import main.java.plugins.FacadeContentManagement.FacadeContentManagementPI;
-import main.java.plugins.NetworkScanner.NetworkScannerPI;
-import main.java.plugins.NetworkScanner.port_connector.NetworkScannerOutboundPort;
-// import main.java.plugins.NetworkScanner.port_connector.NetworkScannerServiceConnector;
 import main.java.ports.ClientInboundPort;
 import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
 
 @OfferedInterfaces(offered = { ClientCI.class })
-@RequiredInterfaces(required = { ContentManagementPI.class, NetworkScannerPI.class })
+@RequiredInterfaces(required = { ContentManagementPI.class })
 public class Client extends AbstractComponent {
 
 	protected ClientInboundPort ReturnPort;
 	// The port used to call the methods of the ContentManagementPI.
 	protected ContentManagementOutboundPort CMGetterPort;
-	// The port used to call the methods of the NetworkScannerPI.
-	protected NetworkScannerOutboundPort NSGetterPort;
+
 	protected String NodeManagementURI;
 	protected boolean found = false;
 	protected static final boolean DEBUG_MODE = true;

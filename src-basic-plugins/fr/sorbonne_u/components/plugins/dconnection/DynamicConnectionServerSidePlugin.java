@@ -49,7 +49,9 @@ import fr.sorbonne_u.components.ports.InboundPortI;
  * See the package documentation for a complete description of the pattern
  * and its implementation.
  *
- * <p><strong>Description</strong></p>
+ * <p>
+ * <strong>Description</strong>
+ * </p>
  * 
  * <p>
  * The class implements the required behaviours for the server side i.e.,
@@ -83,32 +85,34 @@ import fr.sorbonne_u.components.ports.InboundPortI;
  * time on a component.
  * </p>
  * 
- * <p><strong>Invariant</strong></p>
+ * <p>
+ * <strong>Invariant</strong>
+ * </p>
  * 
  * <pre>
- * invariant	true		// TODO
+ * invariant	true
  * </pre>
  * 
- * <p>Created on : 2013-03-04</p>
+ * <p>
+ * Created on : 2013-03-04
+ * </p>
  * 
- * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
+ * @author <a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
  */
-public abstract class	DynamicConnectionServerSidePlugin
-extends		AbstractPlugin
-{
+public abstract class DynamicConnectionServerSidePlugin
+		extends AbstractPlugin {
 	private static final long serialVersionUID = 1L;
 
 	// -------------------------------------------------------------------------
 	// Plug-in internal constants and variables
 	// -------------------------------------------------------------------------
 
-	/** URI of the plug-in used in the plug-in call protocol.				*/
-	public static final String		PLUGIN_URI =
-										"DCONNECTION_SERVER_SIDE_PLUGIN" ;
-	/** Port through which dynamic connection requests are received.		*/
-	protected DynamicConnectionRequestInboundPort	dcrip ;
-	/** The ports used in the dynamic connections.							*/
-	protected Map<Class<?>,InboundPortI>			dynamicInboundPorts ;
+	/** URI of the plug-in used in the plug-in call protocol. */
+	public static final String PLUGIN_URI = "DCONNECTION_SERVER_SIDE_PLUGIN";
+	/** Port through which dynamic connection requests are received. */
+	protected DynamicConnectionRequestInboundPort dcrip;
+	/** The ports used in the dynamic connections. */
+	protected Map<Class<?>, InboundPortI> dynamicInboundPorts;
 
 	// -------------------------------------------------------------------------
 	// Plug-in generic methods
@@ -118,13 +122,12 @@ extends		AbstractPlugin
 	 * @see fr.sorbonne_u.components.AbstractPlugin#installOn(fr.sorbonne_u.components.ComponentI)
 	 */
 	@Override
-	public void			installOn(ComponentI owner) throws Exception
-	{
+	public void installOn(ComponentI owner) throws Exception {
 		// A plug-in is installed on an existing component.
-		assert	owner != null;
+		assert owner != null;
 		// Only one plug-in instance of a given URI can be installed on
 		// a component.
-		assert	!owner.isInstalled(this.getPluginURI());
+		assert !owner.isInstalled(this.getPluginURI());
 
 		super.installOn(owner);
 
@@ -137,12 +140,10 @@ extends		AbstractPlugin
 	 * @see fr.sorbonne_u.components.PluginI#initialise()
 	 */
 	@Override
-	public void			initialise() throws Exception
-	{
+	public void initialise() throws Exception {
 		// The port offering DynamicConnectionRequestI is created and published.
-		this.dcrip =
-			new DynamicConnectionRequestInboundPort(
-										this.getPluginURI(), this.getOwner());
+		this.dcrip = new DynamicConnectionRequestInboundPort(
+				this.getPluginURI(), this.getOwner());
 		this.dcrip.publishPort();
 
 		this.dynamicInboundPorts = new HashMap<>();
@@ -152,17 +153,15 @@ extends		AbstractPlugin
 	 * @see fr.sorbonne_u.components.AbstractPlugin#finalise()
 	 */
 	@Override
-	public void			finalise() throws Exception
-	{
+	public void finalise() throws Exception {
 	}
 
 	/**
 	 * @see fr.sorbonne_u.components.AbstractPlugin#uninstall()
 	 */
 	@Override
-	public void			uninstall() throws Exception
-	{
-		for(InboundPortI p : this.dynamicInboundPorts.values()) {
+	public void uninstall() throws Exception {
+		for (InboundPortI p : this.dynamicInboundPorts.values()) {
 			p.unpublishPort();
 			p.destroyPort();
 		}
@@ -183,23 +182,26 @@ extends		AbstractPlugin
 	 * using the method <code>createAndPublishDynamicPort</code> and return
 	 * its unique identifier (URI).
 	 * 
-	 * <p><strong>Contract</strong></p>
+	 * <p>
+	 * <strong>Contract</strong>
+	 * </p>
 	 * 
 	 * <pre>
-	 * pre	{@code offeredInterface != null}
+	 * pre	{@code
+	 * offeredInterface != null
+	 * }
 	 * post	true		// no postcondition.
 	 * </pre>
 	 *
-	 * @param offeredInterface	server-side interface through which the connection is made.
-	 * @return					the URI of the newly created port.
-	 * @throws Exception			<i>to do.</i>
+	 * @param offeredInterface server-side interface through which the connection is
+	 *                         made.
+	 * @return the URI of the newly created port.
+	 * @throws Exception <i>to do.</i>
 	 */
-	public String		requestDynamicPortURI(
-		Class<? extends OfferedCI> offeredInterface
-		) throws Exception
-	{
-		assert	offeredInterface != null;
-		assert	this.getOwner().isOfferedInterface(offeredInterface);
+	public String requestDynamicPortURI(
+			Class<? extends OfferedCI> offeredInterface) throws Exception {
+		assert offeredInterface != null;
+		assert this.getOwner().isOfferedInterface(offeredInterface);
 
 		InboundPortI p = null;
 		if (this.dynamicInboundPorts.containsKey(offeredInterface)) {
@@ -216,22 +218,24 @@ extends		AbstractPlugin
 	 * remove the inbound port with the given URI that implements the given
 	 * offered interface, if it exists.
 	 * 
-	 * <p><strong>Contract</strong></p>
+	 * <p>
+	 * <strong>Contract</strong>
+	 * </p>
 	 * 
 	 * <pre>
-	 * pre	{@code offeredInterface != null}
+	 * pre	{@code
+	 * offeredInterface != null
+	 * }
 	 * post	true		// no postcondition.
 	 * </pre>
 	 *
-	 * @param offeredInterface	server-side offered interface.
-	 * @param uri				URI of a previously created port.
-	 * @throws Exception 		<i>to do</i>.
+	 * @param offeredInterface server-side offered interface.
+	 * @param uri              URI of a previously created port.
+	 * @throws Exception <i>to do</i>.
 	 */
-	public void			removeDynamicPort(
-		Class<?> offeredInterface,
-		String uri
-		) throws Exception
-	{
+	public void removeDynamicPort(
+			Class<?> offeredInterface,
+			String uri) throws Exception {
 		if (this.dynamicInboundPorts.containsKey(offeredInterface)) {
 			InboundPortI p = this.dynamicInboundPorts.get(offeredInterface);
 			if (p.getPortURI().equals(uri)) {
@@ -251,19 +255,23 @@ extends		AbstractPlugin
 	 * be published, so the client side has the possibility to return an
 	 * already created and published port.
 	 * 
-	 * <p><strong>Contract</strong></p>
+	 * <p>
+	 * <strong>Contract</strong>
+	 * </p>
 	 * 
 	 * <pre>
-	 * pre	{@code offeredInterface != null}
+	 * pre	{@code
+	 * offeredInterface != null
+	 * }
 	 * post	true		// no postcondition.
 	 * </pre>
 	 *
-	 * @param offeredInterface	server-side interface through which the connection is made.
-	 * @return					the newly created port.
-	 * @throws Exception 		<i>to do.</i>
+	 * @param offeredInterface server-side interface through which the connection is
+	 *                         made.
+	 * @return the newly created port.
+	 * @throws Exception <i>to do.</i>
 	 */
-	protected abstract InboundPortI	createAndPublishServerSideDynamicPort(
-		Class<? extends OfferedCI> offeredInterface
-		) throws Exception;
+	protected abstract InboundPortI createAndPublishServerSideDynamicPort(
+			Class<? extends OfferedCI> offeredInterface) throws Exception;
 }
 // -----------------------------------------------------------------------------

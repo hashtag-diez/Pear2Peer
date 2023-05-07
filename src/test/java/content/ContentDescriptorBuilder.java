@@ -4,10 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import main.java.implem.ContentDescriptor;
-import main.java.implem.ContentTemplate;
-import main.java.interfaces.ContentDescriptorI;
 import main.java.interfaces.ContentManagementNodeAddressI;
-import main.java.interfaces.ContentTemplateI;
 
 /**
  * Cette classe permet de creer des contents de diverses manières. Cela nous

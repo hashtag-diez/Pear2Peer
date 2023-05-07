@@ -14,7 +14,6 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import main.java.implem.ContentNode;
 import main.java.plugins.ContentManagement.ContentManagementPlugin;
 import main.java.plugins.NetworkNode.NodePlugin;
-import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 import main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
@@ -50,11 +49,7 @@ public class Node extends AbstractComponent {
 		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(ContentManagementPlug);
 
-		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
-		// NetworkScannerPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
-		this.installPlugin(NetworkScannerPlug);
-
-		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug, NetworkScannerPlug);
+		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug);
 		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
 		this.installPlugin(plugin); // ! Can't reflect if not started
 

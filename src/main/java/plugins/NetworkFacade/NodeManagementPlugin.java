@@ -22,7 +22,6 @@ import main.java.plugins.NetworkFacade.port_connector.NodeManagementOutboundPort
 import main.java.plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
 import main.java.plugins.NetworkNode.NodePI;
 import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
-import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 import main.java.utiles.AsyncProbe;
 import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
@@ -35,7 +34,6 @@ public class NodeManagementPlugin
 
   protected NodeManagementInboundPort NMSetterPort;
   protected FacadeContentManagementPlugin ContentManagementPlug;
-  protected NetworkScannerPlugin NetworkScannerPlug;
   private ReentrantLock lock = new ReentrantLock();
   private ReentrantLock lock1 = new ReentrantLock();
   protected HashMap<String, NodeManagementOutboundPort> facades = new HashMap<>();
@@ -44,13 +42,11 @@ public class NodeManagementPlugin
   private static final boolean DEBUG_MODE = true;
   private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-  public NodeManagementPlugin(String URI, FacadeContentManagementPlugin ContentManagementPlug,
-      NetworkScannerPlugin NetworkScannerPlug)
+  public NodeManagementPlugin(String URI, FacadeContentManagementPlugin ContentManagementPlug)
       throws Exception {
     super();
     setPluginURI(URI);
     this.ContentManagementPlug = ContentManagementPlug;
-    this.NetworkScannerPlug = NetworkScannerPlug;
   }
 
   @Override

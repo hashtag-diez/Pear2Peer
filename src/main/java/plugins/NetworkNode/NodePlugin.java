@@ -22,7 +22,6 @@ import main.java.plugins.NetworkFacade.port_connector.NodeManagementServiceConne
 import main.java.plugins.NetworkNode.port_connector.NodeInboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeServiceConnector;
-import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 // import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
 
@@ -37,20 +36,18 @@ public class NodePlugin
 
   private String URI;
   protected ContentManagementPlugin ContentManagementPlug;
-  protected NetworkScannerPlugin NetworkScannerPlug;
   // A map of all the peers that this node is connected to.
   protected Map<String, NodeOutboundPort> peersGetterPorts;
   private ReentrantLock lock = new ReentrantLock();
   private String NMReflectionInboundURI;
   // private DebugDisplayer debugPrinter = new DebugDisplayer(true);
 
-  public NodePlugin(String NMReflectionInboundURI, String NodeURI, ContentManagementPlugin ContentManagementPlug,
-      NetworkScannerPlugin NetworkScannerPlug) throws Exception {
+  public NodePlugin(String NMReflectionInboundURI, String NodeURI, ContentManagementPlugin ContentManagementPlug)
+      throws Exception {
     super();
     this.URI = NodeURI;
     setPluginURI(AbstractPort.generatePortURI());
     this.ContentManagementPlug = ContentManagementPlug;
-    this.NetworkScannerPlug = NetworkScannerPlug;
     this.NMReflectionInboundURI = NMReflectionInboundURI;
     this.peersGetterPorts = new HashMap<>();
   }

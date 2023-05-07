@@ -66,7 +66,6 @@ extends		AbstractCVM
 											"value-provider-inbound-port" ;
 
 	public CVM() throws Exception {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

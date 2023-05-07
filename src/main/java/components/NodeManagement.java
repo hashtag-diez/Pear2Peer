@@ -14,7 +14,6 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import main.java.implem.ApplicationNode;
 import main.java.plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import main.java.plugins.NetworkFacade.NodeManagementPlugin;
-import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 import main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import main.java.utiles.Helpers;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
@@ -46,13 +45,10 @@ public class NodeManagement extends AbstractComponent {
 		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
 		this.installPlugin(ContentManagementPlug);
 
-		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
-		this.installPlugin(NetworkScannerPlug);
-
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
 
-		plugin = new NodeManagementPlugin(NodeManagementURI, ContentManagementPlug, NetworkScannerPlug);
+		plugin = new NodeManagementPlugin(NodeManagementURI, ContentManagementPlug);
 		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
 		this.installPlugin(plugin);
 	}

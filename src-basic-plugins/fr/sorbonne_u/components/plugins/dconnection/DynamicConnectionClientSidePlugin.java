@@ -97,7 +97,7 @@ import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
  * <p><strong>Invariant</strong></p>
  * 
  * <pre>
- * invariant	true		// TODO
+ * invariant	true		
  * </pre>
  * 
  * <p>Created on : 2017-02-15</p>
