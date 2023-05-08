@@ -49,12 +49,6 @@ public class Client extends AbstractComponent {
 		this.CMGetterPort = new ContentManagementOutboundPort(this);
 		this.CMGetterPort.publishPort();
 		this.NodeManagementURI = NodeManagementURI;
-
-		/*
-		 * this.NSGetterPort = new NetworkScannerOutboundPort(this);
-		 * this.NSGetterPort.publishPort();
-		 */
-
 		this.ReturnPort = new ClientInboundPort(this);
 	}
 

@@ -1,258 +1,34 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "java",
-      "name": "ConnectionDisconnectionScenario",
-      "request": "launch",
-      "mainClass": "main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario",
-      "projectName": "Pear2Peer"
-    },
-    {
-      "type": "java",
-      "name": "FindScenarioBasic",
-      "request": "launch",
-      "mainClass": "main.java.run.scenarios.find.FindScenarioBasic",
-      "projectName": "Pear2Peer"
-    },
-    {
-      "type": "java",
-      "name": "MatchScenarioBasic",
-      "request": "launch",
-      "mainClass": "run.scenarios.match.MatchScenarioBasic",
-      "projectName": "Pear2Peer"
-    },
-    {
-      "type": "java",
-      "name": "FindScenarioBasic",
-      "request": "launch",
-      "mainClass": "run.scenarios.find.FindScenarioBasic",
-      "projectName": "Pear2Peer"
-    },
-    {
-      "type": "java",
-      "name": "MatchScenarioBasic",
-      "request": "launch",
-      "mainClass": "scenarios.match.MatchScenarioBasic",
-      "projectName": "Pear2Peer"
-    },
-    {
-      "type": "java",
-      "name": "CVM",
-      "request": "launch",
-      "mainClass": "CVM",
-      "projectName": "Pear2Peer"
-    },
-    {
-      "type": "java",
-      "name": "FindScenarioBasic",
-      "request": "launch",
-      "mainClass": "scenarios.find.FindScenarioBasic",
-      "projectName": "Pear2Peer",
-      "vmArgs": [
-        "-enableassertions"
-      ]
-    },
-    {
-      "type": "java",
-      "name": "ConnectionDisconnectionScenario",
-      "request": "launch",
-      "mainClass": "scenarios.connect_disconnect.ConnectionDisconnectionScenario",
-      "projectName": "Pear2Peer",
-      "vmArgs": [
-        "-ea"
-      ]
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM",
-      "request": "launch",
-      "mainClass": "CVM",
-      "projectName": "Pear2Peer_99077ee1"
-    },
-    {
-      "type": "java",
-      "name": "Launch Current File",
-      "request": "launch",
-      "mainClass": "${file}"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM",
-      "request": "launch",
-      "mainClass": "CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch AbstractComponentHelper",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.AbstractComponentHelper",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DCVMCyclicBarrier",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.cvm.utils.DCVMCyclicBarrier",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DCVM_Launcher",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.cvm.utils.DCVM_Launcher",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(1)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.basic_cs.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.basic_cs.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(2)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.chm.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(3)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.cps.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM(1)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.cps.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(4)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.ddeployment_cs.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM(2)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.ddeployment_cs.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(5)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.dpp.example.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(6)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.dpp.withPlugins.example.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(7)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.internal_cs.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM(3)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.internal_cs.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(8)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.pingpong.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM(4)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.pingpong.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(9)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.reflection.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CreateHotswap",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.reflection.CreateHotswap",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM(5)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.reflection.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(10)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.examples.subcomp.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(11)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.plugins.dconnection.example.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch DistributedCVM(6)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.plugins.dconnection.example.DistributedCVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch CVM(12)",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.plugins.dipc.example.CVM",
-      "projectName": "Pear2Peer_528924f7"
-    },
-    {
-      "type": "java",
-      "name": "Launch GlobalRegistry",
-      "request": "launch",
-      "mainClass": "fr.sorbonne_u.components.registry.GlobalRegistry",
-      "projectName": "Pear2Peer_528924f7"
-    }
-  ]
+    "configurations": [
+        {
+            "type": "java",
+            "name": "MatchScenarioBasic",
+            "request": "launch",
+            "mainClass": "main.java.run.scenarios.match.MatchScenarioBasic",
+            "projectName": "Pear2Peer",
+            "vmArgs": [
+                "-ea"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "FindScenarioBasic",
+            "request": "launch",
+            "mainClass": "main.java.run.scenarios.find.FindScenarioBasic",
+            "projectName": "Pear2Peer",
+            "vmArgs": [
+                "-ea"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "ConnectionDisconnectionScenario",
+            "request": "launch",
+            "mainClass": "main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario",
+            "projectName": "Pear2Peer",
+            "vmArgs": [
+                "-ea"
+            ]
+        }
+    ]
 }

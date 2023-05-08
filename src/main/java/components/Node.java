@@ -31,8 +31,6 @@ public class Node extends AbstractComponent {
 	private static final boolean DEBUG_MODE = true;
 	protected DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
-	// private static final String NS_EXECUTION_SERVICE_URI =
-	// "networkscanner-tasks-execution-service";
 	private static final String NM_EXECUTION_SERVICE_URI = "networkmanagement-tasks-execution-service";
 	private static final String CM_EXECUTION_SERVICE_URI = "content-tasks-execution-service";
 
@@ -85,6 +83,7 @@ public class Node extends AbstractComponent {
 		super.finalise();
 		this.doPortDisconnection(csop.getPortURI());
 		csop.unpublishPort();
+		csop.destroyPort();
 	}
 
 	/**
