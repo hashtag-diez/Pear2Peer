@@ -30,7 +30,7 @@ public class NodeManagement extends AbstractComponent {
 	private TracerWindow debugPrinter = new TracerWindow();
 	
 	private ApplicationNode app;
-	private static final int DEFAULT_NB_OF_THREADS = 8;
+	private static final int DEFAULT_NB_OF_THREADS = 12;
 
 	private static final String NM_EXECUTION_SERVICE_URI = "app-networkmanagement-tasks-execution-service";
 	private static final String CM_EXECUTION_SERVICE_URI = "app-content-tasks-execution-service";
@@ -61,7 +61,7 @@ public class NodeManagement extends AbstractComponent {
 
 	protected void initialise(int nbThreads) {
 		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
-		int nbThreadsNetwork = 4;
+		int nbThreadsNetwork = 6;
 		int nbThreadsContent = nbThreads - nbThreadsNetwork;
 
 		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,

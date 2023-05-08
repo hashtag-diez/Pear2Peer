@@ -24,7 +24,7 @@ import main.java.components.NodeManagement;
  * 		-Djava.security.manager 
  * 		-Djava.security.policy=dcvm.policy 
  * 		main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario 
- * 		my-NODE_MANAGEMENT-1 
+ * 		my-NODE_MANAGEMENT-1
 			config.xml
  * 	- Relancer
  * 
@@ -44,6 +44,7 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 
 	public ConnectionDisconnectionScenario(String[] args) throws Exception {
 		super(args);
+		System.out.println(thisJVMURI);
 	}
 
 	/** URI of the provider component (convenience). */
@@ -73,22 +74,20 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 1.0;
 		ContentDataManager.DATA_DIR_NAME = "src/data";
-		TracerWindow tracer = new TracerWindow(this.thisJVMURI, 0, 1);
-		tracer.toggleTracing();
-		tracer.traceMessage("HIII");
-		AbstractComponent.createComponent(
-				ClocksServer.class.getCanonicalName(),
-				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
-						startInstant, accelerationFactor });
-		
-		int FacadeIndex = Integer.parseInt(thisJVMURI.split("-")[2]);
+		Integer FacadeIndex = Integer.parseInt(thisJVMURI.split("-")[2]);
 
 		AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
 		new Object[] { thisJVMURI, (FacadeIndex-1)*10 });
 
-		for (int i = 1; i <= NB_PEER; i++) {
+		/* for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + (FacadeIndex*i), thisJVMURI, i });
+					new Object[] { NODE_COMPONENT_URI + ((FacadeIndex-1)*10 + i), thisJVMURI, i });
+		} */
+		if (thisJVMURI.equals("my-NODE_MANAGEMENT-1")) {
+			AbstractComponent.createComponent(
+				ClocksServer.class.getCanonicalName(),
+				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
+						startInstant, accelerationFactor });
 		}
 		super.instantiateAndPublish();
 	}

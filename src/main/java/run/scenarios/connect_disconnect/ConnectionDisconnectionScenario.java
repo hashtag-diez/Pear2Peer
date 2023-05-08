@@ -42,7 +42,7 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;
-	protected final int NB_FACADE = 5;
+	protected final int NB_FACADE = 2;
 	/**
 	 * Reference to the provider component to share between deploy and shutdown.
 	 */

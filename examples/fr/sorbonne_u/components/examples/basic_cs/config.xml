@@ -1,7 +1,7 @@
 <deployment>
    <hosts>
     <host name="localhost"
-          dir="/Users/jmalenfant/principal/Tests/Basic_CS/"/>
+          dir="/Users/diez/Documents/Fac/M1/CPS/Pear2Peer/"/>
   </hosts>
   <cyclicBarrier   hostname="localhost" port="55253"/>
   <globalRegistry  hostname="localhost" port="55252"/>
