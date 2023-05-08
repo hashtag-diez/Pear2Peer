@@ -17,7 +17,7 @@ public class FindScenarioBasic extends AbstractCVM {
 	/** URI of the consumer component (convenience). */
 	protected static final String NODE_COMPONENT_URI = "my_NODE";
 
-	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
+	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(2);
 	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;

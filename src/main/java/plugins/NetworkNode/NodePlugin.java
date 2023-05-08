@@ -91,7 +91,7 @@ public class NodePlugin
         throw new Exception("No inbound port found for the NodeManagementPI interface.");
       this.getOwner().doPortDisconnection(rop.getPortURI());
       rop.unpublishPort();
-      rop.destroyPort();
+
       this.removeRequiredInterface(ReflectionCI.class);
     }
     NMGetterPort.join(((Node) this.getOwner()).getContentNode());
@@ -99,7 +99,9 @@ public class NodePlugin
 
   public void leaveNetwork() throws Exception {
     lock.lock();
-    NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
+    if (NMGetterPort.connected())
+      NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
+
     for (String port : this.peersGetterPorts.keySet()) {
       peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
       this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());
@@ -108,7 +110,7 @@ public class NodePlugin
     }
     this.peersGetterPorts.clear();
     this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
-    NMGetterPort.unpublishPort();
+
     // debugPrinter.display(((Node)
     // this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving :
     // network");
@@ -161,11 +163,14 @@ public class NodePlugin
   @Override
   public void finalise() throws Exception {
     super.finalise();
-    if (NMGetterPort.connected()) {
+    if (NMGetterPort.connected())
       this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
-      NMGetterPort.unpublishPort();
-    }
+
+    NMGetterPort.unpublishPort();
+    NMGetterPort.destroyPort();
+
     NSetterPort.unpublishPort();
+    NSetterPort.destroyPort();
     for (String port : this.peersGetterPorts.keySet()) {
       peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
       this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());

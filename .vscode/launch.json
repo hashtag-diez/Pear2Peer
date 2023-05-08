@@ -6,9 +6,6 @@
             "request": "launch",
             "mainClass": "main.java.run.scenarios.match.MatchScenarioBasic",
             "projectName": "Pear2Peer",
-            "vmArgs": [
-                "-ea"
-            ]
         },
         {
             "type": "java",
@@ -16,9 +13,6 @@
             "request": "launch",
             "mainClass": "main.java.run.scenarios.find.FindScenarioBasic",
             "projectName": "Pear2Peer",
-            "vmArgs": [
-                "-ea"
-            ]
         },
         {
             "type": "java",
@@ -26,9 +20,6 @@
             "request": "launch",
             "mainClass": "main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario",
             "projectName": "Pear2Peer",
-            "vmArgs": [
-                "-ea"
-            ]
         }
     ]
 }
