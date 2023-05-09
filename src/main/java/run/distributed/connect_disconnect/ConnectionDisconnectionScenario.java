@@ -10,23 +10,24 @@ import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import main.java.components.Node;
 import main.java.components.NodeManagement;
+import main.java.utiles.Helpers;
 
 /**
  * 
- * TUTO : 
- *  - Au préalable, avoir lancé start_cyclebarrier.sh et start_gregistry.sh
- *  - Lancer la JVM avec Run sur Visual Studio Code
- *  - Aller sur le main 
- *  - Taper Run
- *  - Cancel la runtime lancée
- * 	- Supprimer tout ce qu'il y'a après le .jar généré par VSCode
- *  - Mettre à la suite : 
- * 		-Djava.security.manager 
- * 		-Djava.security.policy=dcvm.policy 
- * 		main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario 
- * 		my-NODE_MANAGEMENT-1 
-			config.xml
- * 	- Relancer
+ * TUTO :
+ * - Au préalable, avoir lancé start_cyclebarrier.sh et start_gregistry.sh
+ * - Lancer la JVM avec Run sur Visual Studio Code
+ * - Aller sur le main
+ * - Taper Run
+ * - Cancel la runtime lancée
+ * - Supprimer tout ce qu'il y'a après le .jar généré par VSCode
+ * - Mettre à la suite :
+ * -Djava.security.manager
+ * -Djava.security.policy=dcvm.policy
+ * main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario
+ * my-NODE_MANAGEMENT-1
+ * config.xml
+ * - Relancer
  * 
  * Dans ce scenario, chacun des noeuds:
  * - se connecte au reseau,
@@ -56,7 +57,6 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 	protected static final String URIProviderInboundPortURI = "iport";
 
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
-	public static final String CLOCK_URI = "my-clock-uri";
 
 	protected final int NB_PEER = 9;
 	/**
@@ -78,17 +78,17 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 		tracer.traceMessage("HIII");
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
-				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
+				new Object[] { Helpers.GLOBAL_CLOCK_URI, unixEpochStartTimeInNanos,
 						startInstant, accelerationFactor });
-		
+
 		int FacadeIndex = Integer.parseInt(thisJVMURI.split("-")[2]);
 
 		AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
-		new Object[] { thisJVMURI, (FacadeIndex-1)*10 });
+				new Object[] { thisJVMURI, (FacadeIndex - 1) * 10 });
 
 		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + (FacadeIndex*i), thisJVMURI, i });
+					new Object[] { NODE_COMPONENT_URI + (FacadeIndex * i), thisJVMURI, i });
 		}
 		super.instantiateAndPublish();
 	}

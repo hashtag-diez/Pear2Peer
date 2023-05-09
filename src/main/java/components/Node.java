@@ -14,7 +14,6 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import main.java.implem.ContentNode;
 import main.java.plugins.ContentManagement.ContentManagementPlugin;
 import main.java.plugins.NetworkNode.NodePlugin;
-import main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
 
@@ -49,7 +48,7 @@ public class Node extends AbstractComponent {
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug);
 		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
-		this.installPlugin(plugin); // ! Can't reflect if not started
+		this.installPlugin(plugin);
 
 		this.csop = new ClocksServerOutboundPort(this);
 		this.csop.publishPort();
@@ -97,7 +96,7 @@ public class Node extends AbstractComponent {
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
 
-		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(Helpers.GLOBAL_CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 

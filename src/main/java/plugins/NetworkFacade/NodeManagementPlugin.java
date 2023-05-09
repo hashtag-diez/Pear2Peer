@@ -22,7 +22,7 @@ import main.java.plugins.NetworkFacade.port_connector.NodeManagementOutboundPort
 import main.java.plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
 import main.java.plugins.NetworkNode.NodePI;
 import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
-import main.java.utiles.AsyncProbe;
+import main.java.utiles.AsyncCollector;
 import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
 
@@ -38,7 +38,7 @@ public class NodeManagementPlugin
   private ReentrantLock lock1 = new ReentrantLock();
   protected HashMap<String, NodeManagementOutboundPort> facades = new HashMap<>();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
-  protected HashMap<String, AsyncProbe> probeCollector = new HashMap<>();
+  protected HashMap<String, AsyncCollector> probeCollectors = new HashMap<>();
   private static final boolean DEBUG_MODE = true;
   private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
@@ -111,17 +111,17 @@ public class NodeManagementPlugin
   }
 
   public void acceptProbed(PeerNodeAddressI peer, String requestURI) throws Exception {
-    AsyncProbe request = probeCollector.get(requestURI);
+    AsyncCollector request = probeCollectors.get(requestURI);
     request.retrieve(peer);
     if (!request.isComplete()) {
-      probeCollector.put(requestURI, request);
+      probeCollectors.put(requestURI, request);
       return;
     }
     this.addRequiredInterface(NodePI.class);
     NodeOutboundPort nop = new NodeOutboundPort(this.getOwner());
     nop.publishPort();
     this.getOwner().doPortConnection(nop.getPortURI(), requestURI, NodeServiceConnector.class.getCanonicalName());
-    nop.acceptNeighbours(request.getResult());
+    nop.acceptNeighbours(request.getProbeResult());
     this.getOwner().doPortDisconnection(nop.getPortURI());
     this.removeRequiredInterface(NodePI.class);
     nop.unpublishPort();
@@ -131,7 +131,7 @@ public class NodeManagementPlugin
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
       int chosenNeighbourCount)
       throws Exception {
-    probeCollector.put(requestURI, new AsyncProbe(ndSendProbe));
+    probeCollectors.put(requestURI, new AsyncCollector(ndSendProbe));
     this.addRequiredInterface(NodePI.class);
     for (int i = 0; i < ndSendProbe; i++) {
       PeerNodeAddressI chosenNeighbour = Helpers.getRandomElement(roots);

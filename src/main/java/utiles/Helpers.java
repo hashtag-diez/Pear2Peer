@@ -5,6 +5,7 @@ import java.util.Random;
 
 public class Helpers {
     protected static Random r = new Random();
+    public static final String GLOBAL_CLOCK_URI = "my-clock-uri";
 
     /**
      * The function returns a random integer between a minimum and maximum value.
@@ -24,25 +25,27 @@ public class Helpers {
     }
 
     // Get a random element from an set
-    public static <T> T getRandomElement(Collection<T> set) {
-        try {
-            int size = set.size();
-            int item = getRandomNumber(size);
-            int i = 0;
-            for (T obj : set) {
-                if (i == item)
-                    return obj;
+    synchronized public static <T> T getRandomElement(Collection<T> set) {
+        int size = set.size();
+        int item = getRandomNumber(size);
+        int i = 0;
+        for (T obj : set) {
+            if (i == item)
+                return obj;
 
-                i++;
-            }
-            return null;
-        } catch (Exception e) {
-            return null;
+            i++;
         }
+        return null;
+    }
+
+    synchronized public static <T> T popRandomElement(Collection<T> set) {
+        T obj = getRandomElement(set);
+        set.remove(obj);
+        return obj;
     }
 
     // Get a random sub set from an set
-    public static <T> Collection<T> getRandomCollection(Collection<T> set, int size) {
+    synchronized public static <T> Collection<T> getRandomCollection(Collection<T> set, int size) {
         // Copy collection
         Collection<T> subSet = new java.util.ArrayList<T>(set);
         while (subSet.size() > size) {

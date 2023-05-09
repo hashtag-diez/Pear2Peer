@@ -14,7 +14,6 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import main.java.implem.ApplicationNode;
 import main.java.plugins.FacadeContentManagement.FacadeContentManagementPlugin;
 import main.java.plugins.NetworkFacade.NodeManagementPlugin;
-import main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import main.java.utiles.Helpers;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 
@@ -80,7 +79,7 @@ public class NodeManagement extends AbstractComponent {
 		// connexion à l'horloge
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
-		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(Helpers.GLOBAL_CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 

@@ -35,12 +35,13 @@ public class Client extends AbstractComponent {
 	protected ContentManagementOutboundPort CMGetterPort;
 
 	protected String NodeManagementURI;
-	protected boolean found = false;
 	protected static final boolean DEBUG_MODE = true;
 
 	protected static final int HOPS = 6;
+	protected static final int MAX_TEMPLATES = 2;
 
 	protected DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
+	protected ArrayList<ContentTemplateI> templates = allTemplates();
 
 	// The constructor of the Client class. It creates the Client object and
 	// initializes the ports.
@@ -117,8 +118,21 @@ public class Client extends AbstractComponent {
 	 * @return A ContentTemplate object
 	 */
 	public ContentTemplateI pickTemplate() throws ClassNotFoundException, IOException {
-		ArrayList<HashMap<String, Object>> result = ContentDataManager.readTemplates(0);
-		return new ContentTemplate(Helpers.getRandomElement(result));
+		return Helpers.popRandomElement(templates);
+	}
+
+	public ArrayList<ContentTemplateI> allTemplates() throws ClassNotFoundException, IOException {
+		ArrayList<HashMap<String, Object>> result = new ArrayList<>();
+		for (int i = 0; i < MAX_TEMPLATES; i++) {
+			ArrayList<HashMap<String, Object>> tem = ContentDataManager
+					.readTemplates(i);
+			result.addAll(tem);
+		}
+		ArrayList<ContentTemplateI> templates = new ArrayList<>();
+		for (HashMap<String, Object> map : result) {
+			templates.add(new ContentTemplate(map));
+		}
+		return templates;
 	}
 
 	/**
@@ -129,7 +143,7 @@ public class Client extends AbstractComponent {
 		ContentTemplateI temp = pickTemplate();
 		debugPrinter.display("Template recherche :\\n" + temp);
 		Set<ContentDescriptorI> matched = new HashSet<>();
-
+		ReturnPort = new ClientInboundPort(this);
 		ReturnPort.publishPort();
 		CMGetterPort.match(temp, matched, HOPS, null, ReturnPort.getPortURI());
 		debugPrinter.display("Matched count: " + matched.size());
@@ -142,7 +156,7 @@ public class Client extends AbstractComponent {
 		debugPrinter.display("Client start searching [find]");
 		ContentTemplateI temp = pickTemplate();
 		debugPrinter.display("Template recherche :\n" + temp.toString());
-		found = false;
+		ReturnPort = new ClientInboundPort(this);
 		ReturnPort.publishPort();
 		// System.out.println("\t\t\t\t\t\t " + ReturnPort.getPortURI());
 		CMGetterPort.find(temp, HOPS, null, ReturnPort.getPortURI());
@@ -157,13 +171,10 @@ public class Client extends AbstractComponent {
 	 * @throws Exception
 	 */
 	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
-		if (ReturnPort.isPublished())
-			if (found == false) {
-				ReturnPort.unpublishPort();
-				debugPrinter.display("Found : " + matched.toString());
-			} else
-				found = true;
-
+		if (ReturnPort.isPublished()) {
+			ReturnPort.unpublishPort();
+			debugPrinter.display("Found : " + matched.toString());
+		}
 	}
 
 	/**

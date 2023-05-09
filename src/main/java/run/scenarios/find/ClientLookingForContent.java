@@ -13,16 +13,16 @@ import fr.sorbonne_u.utils.aclocks.ClocksServerOutboundPort;
 import main.java.components.Client;
 import main.java.components.interfaces.ClientCI;
 import main.java.plugins.FacadeContentManagement.FacadeContentManagementPI;
-import main.java.run.scenarios.connect_disconnect.ConnectionDisconnectionScenario;
 import main.java.utiles.DebugDisplayer;
+import main.java.utiles.Helpers;
 
 @OfferedInterfaces(offered = { ClientCI.class })
 @RequiredInterfaces(required = { FacadeContentManagementPI.class, ClocksServerCI.class })
 public class ClientLookingForContent extends Client {
 
-	private static final boolean DEBUG_MODE = true;
+	protected static final boolean DEBUG_MODE = true;
 	protected ClocksServerOutboundPort csop;
-	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
+	protected DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
 	protected ClientLookingForContent(String reflectionInboundPort, String CMNodeManagementInboundURI)
 			throws Exception {
@@ -39,12 +39,12 @@ public class ClientLookingForContent extends Client {
 		debugPrinter.display("Client task [find] sheduled");
 	}
 
-	private void scheduleClientTasks() throws Exception {
+	protected void scheduleClientTasks() throws Exception {
 		// connexion à l'horloge
 		this.doPortConnection(this.csop.getPortURI(), ClocksServer.STANDARD_INBOUNDPORT_URI,
 				ClocksServerConnector.class.getCanonicalName());
 
-		AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
+		AcceleratedClock clock = this.csop.getClock(Helpers.GLOBAL_CLOCK_URI);
 		// recuperation de la date du scenario
 		Instant startInstant = clock.getStartInstant();
 
