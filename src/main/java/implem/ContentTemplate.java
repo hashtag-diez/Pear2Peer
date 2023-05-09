@@ -1,5 +1,6 @@
 package main.java.implem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +11,7 @@ import main.java.interfaces.ContentTemplateI;
 /**
  * ContentDescriptor
  */
-public class ContentTemplate implements ContentTemplateI {
+public class ContentTemplate implements ContentTemplateI, Serializable {
     String _title, _albumTitle;
     Set<String> _interpreters, _composers;
 

@@ -42,10 +42,11 @@ public class NodeManagement extends AbstractComponent {
 		String NodeManagementURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		app = new ApplicationNode(NodeManagementURI, ContentManagementURI, reflectionInboundPortURI);
+		Integer FacadeIndex = Integer.parseInt(reflectionInboundPortURI.split("-")[2]);
 
 		FacadeContentManagementPlugin ContentManagementPlug = new FacadeContentManagementPlugin(ContentManagementURI,
 				DescriptorId, app);
-		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
+		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI+"-"+FacadeIndex.toString());
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
@@ -55,7 +56,7 @@ public class NodeManagement extends AbstractComponent {
 		this.csop.publishPort();
 
 		plugin = new NodeManagementPlugin(NodeManagementURI, ContentManagementPlug, NetworkScannerPlug);
-		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
+		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI+"-"+FacadeIndex.toString());
 		this.installPlugin(plugin);
 	}
 
@@ -66,8 +67,9 @@ public class NodeManagement extends AbstractComponent {
 
 		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,
 		// false);
-		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
-		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
+		Integer FacadeIndex = Integer.parseInt(reflectionInboundPortURI.split("-")[2]);
+		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI+"-"+FacadeIndex.toString(), nbThreadsContent, true);
+		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI+"-"+FacadeIndex.toString(), nbThreadsNetwork, true);
 	}
 
 	@Override

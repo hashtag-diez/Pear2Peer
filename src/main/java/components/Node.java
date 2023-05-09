@@ -28,7 +28,7 @@ public class Node extends AbstractComponent {
 
 	private NodePlugin plugin;
 
-	private static final int DEFAULT_NB_OF_THREADS = 6;
+	private static final int DEFAULT_NB_OF_THREADS = 8;
 	private static final boolean DEBUG_MODE = true;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
@@ -44,10 +44,11 @@ public class Node extends AbstractComponent {
 		String NodeURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		node = new ContentNode(NodeURI, ContentManagementURI, reflectionInboundPortURI);
+		Integer NodeIndex = Integer.parseInt(reflectionInboundPortURI.split("_")[2]);
 
 		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(ContentManagementURI, DescriptorId,
 				node);
-		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
+		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString());
 		this.installPlugin(ContentManagementPlug);
 
 		NetworkScannerPlugin NetworkScannerPlug = new NetworkScannerPlugin(ContentManagementPlug);
@@ -55,7 +56,7 @@ public class Node extends AbstractComponent {
 		this.installPlugin(NetworkScannerPlug);
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug, NetworkScannerPlug);
-		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
+		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString());
 		this.installPlugin(plugin); // ! Can't reflect if not started
 
 		this.csop = new ClocksServerOutboundPort(this);
@@ -64,13 +65,15 @@ public class Node extends AbstractComponent {
 
 	protected void initialise(int nbThreads) {
 		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
-		int nbThreadsNetwork = 3;
+		int nbThreadsNetwork = 5;
 		int nbThreadsContent = nbThreads - nbThreadsNetwork;
 
 		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,
 		// false);
-		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
-		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
+		Integer NodeIndex = Integer.parseInt(reflectionInboundPortURI.split("_")[2]);
+
+		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString(), nbThreadsContent, true);
+		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString(), nbThreadsNetwork, true);
 	}
 
 	@Override

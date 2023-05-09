@@ -1,5 +1,6 @@
 package main.java.implem;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import main.java.interfaces.ContentDescriptorI;
 import main.java.interfaces.ContentManagementNodeAddressI;
 import main.java.interfaces.ContentTemplateI;
 
-public class ContentDescriptor extends ContentTemplate implements ContentDescriptorI {
+public class ContentDescriptor extends ContentTemplate implements ContentDescriptorI, Serializable {
 
     /*
      * TODO

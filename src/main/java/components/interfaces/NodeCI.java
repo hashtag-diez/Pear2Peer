@@ -2,8 +2,6 @@ package main.java.components.interfaces;
 
 import java.util.Set;
 
-import fr.sorbonne_u.components.interfaces.OfferedCI;
-import fr.sorbonne_u.components.interfaces.RequiredCI;
 import main.java.interfaces.PeerNodeAddressI;
 
 /**
@@ -21,7 +19,7 @@ import main.java.interfaces.PeerNodeAddressI;
  * @author ABSSI (Team)
  *
  */
-public interface NodeCI extends OfferedCI, RequiredCI, ProbingCI {
+public interface NodeCI extends ProbingCI {
 
 	/**
 	 * The connect function establishes a connection with a peer node address.
