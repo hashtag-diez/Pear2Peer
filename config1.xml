@@ -10,22 +10,22 @@
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-1"
         rmiRegistryCreator="true"
         hostname="localhost"
-        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+        mainclass="main.java.run.distributed.find.FindScenarioBasic"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-2"
         rmiRegistryCreator="false"
         hostname="localhost"
-        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+        mainclass="main.java.run.distributed.find.FindScenarioBasic"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-3"
         rmiRegistryCreator="false"
         hostname="localhost"
-        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+        mainclass="main.java.run.distributed.find.FindScenarioBasic"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-4"
         rmiRegistryCreator="false"
         hostname="localhost"
-        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+        mainclass="main.java.run.distributed.find.FindScenarioBasic"/>
     <jvm2hostname jvmuri="my-NODE_MANAGEMENT-5"
         rmiRegistryCreator="false"
         hostname="localhost"
-        mainclass="main.java.run.distributed.connect_disconnect.ConnectionDisconnectionScenario"/>
+        mainclass="main.java.run.distributed.find.FindScenarioBasic"/>
   </jvms2hostnames>
 </deployment>
