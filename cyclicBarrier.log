@@ -1,0 +1,96 @@
+1683903539919|DCVM Cyclic Barrier up and running!
+1683903549017|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903549017|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903553118|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903553119|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903557915|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903557916|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903561764|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903561764|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903566042|All connected!
+1683903566044|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903566045|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903566045|DCVM Cyclic Barrier releases 5 sites.
+1683903566049|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903566050|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903566137|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903566138|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903566139|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903566140|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903566141|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903566142|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903566144|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903566145|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903566145|DCVM Cyclic Barrier releases 5 sites.
+1683903567270|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903567270|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903567565|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903567565|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903567594|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903567595|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903567683|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903567683|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903567819|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903567819|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903567819|DCVM Cyclic Barrier releases 5 sites.
+1683903567821|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903567821|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903567821|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903567821|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903567821|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903567822|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903567824|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903567825|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903567825|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903567825|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903567825|DCVM Cyclic Barrier releases 5 sites.
+1683903567830|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903567833|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903567839|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903567839|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903567855|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903567855|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903567856|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903567857|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903567880|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903567881|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903567881|DCVM Cyclic Barrier releases 5 sites.
+1683903582887|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903582888|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903582894|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903582894|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903582894|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903582895|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903582895|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903582896|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903582927|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903582928|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903582928|DCVM Cyclic Barrier releases 5 sites.
+1683903583089|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903583090|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903583099|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903583100|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903583118|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903583119|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903583138|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903583138|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903583153|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903583153|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903583153|DCVM Cyclic Barrier releases 5 sites.
+1683903583162|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-1 localhost 54077
+1683903583162|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-4 localhost 54087
+1683903583163|DCVM Cyclic Barrier has received 1 out of 5 expected.
+1683903583174|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-2 localhost 54081
+1683903583175|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-5 localhost 54091
+1683903583176|DCVM Cyclic Barrier accepts: my-NODE_MANAGEMENT-3 localhost 54084
+1683903583176|DCVM Cyclic Barrier has received 2 out of 5 expected.
+1683903583177|DCVM Cyclic Barrier has received 3 out of 5 expected.
+1683903583178|DCVM Cyclic Barrier has received 4 out of 5 expected.
+1683903583179|DCVM Cyclic Barrier has received 5 out of 5 expected.
+1683903583179|DCVM Cyclic Barrier releases 5 sites.
+1683903583182|DCVMCyclicBarrier.run() finished.
+1683903583182|DCVMCyclicBarrier.run() finished.
+1683903583184|DCVMCyclicBarrier.run() finished.
+1683903583184|DCVMCyclicBarrier.run() finished.
+1683903583184|DCVMCyclicBarrier.run() finished.
+1683903583184|DCVM Cyclic Barrier shuts down!

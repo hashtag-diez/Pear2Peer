@@ -13,10 +13,10 @@ import main.java.run.scenarios.find.ClientLookingForContent;
 import main.java.utiles.Helpers;
 
 public class FindScenarioBasic extends AbstractDistributedCVM {
-		/** URI of the provider component (convenience). */
-		protected static final String NODE_MANAGEMENT_COMPONENT_URI = "my-NODE_MANAGEMENT";
-		/** URI of the consumer component (convenience). */
-		protected static final String NODE_COMPONENT_URI = "my_NODE";
+	/** URI of the provider component (convenience). */
+	protected static final String NODE_MANAGEMENT_COMPONENT_URI = "my-NODE_MANAGEMENT";
+	/** URI of the consumer component (convenience). */
+	protected static final String NODE_COMPONENT_URI = "my_NODE";
 
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 	public static final String CLOCK_URI = "my-clock-uri";
@@ -43,23 +43,23 @@ public class FindScenarioBasic extends AbstractDistributedCVM {
 		Integer FacadeIndex = Integer.parseInt(thisJVMURI.split("-")[2]);
 
 		AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
-		new Object[] { thisJVMURI, (FacadeIndex-1)*10 });
+				new Object[] { thisJVMURI, (FacadeIndex - 1) * 10 });
 
 		for (int i = 1; i <= NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI +"_"+ ((FacadeIndex-1)*10 + i), thisJVMURI, i });
+					new Object[] { NODE_COMPONENT_URI + "_" + ((FacadeIndex - 1) * 10 + i), thisJVMURI, i });
 		}
 		if (thisJVMURI.equals("my-NODE_MANAGEMENT-1")) {
 			AbstractComponent.createComponent(
-				ClocksServer.class.getCanonicalName(),
-				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
-						startInstant, accelerationFactor });
-		}
+					ClocksServer.class.getCanonicalName(),
+					new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
+							startInstant, accelerationFactor });
 
-		AbstractComponent.createComponent(
-				ClientLookingForContent.class.getCanonicalName(),
-				new Object[] { "Clicos",
-						NODE_MANAGEMENT_COMPONENT_URI + "-" + Helpers.getRandomNumber(1, 5) });
+			AbstractComponent.createComponent(
+					ClientLookingForContent.class.getCanonicalName(),
+					new Object[] { "Clicos",
+							NODE_MANAGEMENT_COMPONENT_URI + "-" + Helpers.getRandomNumber(1, 5) });
+		}
 		super.instantiateAndPublish();
 	}
 

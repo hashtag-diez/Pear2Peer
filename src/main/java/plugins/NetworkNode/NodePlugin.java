@@ -107,7 +107,7 @@ public class NodePlugin
     lock.lock();
     NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
     for (String port : this.peersGetterPorts.keySet()) {
-      peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
+      // peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
       this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());
       peersGetterPorts.get(port).unpublishPort();
       ContentManagementPlug.remove(port);

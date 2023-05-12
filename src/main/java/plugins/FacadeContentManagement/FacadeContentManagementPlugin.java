@@ -179,7 +179,10 @@ public class FacadeContentManagementPlugin
       this.getOwner().doPortConnection(cli.getPortURI(), requestOwner, ClientReturnConnector.class.getCanonicalName());
       cli.findResult(found);
     } catch (NullPointerException e) {
-    } finally {
+
+    } catch(fr.sorbonne_u.components.registry.exceptions.GlobalRegistryResponseException e){
+
+    }finally {
       this.getOwner().doPortDisconnection(cli.getPortURI());
       cli.unpublishPort();
       cli.destroyPort();
@@ -193,6 +196,8 @@ public class FacadeContentManagementPlugin
       this.getOwner().doPortConnection(cli.getPortURI(), requestOwner, ClientReturnConnector.class.getCanonicalName());
       cli.matchResult(found);
     } catch (NullPointerException e) {
+
+    } catch(fr.sorbonne_u.components.registry.exceptions.GlobalRegistryResponseException e){
 
     } finally {
       this.getOwner().doPortDisconnection(cli.getPortURI());

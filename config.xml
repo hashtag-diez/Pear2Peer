@@ -1,7 +1,7 @@
 <deployment>
    <hosts>
     <host name="localhost"
-          dir="/Users/diez/Documents/Fac/M1/CPS/Pear2Peer/"/>
+          dir="C:\Users\aboub_bmdb7gr\git\Pear2Peer"/>
   </hosts>
   <cyclicBarrier   hostname="localhost" port="55253"/>
   <globalRegistry  hostname="localhost" port="55252"/>

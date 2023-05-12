@@ -1,2 +1,2 @@
 #!/bin/bash
-java -ea -Xms2m -cp '/var/folders/_5/nsgfy6157798ts5y0xz4_nym0000gn/T/cp_1yeebtp0oyr001d6ae3j28b3z.jar' -Djava.security.manager -Djava.security.policy=dcvm.policy fr.sorbonne_u.components.registry.GlobalRegistry config.xml
+java -ea -Xms2m -cp 'lib/*' fr.sorbonne_u.components.registry.GlobalRegistry config.xml
