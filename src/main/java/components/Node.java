@@ -1,11 +1,17 @@
 package main.java.components;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
+import fr.sorbonne_u.components.exceptions.ConnectionException;
+import fr.sorbonne_u.components.helpers.Logger;
+import fr.sorbonne_u.components.helpers.TracerWindow;
+import fr.sorbonne_u.components.ports.PortI;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
@@ -26,7 +32,12 @@ public class Node extends AbstractComponent {
 
 	private NodePlugin plugin;
 
-	private static final int DEFAULT_NB_OF_THREADS = 6;
+	/** Execution log of the cyclic barrier.								*/
+	protected final Logger					executionLog;
+	/** 	Tracer of the cyclic barrier.									*/
+	protected final TracerWindow			tracer;
+
+	private static final int DEFAULT_NB_OF_THREADS = 8;
 	private static final boolean DEBUG_MODE = true;
 	protected DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
@@ -37,13 +48,18 @@ public class Node extends AbstractComponent {
 		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
 		this.initialise(DEFAULT_NB_OF_THREADS);
 
+		this.tracer = new TracerWindow();	
+		this.executionLog = new Logger(reflectionInboundPortURI);
+		// tracer.toggleTracing();
+		// executionLog.toggleLogging();
 		String NodeURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		node = new ContentNode(NodeURI, ContentManagementURI, reflectionInboundPortURI);
+		Integer NodeIndex = Integer.parseInt(reflectionInboundPortURI.split("_")[2]);
 
 		ContentManagementPlugin ContentManagementPlug = new ContentManagementPlugin(ContentManagementURI, DescriptorId,
 				node);
-		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI);
+		ContentManagementPlug.setPreferredExecutionServiceURI(CM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString());
 		this.installPlugin(ContentManagementPlug);
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug);
@@ -63,13 +79,15 @@ public class Node extends AbstractComponent {
 	 */
 	protected void initialise(int nbThreads) {
 		assert nbThreads >= 4 : "Contrainte sur le nombre de threads [" + DEFAULT_NB_OF_THREADS + "]";
-		int nbThreadsNetwork = 3;
+		int nbThreadsNetwork = 5;
 		int nbThreadsContent = nbThreads - nbThreadsNetwork;
 
 		// this.createNewExecutorService(NS_EXECUTION_SERVICE_URI, nbThreadsNetwork,
 		// false);
-		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI, nbThreadsContent, false);
-		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI, nbThreadsNetwork, false);
+		Integer NodeIndex = Integer.parseInt(reflectionInboundPortURI.split("_")[2]);
+
+		this.createNewExecutorService(CM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString(), nbThreadsContent, true);
+		this.createNewExecutorService(NM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString(), nbThreadsNetwork, true);
 	}
 
 	@Override
@@ -82,7 +100,21 @@ public class Node extends AbstractComponent {
 		super.finalise();
 		this.doPortDisconnection(csop.getPortURI());
 		csop.unpublishPort();
-		csop.destroyPort();
+
+		Set<String>	 URIs = new HashSet<>(this.portURIs2ports.keySet());
+		for(String uri : URIs){
+			PortI port = this.portURIs2ports.get(uri);
+			try{
+				if(port.connected()){
+					this.doPortDisconnection(port.getPortURI());
+				}
+			} catch(ConnectionException e){
+				
+			} finally{
+				if(port.isPublished()) port.unpublishPort();
+				if(!port.isDestroyed()) port.destroyPort();
+			}
+		}
 	}
 
 	/**
@@ -139,5 +171,9 @@ public class Node extends AbstractComponent {
 
 	public ContentNode getContentNode() {
 		return node;
+	}
+	public void writeMessage(String msg){
+		//this.executionLog.logMessage(msg);
+		//this.tracer.traceMessage(System.currentTimeMillis() + "|" + msg +"\n");
 	}
 }

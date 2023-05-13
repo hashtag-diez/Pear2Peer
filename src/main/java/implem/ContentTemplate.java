@@ -1,5 +1,6 @@
 package main.java.implem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,7 +8,10 @@ import java.util.Set;
 import fr.sorbonne_u.cps.p2Pcm.dataread.ContentDataManager;
 import main.java.interfaces.ContentTemplateI;
 
-public class ContentTemplate implements ContentTemplateI {
+/**
+ * ContentDescriptor
+ */
+public class ContentTemplate implements ContentTemplateI, Serializable {
     String _title, _albumTitle;
     Set<String> _interpreters, _composers;
 

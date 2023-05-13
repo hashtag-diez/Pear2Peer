@@ -39,10 +39,11 @@ public class ConnectionDisconnectionScenario extends AbstractCVM {
 	/** URI of the consumer inbound port (simplifies the connection). */
 	protected static final String URIProviderInboundPortURI = "iport";
 
+	public static final String CLOCK_URI = "my-clock-uri";
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 
 	protected final int NB_PEER = 9;
-	protected final int NB_FACADE = 5;
+	protected final int NB_FACADE = 2;
 	/**
 	 * Reference to the provider component to share between deploy and shutdown.
 	 */

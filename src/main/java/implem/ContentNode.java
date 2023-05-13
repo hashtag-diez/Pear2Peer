@@ -1,8 +1,10 @@
 package main.java.implem;
 
+import java.io.Serializable;
+
 import main.java.interfaces.ContentNodeAddressI;
 
-public class ContentNode implements ContentNodeAddressI {
+public class ContentNode implements ContentNodeAddressI, Serializable{
 
   private String ContentManagementURI;
   private String Id;

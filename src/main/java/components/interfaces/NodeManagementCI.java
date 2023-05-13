@@ -1,7 +1,5 @@
 package main.java.components.interfaces;
 
-import fr.sorbonne_u.components.interfaces.OfferedCI;
-import fr.sorbonne_u.components.interfaces.RequiredCI;
 import main.java.interfaces.PeerNodeAddressI;
 
 /**
@@ -18,7 +16,7 @@ import main.java.interfaces.PeerNodeAddressI;
  * @author ABSSI (Team)
  *
  */
-public interface NodeManagementCI extends OfferedCI, RequiredCI, ProbingCI {
+public interface NodeManagementCI extends ProbingCI {
 
 	/**
 	 * Takes as a parameter the address of the peer node to be inserted into the

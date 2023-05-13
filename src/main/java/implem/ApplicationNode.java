@@ -1,8 +1,10 @@
 package main.java.implem;
 
+import java.io.Serializable;
+
 import main.java.interfaces.ApplicationNodeAddressI;
 
-public class ApplicationNode implements ApplicationNodeAddressI {
+public class ApplicationNode implements ApplicationNodeAddressI, Serializable {
 
   private String ContentManagementURI;
   private String Id;

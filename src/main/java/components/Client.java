@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Set;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.ComponentStartException;
+import fr.sorbonne_u.components.exceptions.ConnectionException;
+import fr.sorbonne_u.components.ports.PortI;
 import fr.sorbonne_u.components.reflection.connectors.ReflectionConnector;
 import fr.sorbonne_u.components.reflection.interfaces.ReflectionCI;
 import fr.sorbonne_u.components.reflection.ports.ReflectionOutboundPort;
@@ -88,6 +91,20 @@ public class Client extends AbstractComponent {
 
 		this.doPortDisconnection(CMGetterPort.getPortURI());
 		CMGetterPort.unpublishPort();
+		Set<String>	 URIs = new HashSet<>(this.portURIs2ports.keySet());
+		for(String uri : URIs){
+			PortI port = this.portURIs2ports.get(uri);
+			try{
+				if(port.connected()){
+					this.doPortDisconnection(port.getPortURI());
+				}
+			} catch(ConnectionException e){
+				
+			} finally{
+				if(port.isPublished()) port.unpublishPort();
+				if(!port.isDestroyed()) port.destroyPort();
+			}
+		}
 	}
 
 	/**
