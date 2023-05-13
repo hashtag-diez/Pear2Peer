@@ -1,6 +1,7 @@
 package main.java.run.distributed.connect_disconnect;
 
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.cvm.AbstractDistributedCVM;
@@ -51,6 +52,8 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 	protected static final String NODE_COMPONENT_URI = "my_NODE";
 	public static final String CLOCK_URI = "my-clock-uri";
 
+	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
+
 	protected final int NB_PEER = 9;
 	/**
 	 * Reference to the provider component to share between deploy and shutdown.
@@ -61,7 +64,11 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 	public void instantiateAndPublish() throws Exception {
 		// decide for a start time as an Instant that will be used as the base
 		// time to plan all the actions of the test scenario
-		Instant startInstant = Instant.now().plusSeconds(2);
+		long unixEpochStartTimeInNanos = TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis())
+				+ DELAY_TO_START_IN_NANOS;
+		// decide for a start time as an Instant that will be used as the base
+		// time to plan all the actions of the test scenario
+		Instant startInstant = Instant.parse("2023-03-06T15:37:00Z");
 		double accelerationFactor = 1.0;
 		ContentDataManager.DATA_DIR_NAME = "src/data";
 		Integer FacadeIndex = Integer.parseInt(thisJVMURI.split("-")[2]);
@@ -76,7 +83,7 @@ public class ConnectionDisconnectionScenario extends AbstractDistributedCVM {
 		if (thisJVMURI.equals("my-NODE_MANAGEMENT-1")) {
 			AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
-				new Object[] { CLOCK_URI, startInstant.toEpochMilli(),
+				new Object[] { CLOCK_URI, unixEpochStartTimeInNanos,
 						startInstant, accelerationFactor });
 		}
 		super.instantiateAndPublish();

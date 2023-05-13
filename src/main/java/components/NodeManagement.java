@@ -120,7 +120,7 @@ public class NodeManagement extends AbstractComponent {
 			AcceleratedClock clock = this.csop.getClock(ConnectionDisconnectionScenario.CLOCK_URI);
 			writeMessage("BBBBB");
 			// recuperation de la date du scenario
-			Instant startInstant = clock.getStartInstant();
+			Instant start = clock.getStartInstant();
 			writeMessage("CCCCC");
 
 			// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
@@ -129,11 +129,11 @@ public class NodeManagement extends AbstractComponent {
 			writeMessage("DDDDD");
 			Random r = new Random();
       int delay = r.nextInt(2 - 1) + 1;
-			long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(1 + delay));
+			long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(start.plusSeconds(2 + delay));
 			writeMessage("BBBBB");
 			scheduleConnectionWithFacades(delayInNanosToJoin);
 		} catch (Exception e) {
-			writeMessage(e.getMessage());
+			// writeMessage(e.getMessage());
 		}
 	}
 

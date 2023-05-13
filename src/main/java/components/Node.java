@@ -63,7 +63,7 @@ public class Node extends AbstractComponent {
 		this.installPlugin(ContentManagementPlug);
 
 		plugin = new NodePlugin(NMInboundURI, NodeURI, ContentManagementPlug);
-		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI);
+		plugin.setPreferredExecutionServiceURI(NM_EXECUTION_SERVICE_URI+"-"+NodeIndex.toString());
 		this.installPlugin(plugin);
 
 		this.csop = new ClocksServerOutboundPort(this);
@@ -130,28 +130,26 @@ public class Node extends AbstractComponent {
 
 		AcceleratedClock clock = this.csop.getClock(Helpers.GLOBAL_CLOCK_URI);
 		// recuperation de la date du scenario
-		Instant startInstant = clock.getStartInstant();
 
 		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
 
+		Instant start = clock.getStartInstant();
 		int delay = Helpers.getRandomNumber(4);
-		long delayInNanosToJoin = clock.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(4 + delay));
 
-		long delayInNanosToLeave = clock
-				.nanoDelayUntilAcceleratedInstant(startInstant.plusSeconds(15));
+		long delayInNanosToLeave = clock.nanoDelayUntilAcceleratedInstant(start.plusSeconds(17));
 
-		scheduleConnectionToNetwork(delayInNanosToJoin);
+		scheduleConnectionToNetwork(2 + delay);
 		debugPrinter.display("[node join network] has been scheduled");
 		scheduleDisconnectionToNetwork(delayInNanosToLeave);
 		debugPrinter.display("[node disconnection] has been scheduled");
-
 	}
 
 	private void scheduleDisconnectionToNetwork(long delayInNanosToLeave) throws AssertionError {
 		this.scheduleTask(o -> {
 			try {
+				Thread.sleep(120000);
 				plugin.leaveNetwork();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -162,6 +160,7 @@ public class Node extends AbstractComponent {
 	private void scheduleConnectionToNetwork(long delayInNanosToJoin) throws AssertionError {
 		this.scheduleTask(o -> {
 			try {
+				Thread.sleep(delayInNanosToJoin*1000);
 				plugin.joinNetwork();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -173,6 +172,7 @@ public class Node extends AbstractComponent {
 		return node;
 	}
 	public void writeMessage(String msg){
+		// System.out.println(msg);
 		//this.executionLog.logMessage(msg);
 		//this.tracer.traceMessage(System.currentTimeMillis() + "|" + msg +"\n");
 	}

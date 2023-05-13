@@ -154,7 +154,7 @@ public class FacadeContentManagementPlugin
       Collection<FacadeContentManagementOutboundPort> ports = Helpers
           .getRandomCollection(this.facadeGetterPorts.values(), 2);
       for (FacadeContentManagementOutboundPort outBoundPort : ports)
-        outBoundPort.match(cd, matched, hops - 1, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
+        outBoundPort.match(cd, matched, hops, ((NodeManagement) this.getOwner()).getApplicationNode(), clientAddr);
 
     } else {
       // System.out.println("On a reçu une requête d'une autre façade !");
@@ -176,12 +176,10 @@ public class FacadeContentManagementPlugin
     ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
     try {
       this.getOwner().doPortConnection(cli.getPortURI(), requestOwner, ClientReturnConnector.class.getCanonicalName());
-      cli.findResult(found);
-    } catch (NullPointerException e) {
+      cli.findResult(found, requestOwner);
+    } catch (Exception e) {
 
-    } catch(fr.sorbonne_u.components.registry.exceptions.GlobalRegistryResponseException e){
-
-    }finally {
+    } finally {
       this.getOwner().doPortDisconnection(cli.getPortURI());
       cli.unpublishPort();
       cli.destroyPort();
@@ -193,10 +191,8 @@ public class FacadeContentManagementPlugin
     ClientOutboundPort cli = makeClientOutboundPort(requestOwner);
     try {
       this.getOwner().doPortConnection(cli.getPortURI(), requestOwner, ClientReturnConnector.class.getCanonicalName());
-      cli.matchResult(found);
-    } catch (NullPointerException e) {
-
-    } catch(fr.sorbonne_u.components.registry.exceptions.GlobalRegistryResponseException e){
+      cli.matchResult(found, requestOwner);
+    } catch (Exception e) {
 
     } finally {
       this.getOwner().doPortDisconnection(cli.getPortURI());

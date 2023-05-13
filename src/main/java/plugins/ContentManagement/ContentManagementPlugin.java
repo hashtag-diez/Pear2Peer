@@ -151,10 +151,18 @@ public class ContentManagementPlugin
       throws Exception {
     for (ContentDescriptorI localCd : this.contentsDescriptors) {
       if (localCd.match(cd)) {
-        FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
-        port.acceptFound(localCd, clientAddr);
-        this.getOwner().doPortDisconnection(port.getPortURI());
-        port.unpublishPort();
+        FacadeContentManagementOutboundPort port = makeFacadeOutboundPort();
+        try {
+          this.getOwner().doPortConnection(port.getPortURI(), requester.getContentManagementURI(),
+              FacadeContentManagementServiceConnector.class.getCanonicalName());
+          port.acceptFound(localCd, clientAddr);
+          this.getOwner().doPortDisconnection(port.getPortURI());
+        } catch (Exception e) {
+
+        } finally {
+          port.unpublishPort();
+          port.destroyPort();
+        }
         return;
       }
     }
@@ -187,10 +195,18 @@ public class ContentManagementPlugin
         matched.add(localCd);
 
     if (--hops == 0) {
-      FacadeContentManagementOutboundPort port = makeFacadeOutboundPort(requester);
-      port.acceptMatched(matched, clientAddr);
-      this.getOwner().doPortDisconnection(port.getPortURI());
-      port.unpublishPort();
+      FacadeContentManagementOutboundPort port = makeFacadeOutboundPort();
+      try {
+        this.getOwner().doPortConnection(port.getPortURI(), requester.getContentManagementURI(),
+            FacadeContentManagementServiceConnector.class.getCanonicalName());
+        port.acceptMatched(matched, clientAddr);
+        this.getOwner().doPortDisconnection(port.getPortURI());
+      } catch (Exception e) {
+
+      } finally {
+        port.unpublishPort();
+        port.destroyPort();
+      }
       return;
     }
     Collection<ContentManagementOutboundPort> ports = Helpers.getRandomCollection(this.getterPorts.values(), PINGED);
@@ -203,13 +219,10 @@ public class ContentManagementPlugin
     return this.getterPorts.containsKey(a.getNodeURI());
   }
 
-  private FacadeContentManagementOutboundPort makeFacadeOutboundPort(ApplicationNodeAddressI addr) throws Exception {
+  private FacadeContentManagementOutboundPort makeFacadeOutboundPort() throws Exception {
 
     FacadeContentManagementOutboundPort outboundPort = new FacadeContentManagementOutboundPort(this.getOwner());
     outboundPort.publishPort();
-
-    this.getOwner().doPortConnection(outboundPort.getPortURI(), addr.getContentManagementURI(),
-        FacadeContentManagementServiceConnector.class.getCanonicalName());
     return outboundPort;
   }
 

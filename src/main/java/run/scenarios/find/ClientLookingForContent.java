@@ -46,18 +46,19 @@ public class ClientLookingForContent extends Client {
 
 		AcceleratedClock clock = this.csop.getClock(Helpers.GLOBAL_CLOCK_URI);
 		// recuperation de la date du scenario
-		Instant startInstant = clock.getStartInstant();
+		// Instant startInstant = clock.getStartInstant();
 
 		// synchronisaiton: tous les noeuds doivent patienter jusqu'à la date
 		// du rendez-vous: (startInstant)
 		clock.waitUntilStart();
-
+		Instant start = clock.getStartInstant();
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(12));
+			start.plusSeconds(10));
 
 		this.scheduleTask(
 				o -> {
 					try {
+						Thread.sleep(10000);
 						((ClientLookingForContent) o).exampleSearchFind();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -70,7 +71,5 @@ public class ClientLookingForContent extends Client {
 	@Override
 	public void finalise() throws Exception {
 		super.finalise();
-		this.doPortDisconnection(csop.getPortURI());
-		csop.unpublishPort();
 	}
 }

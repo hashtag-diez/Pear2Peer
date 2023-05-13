@@ -15,11 +15,11 @@ public class ClientInboundPort extends AbstractInboundPort implements ClientCI {
     }
 
     @Override
-    public void findResult(ContentDescriptorI result) throws Exception {
+    public void findResult(ContentDescriptorI result, String URI) throws Exception {
         this.getOwner().runTask(
                 owner -> {
                     try {
-                        ((Client) owner).findResult(result);
+                        ((Client) owner).findResult(result, URI);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -27,7 +27,7 @@ public class ClientInboundPort extends AbstractInboundPort implements ClientCI {
     }
 
     @Override
-    public void matchResult(Set<ContentDescriptorI> result) throws Exception {
+    public void matchResult(Set<ContentDescriptorI> result, String URI) throws Exception {
         this.getOwner().runTask(
                 owner -> {
                     try {

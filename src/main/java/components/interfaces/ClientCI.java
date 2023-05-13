@@ -14,7 +14,7 @@ public interface ClientCI extends OfferedCI, RequiredCI {
      * 
      * @param result The set of ContentDescriptorI objects that match the query.
      */
-    void findResult(ContentDescriptorI result) throws Exception;
+    void findResult(ContentDescriptorI result, String URI) throws Exception;
 
     /**
      * > This function is called when the match is complete by a node
@@ -22,5 +22,5 @@ public interface ClientCI extends OfferedCI, RequiredCI {
      * 
      * @param result The set of ContentDescriptorI objects that match the query.
      */
-    void matchResult(Set<ContentDescriptorI> result) throws Exception;
+    void matchResult(Set<ContentDescriptorI> result, String URI) throws Exception;
 }

@@ -14,7 +14,8 @@ import main.java.interfaces.ContentTemplateI;
 public class ContentTemplate implements ContentTemplateI, Serializable {
     String _title, _albumTitle;
     Set<String> _interpreters, _composers;
-
+    private int index;
+    static private int INDEX = 0;
     public ContentTemplate() {
 
     }
@@ -24,6 +25,8 @@ public class ContentTemplate implements ContentTemplateI, Serializable {
         this._albumTitle = albumTitle;
         this._interpreters = interpreters;
         this._composers = composers;
+        this.index = INDEX;
+        INDEX++;
     }
 
     public ContentTemplate(HashMap<String, Object> toLoad) {

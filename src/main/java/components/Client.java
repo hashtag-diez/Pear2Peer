@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
 
 import fr.sorbonne_u.components.AbstractComponent;
@@ -49,7 +48,7 @@ public class Client extends AbstractComponent {
 	// The constructor of the Client class. It creates the Client object and
 	// initializes the ports.
 	protected Client(String reflectionInboundPort, String NodeManagementURI) throws Exception {
-		super(reflectionInboundPort, 1, 1);
+		super(reflectionInboundPort, 4, 4);
 		this.CMGetterPort = new ContentManagementOutboundPort(this);
 		this.CMGetterPort.publishPort();
 		this.NodeManagementURI = NodeManagementURI;
@@ -187,7 +186,7 @@ public class Client extends AbstractComponent {
 	 *                criteria.
 	 * @throws Exception
 	 */
-	public synchronized void findResult(ContentDescriptorI matched) throws Exception {
+	public synchronized void findResult(ContentDescriptorI matched, String URI) throws Exception {
 		if (ReturnPort.isPublished()) {
 			ReturnPort.unpublishPort();
 			debugPrinter.display("Found : " + matched.toString());

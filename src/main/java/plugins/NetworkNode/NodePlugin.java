@@ -99,8 +99,9 @@ public class NodePlugin
 
   public void leaveNetwork() throws Exception {
     lock.lock();
-    if (NMGetterPort.connected())
+    if (NMGetterPort.connected()){
       NMGetterPort.leave(((Node) this.getOwner()).getContentNode());
+    }
 
     for (String port : this.peersGetterPorts.keySet()) {
       // peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
@@ -168,7 +169,6 @@ public class NodePlugin
     NSetterPort.unpublishPort();
     NSetterPort.destroyPort();
     for (String port : this.peersGetterPorts.keySet()) {
-      peersGetterPorts.get(port).disconnect(((Node) this.getOwner()).getContentNode());
       this.getOwner().doPortDisconnection(peersGetterPorts.get(port).getPortURI());
       peersGetterPorts.get(port).unpublishPort();
       ContentManagementPlug.remove(port);

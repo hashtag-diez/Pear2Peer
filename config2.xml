@@ -1,0 +1,31 @@
+<deployment>
+   <hosts>
+    <host name="localhost"
+          dir="C:\Users\aboub_bmdb7gr\git\Pear2Peer"/>
+  </hosts>
+  <cyclicBarrier   hostname="localhost" port="55253"/>
+  <globalRegistry  hostname="localhost" port="55252"/>
+  <rmiRegistryPort no="55999"/>
+  <jvms2hostnames>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-1"
+        rmiRegistryCreator="true"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.find.FindBigNetwork"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-2"
+        rmiRegistryCreator="false"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.find.FindBigNetwork"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-3"
+        rmiRegistryCreator="false"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.find.FindBigNetwork"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-4"
+        rmiRegistryCreator="false"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.find.FindBigNetwork"/>
+    <jvm2hostname jvmuri="my-NODE_MANAGEMENT-5"
+        rmiRegistryCreator="false"
+        hostname="localhost"
+        mainclass="main.java.run.distributed.find.FindBigNetwork"/>
+  </jvms2hostnames>
+</deployment>

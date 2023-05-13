@@ -39,8 +39,7 @@ public class NodeManagementServiceConnector
   public void interconnect(ApplicationNode f) throws RejectedExecutionException, AssertionError, Exception {
     try{
       ((NodeManagementPI) this.offering).interconnect(f);
-    } catch(Exception e){
-      System.out.println(e.getMessage());
+    } catch(Exception e){;
       throw e;
     }
   }

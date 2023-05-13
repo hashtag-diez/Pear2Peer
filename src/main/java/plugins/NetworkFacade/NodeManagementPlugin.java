@@ -38,6 +38,7 @@ public class NodeManagementPlugin
   protected FacadeContentManagementPlugin ContentManagementPlug;
   private ReentrantLock lock = new ReentrantLock();
   private ReentrantLock lock1 = new ReentrantLock();
+  private ReentrantLock lock2 = new ReentrantLock();
   protected HashMap<String, NodeManagementOutboundPort> facades = new HashMap<>();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
   protected HashMap<String, AsyncCollector> probeCollectors = new HashMap<>();
@@ -114,13 +115,20 @@ public class NodeManagementPlugin
   }
 
   public void acceptProbed(PeerNodeAddressI peer, String requestURI) throws Exception {
+    lock2.lock();
     AsyncCollector request = probeCollectors.get(requestURI);
+    if(request==null) {
+      lock2.unlock();
+      return;
+    }
     request.retrieve(peer);
     if (!request.isComplete()) {
       probeCollectors.put(requestURI, request);
+      lock2.unlock();
       return;
     }
     probeCollectors.remove(requestURI);
+    lock2.unlock();
     this.addRequiredInterface(NodePI.class);
     NodeOutboundPort nop = new NodeOutboundPort(this.getOwner());
     nop.publishPort();
@@ -129,7 +137,6 @@ public class NodeManagementPlugin
       Set<PeerNodeAddressI> res = request.getProbeResult();
       nop.acceptNeighbours(res);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
     } finally{
       this.getOwner().doPortDisconnection(nop.getPortURI());
       this.removeRequiredInterface(NodePI.class);
@@ -141,8 +148,9 @@ public class NodeManagementPlugin
   public void probe(String requestURI, FacadeNodeAddressI facade, int remainingHops, PeerNodeAddressI chosen,
       int chosenNeighbourCount)
       throws Exception {
-    // System.out.println("PROBE (F) : " + requestURI);
+    lock2.lock();
     probeCollectors.put(requestURI, new AsyncCollector(ndSendProbe));
+    lock2.unlock();
     this.addRequiredInterface(NodePI.class);
     FacadeNodeAddressI agregator = facade;
     if (agregator == null) {
@@ -154,7 +162,6 @@ public class NodeManagementPlugin
         try {
           port.probe(requestURI, agregator, nbSaut, null, Integer.MAX_VALUE);
         } catch (Exception e) {
-          System.out.println(e.getMessage());
         }
       }
     }
@@ -176,7 +183,6 @@ public class NodeManagementPlugin
         port.unpublishPort();
         port.destroyPort();
       } catch (Exception e) {
-        System.out.println(e.getMessage());
       }
     }
     this.removeRequiredInterface(NodePI.class);

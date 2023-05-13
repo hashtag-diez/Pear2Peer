@@ -11,13 +11,13 @@ public class ClientReturnConnector
     implements ClientCI {
 
   @Override
-  public void findResult(ContentDescriptorI result) throws Exception {
-    ((ClientCI) this.offering).findResult(result);
+  public void findResult(ContentDescriptorI result, String URI) throws Exception {
+    ((ClientCI) this.offering).findResult(result, URI);
   }
 
   @Override
-  public void matchResult(Set<ContentDescriptorI> result) throws Exception {
-    ((ClientCI) this.offering).matchResult(result);
+  public void matchResult(Set<ContentDescriptorI> result, String URI) throws Exception {
+    ((ClientCI) this.offering).matchResult(result, URI);
   }
 
 }

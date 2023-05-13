@@ -15,13 +15,13 @@ public class ClientOutboundPort extends AbstractOutboundPort implements ClientCI
     }
 
     @Override
-    public void findResult(ContentDescriptorI result) throws Exception {
-        ((ClientCI) this.getConnector()).findResult(result);
+    public void findResult(ContentDescriptorI result,String URI) throws Exception {
+        ((ClientCI) this.getConnector()).findResult(result, URI);
     }
 
     @Override
-    public void matchResult(Set<ContentDescriptorI> result) throws Exception {
-        ((ClientCI) this.getConnector()).matchResult(result);
+    public void matchResult(Set<ContentDescriptorI> result, String URI) throws Exception {
+        ((ClientCI) this.getConnector()).matchResult(result, URI);
     }
 
 }
