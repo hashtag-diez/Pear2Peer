@@ -26,9 +26,7 @@ import main.java.plugins.NetworkFacade.port_connector.NodeManagementOutboundPort
 import main.java.plugins.NetworkFacade.port_connector.NodeManagementServiceConnector;
 import main.java.plugins.NetworkNode.NodePI;
 import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
-import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
 import main.java.utiles.AsyncProbe;
-import main.java.utiles.DebugDisplayer;
 import main.java.utiles.Helpers;
 
 public class NodeManagementPlugin
@@ -39,25 +37,20 @@ public class NodeManagementPlugin
 
   protected NodeManagementInboundPort NMSetterPort;
   protected FacadeContentManagementPlugin ContentManagementPlug;
-  protected NetworkScannerPlugin NetworkScannerPlug;
   private ReentrantLock lock = new ReentrantLock();
   private ReentrantLock lock1 = new ReentrantLock();
   protected HashMap<String, NodeManagementOutboundPort> facades = new HashMap<>();
   protected Set<PeerNodeAddressI> roots = new HashSet<>();
   protected ConcurrentHashMap<String, AsyncProbe> probeCollector = new ConcurrentHashMap<>();
-  private static final boolean DEBUG_MODE = true;
-  private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
 
   private String URI;
 
-  public NodeManagementPlugin(String URI, FacadeContentManagementPlugin ContentManagementPlug,
-      NetworkScannerPlugin NetworkScannerPlug)
+  public NodeManagementPlugin(String URI, FacadeContentManagementPlugin ContentManagementPlug)
       throws Exception {
     super();
     this.URI = URI;
     setPluginURI(AbstractPort.generatePortURI());
     this.ContentManagementPlug = ContentManagementPlug;
-    this.NetworkScannerPlug = NetworkScannerPlug;
   }
 
   @Override
@@ -93,12 +86,12 @@ public class NodeManagementPlugin
   }
 
   public void join(PeerNodeAddressI a) throws Exception {
-    // debugPrinter.display((a.getNodeIdentifier()+", "+ a.getNodeURI() + " is joining : network"));
+    ((NodeManagement) this.getOwner()).writeMessage((a.getNodeIdentifier()+", "+ a.getNodeURI() + " is joining : network"));
     lock.lock();
     if (roots.size() < nbRacine) {
       ContentManagementPlug.put((ContentNodeAddressI) a);
       roots.add(a);
-      // debugPrinter.display(((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " -> " + a.getNodeIdentifier()+";");
+      // ((NodeManagement) this.getOwner()).writeMessage(((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " -> " + a.getNodeIdentifier()+";");
     }
     lock.unlock();
     probe(a.getNodeURI(), null, nbSaut, null, 0);
@@ -112,7 +105,7 @@ public class NodeManagementPlugin
   public void leave(PeerNodeAddressI a) throws Exception {
     lock.lock();
     /*
-     * debugPrinter.display(
+     * ((NodeManagement) this.getOwner()).writeMessage(
      * (a.getNodeIdentifier() + " is leaving : network"));
      */
     if (roots.remove(a)) {
@@ -191,7 +184,7 @@ public class NodeManagementPlugin
   }
 
   public void connectWithFacade() throws Exception {
-    debugPrinter.display(
+    ((NodeManagement) this.getOwner()).writeMessage(
         ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " : connect to others facades");
     String[] tab = ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier().split("-");
     String basename = tab[0] + "-" + tab[1];
@@ -229,7 +222,7 @@ public class NodeManagementPlugin
             // facadeOutPortNM.getPortURI());
           }
           this.getOwner().doPortDisconnection(rop.getPortURI());
-          /* debugPrinter.display(
+          /* ((NodeManagement) this.getOwner()).writeMessage(
               ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " -> " + basename + "-"
                   + i); */
         } catch (Exception e) {
@@ -263,7 +256,7 @@ public class NodeManagementPlugin
           NodeManagementServiceConnector.class.getCanonicalName());
       facades.put(f.getNodeIdentifier(), facadeOutPortNM);
       // System.out.println("PORT NM AJOUTE : " + facadeOutPortNM.getPortURI());
-      /* debugPrinter.display(
+      /* ((NodeManagement) this.getOwner()).writeMessage(
           ((NodeManagement) this.getOwner()).getApplicationNode().getNodeIdentifier() + " -> " + f.getNodeIdentifier()); */
     } catch (Exception e) {
       if (facadeOutPortNM.connected()) {

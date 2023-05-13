@@ -1,11 +1,17 @@
 package main.java.components;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.AbstractPort;
 import fr.sorbonne_u.components.annotations.RequiredInterfaces;
+import fr.sorbonne_u.components.exceptions.ConnectionException;
+import fr.sorbonne_u.components.helpers.Logger;
+import fr.sorbonne_u.components.helpers.TracerWindow;
+import fr.sorbonne_u.components.ports.PortI;
 import fr.sorbonne_u.utils.aclocks.AcceleratedClock;
 import fr.sorbonne_u.utils.aclocks.ClocksServer;
 import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
@@ -28,6 +34,11 @@ public class Node extends AbstractComponent {
 
 	private NodePlugin plugin;
 
+	/** Execution log of the cyclic barrier.								*/
+	protected final Logger					executionLog;
+	/** 	Tracer of the cyclic barrier.									*/
+	protected final TracerWindow			tracer;
+
 	private static final int DEFAULT_NB_OF_THREADS = 8;
 	private static final boolean DEBUG_MODE = true;
 	private DebugDisplayer debugPrinter = new DebugDisplayer(DEBUG_MODE);
@@ -41,6 +52,10 @@ public class Node extends AbstractComponent {
 		super(reflectionInboundPortURI, DEFAULT_NB_OF_THREADS, DEFAULT_NB_OF_THREADS);
 		this.initialise(DEFAULT_NB_OF_THREADS);
 
+		this.tracer = new TracerWindow();	
+		this.executionLog = new Logger(reflectionInboundPortURI);
+		// tracer.toggleTracing();
+		// executionLog.toggleLogging();
 		String NodeURI = AbstractPort.generatePortURI();
 		String ContentManagementURI = AbstractPort.generatePortURI();
 		node = new ContentNode(NodeURI, ContentManagementURI, reflectionInboundPortURI);
@@ -86,6 +101,21 @@ public class Node extends AbstractComponent {
 		super.finalise();
 		this.doPortDisconnection(csop.getPortURI());
 		csop.unpublishPort();
+
+		Set<String>	 URIs = new HashSet<>(this.portURIs2ports.keySet());
+		for(String uri : URIs){
+			PortI port = this.portURIs2ports.get(uri);
+			try{
+				if(port.connected()){
+					this.doPortDisconnection(port.getPortURI());
+				}
+			} catch(ConnectionException e){
+				
+			} finally{
+				if(port.isPublished()) port.unpublishPort();
+				if(!port.isDestroyed()) port.destroyPort();
+			}
+		}
 	}
 
 	private void scheduleTasks() throws Exception {
@@ -137,5 +167,9 @@ public class Node extends AbstractComponent {
 
 	public ContentNode getContentNode() {
 		return node;
+	}
+	public void writeMessage(String msg){
+		//this.executionLog.logMessage(msg);
+		//this.tracer.traceMessage(System.currentTimeMillis() + "|" + msg +"\n");
 	}
 }

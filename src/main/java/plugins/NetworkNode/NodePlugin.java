@@ -26,8 +26,6 @@ import main.java.plugins.NetworkNode.port_connector.NodeInboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeOutboundPort;
 import main.java.plugins.NetworkNode.port_connector.NodeServiceConnector;
 import main.java.plugins.NetworkScanner.NetworkScannerPlugin;
-// import main.java.utiles.DebugDisplayer;
-import main.java.utiles.DebugDisplayer;
 
 public class NodePlugin
     extends AbstractPlugin implements NodePI {
@@ -45,7 +43,6 @@ public class NodePlugin
   protected Map<String, NodeOutboundPort> peersGetterPorts;
   private ReentrantLock lock = new ReentrantLock();
   private String NMReflectionInboundURI;
-  private DebugDisplayer debugPrinter = new DebugDisplayer(true);
 
   public NodePlugin(String NMReflectionInboundURI, String NodeURI, ContentManagementPlugin ContentManagementPlug,
       NetworkScannerPlugin NetworkScannerPlug) throws Exception {
@@ -78,7 +75,7 @@ public class NodePlugin
   }
 
   public void joinNetwork() throws Exception {
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeURI() + " is joining : ");
+    // ((Node) this.getOwner()).writeMessage(((Node) this.getOwner()).getContentNode().getNodeURI() + " is joining : ");
     if (!NMGetterPort.connected()) {
       ReflectionOutboundPort rop = new ReflectionOutboundPort(this.getOwner());
       rop.publishPort();
@@ -115,7 +112,7 @@ public class NodePlugin
     this.peersGetterPorts.clear();
     this.getOwner().doPortDisconnection(NMGetterPort.getPortURI());
     NMGetterPort.unpublishPort();
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving : network");
+    // ((Node) this.getOwner()).writeMessage(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " is leaving : network");
     lock.unlock();
   }
 
@@ -139,7 +136,7 @@ public class NodePlugin
         NodeServiceConnector.class.getCanonicalName());
     peerOutPortN.share(((Node) this.getOwner()).getContentNode());
     this.peersGetterPorts.put(node.getNodeURI(), peerOutPortN);
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " -> " + node.getNodeIdentifier()+";");
+    ((Node) this.getOwner()).writeMessage(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " -> " + node.getNodeIdentifier()+";");
     peerOutPortN.acceptConnected(((Node) this.getOwner()).getContentNode());
 
     lock.unlock();
@@ -194,7 +191,7 @@ public class NodePlugin
     }
     NodeOutboundPort peerOutPortN = new NodeOutboundPort(this.getOwner());
     peerOutPortN.publishPort();
-    // debugPrinter.display(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " -> " + node.getNodeIdentifier()+";");
+    ((Node) this.getOwner()).writeMessage(((Node) this.getOwner()).getContentNode().getNodeIdentifier() + " -> " + node.getNodeIdentifier()+";");
     this.getOwner().doPortConnection(peerOutPortN.getPortURI(), node.getNodeURI(),
         NodeServiceConnector.class.getCanonicalName());
 

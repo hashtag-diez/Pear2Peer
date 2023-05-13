@@ -1,2 +1,2 @@
 #!/bin/bash
-java -ea -Xms2m -cp '@C:\Users\ABOUB_~1\AppData\Local\Temp\cp_9ltcwz84ndqbrafypj8cwg36d.argfile' -Djava.security.manager -Djava.security.policy=dcvm.policy fr.sorbonne_u.components.cvm.utils.DCVMCyclicBarrier config.xml 
+java -ea -Xms2m -cp 'lib/*' -Djava.security.manager -Djava.security.policy=dcvm.policy fr.sorbonne_u.components.cvm.utils.DCVMCyclicBarrier config.xml 
