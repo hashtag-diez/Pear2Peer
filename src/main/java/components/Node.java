@@ -172,7 +172,7 @@ public class Node extends AbstractComponent {
 		return node;
 	}
 	public void writeMessage(String msg){
-		// System.out.println(msg);
+		System.out.println(msg);
 		//this.executionLog.logMessage(msg);
 		//this.tracer.traceMessage(System.currentTimeMillis() + "|" + msg +"\n");
 	}

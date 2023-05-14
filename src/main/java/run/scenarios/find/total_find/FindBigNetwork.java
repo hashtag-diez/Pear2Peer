@@ -19,7 +19,7 @@ public class FindBigNetwork extends AbstractCVM {
 
 	protected static final long DELAY_TO_START_IN_NANOS = TimeUnit.SECONDS.toNanos(2);
 
-	protected final int NB_PEER = 45;
+	protected final int NB_PEER = 50;
 	protected final int NB_FACADE = 5;
 	protected final int NB_DESCRIPTORS = 50;
 	/**
@@ -33,27 +33,25 @@ public class FindBigNetwork extends AbstractCVM {
 
 	@Override
 	public void deploy() throws Exception {
-		long unixEpochStartTimeInNanos = TimeUnit.MILLISECONDS.toNanos(System.currentTimeMillis())
-				+ DELAY_TO_START_IN_NANOS;
 		// decide for a start time as an Instant that will be used as the base
 		// time to plan all the actions of the test scenario
-		Instant startInstant = Instant.parse("2023-04-17T15:37:00Z");
+		Instant startInstant = Instant.now().plusSeconds(DELAY_TO_START_IN_NANOS);
 		double accelerationFactor = 10.0;
 
 		ContentDataManager.DATA_DIR_NAME = "src/data";
 
 		AbstractComponent.createComponent(
 				ClocksServer.class.getCanonicalName(),
-				new Object[] { Helpers.GLOBAL_CLOCK_URI, unixEpochStartTimeInNanos,
+				new Object[] { Helpers.GLOBAL_CLOCK_URI, startInstant.toEpochMilli(),
 						startInstant, accelerationFactor });
 
 		for (int i = 0; i < NB_FACADE; i++)
 			AbstractComponent.createComponent(NodeManagement.class.getCanonicalName(),
 					new Object[] { NODE_MANAGEMENT_COMPONENT_URI + "-" + i, i });
 
-		for (int i = NB_FACADE; i < NB_PEER + NB_FACADE; i++) {
+		for (int i = 0; i < NB_PEER; i++) {
 			AbstractComponent.createComponent(Node.class.getCanonicalName(),
-					new Object[] { NODE_COMPONENT_URI + i, NODE_MANAGEMENT_COMPONENT_URI + "-" + ((i % NB_FACADE)),
+					new Object[] { NODE_COMPONENT_URI +"_"+ i, NODE_MANAGEMENT_COMPONENT_URI + "-" + ((i % NB_FACADE)),
 							i });
 		}
 
@@ -69,7 +67,7 @@ public class FindBigNetwork extends AbstractCVM {
 			// Create an instance of the defined component virtual machine.
 			FindBigNetwork a = new FindBigNetwork();
 			// Execute the application.
-			a.startStandardLifeCycle(10000L);
+			a.startStandardLifeCycle(130000L);
 			// Give some time to see the traces (convenience).
 			Thread.sleep(500L);
 			// Simplifies the termination (termination has yet to be treated

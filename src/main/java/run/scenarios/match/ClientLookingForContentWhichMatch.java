@@ -54,11 +54,12 @@ public class ClientLookingForContentWhichMatch extends Client {
 		clock.waitUntilStart();
 
 		long delayInNanosToSearch = clock.nanoDelayUntilAcceleratedInstant(
-				startInstant.plusSeconds(12));
+				startInstant.plusSeconds(10));
 
 		this.scheduleTask(
 				o -> {
 					try {
+						Thread.sleep(10000);
 						((ClientLookingForContentWhichMatch) o).exampleSearchContainsWichMatch();
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -66,13 +67,6 @@ public class ClientLookingForContentWhichMatch extends Client {
 				},
 				delayInNanosToSearch,
 				TimeUnit.NANOSECONDS);
-	}
-
-	@Override
-	public void finalise() throws Exception {
-		super.finalise();
-		this.doPortDisconnection(csop.getPortURI());
-		csop.unpublishPort();
 	}
 
 }
